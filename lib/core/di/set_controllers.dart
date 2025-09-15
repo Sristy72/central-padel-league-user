@@ -3,5 +3,5 @@ import 'package:karlfive/features/auth/presentation/controller/auth_controller.d
 
 void setupController() {
   // Auth Controller
-  Get.lazyPut<AuthController>(() => AuthController());
+  Get.lazyPut<AuthController>(() => AuthController(Get.find(), Get.find()));
 }
