@@ -15,4 +15,8 @@ class AppColors {
   static const Color textFieldBackground = Color(0xFF121212);
   static const Color textFieldTextiHint = gray;
   static const Color textFieldBorder = Color(0xFF1F2937);
+
+  ///Marjana
+  static const Color secondaryText = Color(0xFF9A9A9A);
+  static const Color cardColor = Color(0xFF9A9A9A33);
 }
