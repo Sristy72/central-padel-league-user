@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutx_core/flutx_core.dart';
 import 'package:get/get.dart';
+import 'package:karlfive/core/common/constants/app_images.dart';
 import 'package:karlfive/core/theme/app_buttoms.dart';
 import 'package:karlfive/core/theme/input_decoration_extensions.dart';
+import 'package:karlfive/features/auth/presentation/controller/remember_me_controller.dart';
 
 import '../../../../core/common/widgets/app_logo.dart';
 import '../../../../core/common/widgets/app_scaffold.dart';
@@ -32,6 +34,7 @@ class _LoginScreenState extends State<LoginScreen>
 
   /// [Controller]
   final _authController = Get.find<AuthController>();
+  final rememberMeController = Get.put(RememberMeController());
 
   @override
   void dispose() {
@@ -78,127 +81,197 @@ class _LoginScreenState extends State<LoginScreen>
             children: [
               Expanded(
                 child: SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: MediaQuery.of(context).size.height - 100,
-                    ),
-                    child: IntrinsicHeight(
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            AppLogo(),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      //crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        AppLogo(
+                          images: appImages.app_logo_landscape,
+                          height: 193,
+                          width: 193,
+                        ),
 
-                            /// [Api Error messages]
-                            AnimatedBuilder(
-                              animation: _authController,
-                              builder: (context, _) {
-                                return FormErrorMessage(
-                                  message: _authController.errorMessage.value,
-                                );
-                              },
+                        SizedBox(height: 37),
+
+                        Text(
+                          'Log In Your Account',
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 24,
+                          ),
+                        ),
+
+                        SizedBox(height: 16),
+
+                        /// [Api Error messages]
+                        AnimatedBuilder(
+                          animation: _authController,
+                          builder: (context, _) {
+                            return FormErrorMessage(
+                              message: _authController.errorMessage.value,
+                            );
+                          },
+                        ),
+
+                        /// [Text Field] Email
+                        TextFormField(
+                          controller: _emailController,
+                          focusNode: _emailFocus,
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: AppColors.white,
+                          ),
+                          decoration: context.primaryInputDecoration.copyWith(
+                            hintText: "Enter your email",
+                            prefixIcon: Icon(
+                              Icons.email_outlined,
+                              color: AppColors.prefixIconColor,
                             ),
+                          ),
+                          validator: Validators.email,
+                          onFieldSubmitted: (_) => FocusScope.of(
+                            context,
+                          ).requestFocus(_passwordFocus),
+                          autofillHints: const [AutofillHints.email],
+                        ),
 
-                            /// [Text Field] Email
-                            TextFormField(
-                              controller: _emailController,
-                              focusNode: _emailFocus,
-                              keyboardType: TextInputType.emailAddress,
-                              textInputAction: TextInputAction.next,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: AppColors.white,
-                              ),
+                        Gap.h16,
+
+                        /// [Text field] Password
+                        ValueListenableBuilder<bool>(
+                          valueListenable: _obscurePassword,
+                          builder: (context, obscure, _) {
+                            return TextFormField(
+                              controller: _passwordController,
+                              focusNode: _passwordFocus,
+                              obscureText: obscure,
+                              textInputAction: TextInputAction.done,
+                              style: TextStyle(color: AppColors.primaryText),
                               decoration: context.primaryInputDecoration
-                                  .copyWith(hintText: "Enter your email"),
-                              validator: Validators.email,
-                              onFieldSubmitted: (_) => FocusScope.of(
-                                context,
-                              ).requestFocus(_passwordFocus),
-                              autofillHints: const [AutofillHints.email],
-                            ),
-                            Gap.h12,
-
-                            /// [Text field] Password
-                            ValueListenableBuilder<bool>(
-                              valueListenable: _obscurePassword,
-                              builder: (context, obscure, _) {
-                                return TextFormField(
-                                  controller: _passwordController,
-                                  focusNode: _passwordFocus,
-                                  obscureText: obscure,
-                                  textInputAction: TextInputAction.done,
-                                  style: TextStyle(
-                                    color: AppColors.primaryText,
-                                  ),
-                                  decoration: context.primaryInputDecoration
-                                      .copyWith(
-                                        hintText: "Enter your Password",
-
-                                        suffixIcon: IconButton(
-                                          icon: Icon(
-                                            obscure
-                                                ? Icons.visibility_off
-                                                : Icons.visibility,
-                                            color: AppColors.buttonText,
-                                          ),
-                                          onPressed: () =>
-                                              _obscurePassword.value = !obscure,
+                                  .copyWith(
+                                    hintText: "Enter your Password",
+                                    prefixIcon: Icon(
+                                      Icons.lock_open_outlined,
+                                      color: AppColors.prefixIconColor,
+                                    ),
+                                    suffixIcon: IconButton(
+                                      icon: SizedBox(
+                                        width: 15,
+                                        height: 7,
+                                        child: Image.asset(
+                                          appImages.suffix_eye_icon,
                                         ),
                                       ),
+                                      onPressed: () =>
+                                          _obscurePassword.value = !obscure,
+                                    ),
+                                  ),
 
-                                  // validator: Validators.password,
-                                  onFieldSubmitted: (_) => _submit(),
-                                );
-                              },
+                              // validator: Validators.password,
+                              onFieldSubmitted: (_) => _submit(),
+                            );
+                          },
+                        ),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Obx(
+                                  () => Checkbox(
+                                    value:
+                                        rememberMeController.rememberMe.value,
+                                    activeColor: AppColors.checkboxColor,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(2),
+                                    ),
+                                    checkColor: AppColors.prefixIconColor,
+                                    // color of the check mark
+                                    side: BorderSide(
+                                      color: AppColors.prefixIconColor,
+                                      // border color when unchecked
+                                      width: 1,
+                                    ),
+                                    onChanged: (_) =>
+                                        rememberMeController.toggleRememberMe(),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: rememberMeController.toggleRememberMe,
+                                  // tap text also toggles
+                                  child: const Text(
+                                    "Remember Me",
+                                    style: TextStyle(
+                                      color: AppColors.rememberMeColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                onPressed: () {},
-                                child: 'Forgot Password ?'.text14w400(
-                                  color: AppColors.buttonText,
+
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                'Forgot Password?',
+                                style: TextStyle(
+                                  color: AppColors.primaryGreen,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
                                 ),
                               ),
                             ),
-
-                            /// [Button] Sign In
-                            // ListenableBuilder(
-                            //   listenable: _authController,
-                            //   builder: (context, _) {
-                            //     return PrimaryButton(
-                            //       isLoading: _authController.isLoading.value,
-                            //       onPressed: _submit,
-                            //       text: "Sign In",
-                            //     );
-                            //   },
-                            // ),
-                            Obx(
-                              () => PrimaryButton(
-                                isLoading: _authController.isLoading.value,
-                                onPressed: _submit,
-                                text: "Sign In",
-                              ),
-                            ),
-                            OrDividerWithCircle(),
-
-                            Gap.h12,
-
-                            // ListenableBuilder(
-                            //   listenable: _authController,
-                            //   builder: (context, _) {
-                            //     return SecondaryButton(
-                            //       isLoading: _authController.isLoading.value,
-                            //       onPressed: _submit,
-                            //       text: "Sign In",
-                            //     );
-                            //   },
-                            // ),
                           ],
                         ),
-                      ),
+
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {},
+                            child: 'Forgot Password ?'.text14w400(
+                              color: AppColors.buttonText,
+                            ),
+                          ),
+                        ),
+
+                        /// [Button] Sign In
+                        // ListenableBuilder(
+                        //   listenable: _authController,
+                        //   builder: (context, _) {
+                        //     return PrimaryButton(
+                        //       isLoading: _authController.isLoading.value,
+                        //       onPressed: _submit,
+                        //       text: "Sign In",
+                        //     );
+                        //   },
+                        // ),
+                        Obx(
+                          () => PrimaryButton(
+                            isLoading: _authController.isLoading.value,
+                            onPressed: _submit,
+                            text: "Sign In",
+                          ),
+                        ),
+                        OrDividerWithCircle(),
+
+                        Gap.h12,
+
+                        // ListenableBuilder(
+                        //   listenable: _authController,
+                        //   builder: (context, _) {
+                        //     return SecondaryButton(
+                        //       isLoading: _authController.isLoading.value,
+                        //       onPressed: _submit,
+                        //       text: "Sign In",
+                        //     );
+                        //   },
+                        // ),
+                      ],
                     ),
                   ),
                 ),

@@ -15,4 +15,9 @@ class AppColors {
   static const Color textFieldBackground = Color(0xFF121212);
   static const Color textFieldTextiHint = gray;
   static const Color textFieldBorder = Color(0xFF1F2937);
+
+  ///Eshita
+  static const Color prefixIconColor = Color(0xFF515151);
+  static const Color checkboxColor = Color(0xFF121212);
+  static const Color rememberMeColor = Color(0xFF9CA3AF);
 }
