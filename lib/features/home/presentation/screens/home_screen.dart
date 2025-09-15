@@ -15,19 +15,68 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(HomeController());
-    return AppScaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
+
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80), // custom height
+        child: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.black,
+          elevation: 0,
+          title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: const [
               Text(
                 "Hello Mosh,",
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
+              SizedBox(height: 4),
               Text(
                 "Welcome to Padel app",
                 style: TextStyle(color: Colors.grey, fontSize: 14),
+              ),
+            ],
+          ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: CircleAvatar(
+                backgroundColor: Colors.grey[850],
+                child: IconButton(
+                  onPressed: () {
+                    // TODO: add your button logic here
+                  },
+                  icon: const Icon(Icons.add, color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              // Search bar
+              Padding(
+                padding: EdgeInsets.all(12.0),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: "Search",
+                    prefixIcon: Icon(Icons.search),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 0,
+                      horizontal: 16,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(30)),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
               ),
               SizedBox(height: 20),
 
