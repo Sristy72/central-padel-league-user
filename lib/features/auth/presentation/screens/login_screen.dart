@@ -54,18 +54,7 @@ class _LoginScreenState extends State<LoginScreen>
     // Hide keyboard immediately
     if (mounted) FocusScope.of(context).unfocus();
 
-    try {
-      DPrint.log(
-        "Login Form Data ${_emailController.text}, ${_passwordController.text}",
-      );
-
-      await _authController.login(
-        _emailController.text,
-        _passwordController.text,
-      );
-    } catch (e) {
-      DPrint.error(e);
-    }
+    _authController.login(_emailController.text, _passwordController.text);
   }
 
   @override
