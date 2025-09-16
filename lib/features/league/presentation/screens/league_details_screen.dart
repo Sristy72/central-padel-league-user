@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:karlfive/features/league/presentation/widgets/custom_league_appbar.dart';
+import 'package:karlfive/features/league/presentation/widgets/matches_tab.dart';
 import 'package:karlfive/features/league/presentation/widgets/standing_tab.dart';
 
 import '../../models/standing_model.dart';
 import '../../models/team_model.dart';
+import '../../models/match_model.dart';
 import '../widgets/teams_tab.dart'; // Import the model class
 
 class LeagueDetailsScreen extends StatefulWidget {
@@ -18,6 +20,46 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
   late TabController _tabController;
 
   final List<String> _tabs = ['Standing', 'Matches', 'Teams', 'Fixtures'];
+
+  //! <--- Dynamic data using the "Match" model --->
+  final List<Match> _matchesData = [
+    Match(
+      team1LogoPath: 'assets/images/group_icon.png',
+      team1Name: 'Smasher',
+      team2LogoPath: 'assets/images/group_icon.png',
+      team2Name: 'Dribblers',
+      matchDate: '9th August 2025',
+      matchTime: '18:30',
+      leagueName: 'Premier League',
+      arena: 'Allianz Arena',
+      score: '6-4, 7-5',
+      winner: 'Smasher',
+    ),
+    const Match(
+      team1LogoPath: 'assets/images/group_icon.png',
+      team1Name: 'Smasher',
+      team2LogoPath: 'assets/images/group_icon.png',
+      team2Name: 'Dribblers',
+      matchDate: '10th August 2025',
+      matchTime: '20:00',
+      leagueName: 'Premier League',
+      arena: 'Old Trafford',
+      score: '3-2, 6-4',
+      winner: 'Dribblers',
+    ),
+    const Match(
+      team1LogoPath: 'assets/images/group_icon.png',
+      team1Name: 'Smasher',
+      team2LogoPath: 'assets/images/group_icon.png',
+      team2Name: 'Dribblers',
+      matchDate: '10th August 2025',
+      matchTime: '20:00',
+      leagueName: 'Premier League',
+      arena: 'Old Trafford',
+      score: '3-2, 6-4',
+      winner: 'Dribblers',
+    ),
+  ];
 
   //! <--- Dynamic data using the "Team" model --->
   final List<Team> _teamsData = [
@@ -177,7 +219,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
         controller: _tabController,
         children: [
           StandingTab(standingsData: _standingsData),
-          const Center(child: Text('Matches Tab Content')),
+          MatchesTab(matchesData: _matchesData),
           TeamsTab(teamsData: _teamsData),
           const Center(child: Text('Fixtures Tab Content')),
         ],
