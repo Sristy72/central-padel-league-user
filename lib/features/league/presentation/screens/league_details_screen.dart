@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:karlfive/features/league/presentation/widgets/custom_league_appbar.dart';
 import 'package:karlfive/features/league/presentation/widgets/standing_tab.dart';
 
-import '../../models/standing_model.dart'; // Import the model class
+import '../../models/standing_model.dart';
+import '../../models/team_model.dart';
+import '../widgets/teams_tab.dart'; // Import the model class
 
 class LeagueDetailsScreen extends StatefulWidget {
   const LeagueDetailsScreen({super.key});
@@ -17,7 +19,35 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
 
   final List<String> _tabs = ['Standing', 'Matches', 'Teams', 'Fixtures'];
 
-  // Example dynamic data using the Standing model
+  //! <--- Dynamic data using the "Team" model --->
+  final List<Team> _teamsData = [
+    const Team(
+      teamLogoPath: 'assets/images/group_icon.png',
+      teamName: 'Deathrader',
+    ),
+    const Team(
+      teamLogoPath: 'assets/images/group_icon.png',
+      teamName: 'Team B',
+    ),
+    const Team(
+      teamLogoPath: 'assets/images/group_icon.png',
+      teamName: 'Team C',
+    ),
+    const Team(
+      teamLogoPath: 'assets/images/group_icon.png',
+      teamName: 'Team D',
+    ),
+    const Team(
+      teamLogoPath: 'assets/images/group_icon.png',
+      teamName: 'Team E',
+    ),
+    const Team(
+      teamLogoPath: 'assets/images/group_icon.png',
+      teamName: 'Team F',
+    ),
+  ];
+
+  //! <--- Dynamic data using the "Standing" model --->
   final List<Standing> _standingsData = [
     const Standing(
       pos: 1,
@@ -120,6 +150,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
       pts: 0,
     ),
   ];
+  //! <-------- END -------->
 
   @override
   void initState() {
@@ -147,7 +178,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
         children: [
           StandingTab(standingsData: _standingsData),
           const Center(child: Text('Matches Tab Content')),
-          const Center(child: Text('Teams Tab Content')),
+          TeamsTab(teamsData: _teamsData),
           const Center(child: Text('Fixtures Tab Content')),
         ],
       ),
