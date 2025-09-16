@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:karlfive/core/common/widgets/app_scaffold.dart';
+import 'package:karlfive/features/home/presentation/widgets/custom_search_bar.dart';
 
-import '../../controller/home_controller.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../widgets/fixtures_widget.dart';
 import '../widgets/game_reminder_widget.dart';
 import '../widgets/league_update_widget.dart';
@@ -14,11 +13,11 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(HomeController());
+    // final controller = Get.put(HomeController());
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80), // custom height
+        preferredSize: const Size.fromHeight(60),
         child: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Colors.black,
@@ -28,12 +27,12 @@ class HomeScreen extends StatelessWidget {
             children: const [
               Text(
                 "Hello Mosh,",
-                style: TextStyle(color: Colors.white, fontSize: 18),
+                style: TextStyle(color: AppColors.white, fontSize: 18),
               ),
               SizedBox(height: 4),
               Text(
                 "Welcome to Padel app",
-                style: TextStyle(color: Colors.grey, fontSize: 14),
+                style: TextStyle(color: AppColors.white, fontSize: 14),
               ),
             ],
           ),
@@ -44,7 +43,7 @@ class HomeScreen extends StatelessWidget {
                 backgroundColor: Colors.grey[850],
                 child: IconButton(
                   onPressed: () {
-                    // TODO: add your button logic here
+                    // TODO: button logic here
                   },
                   icon: const Icon(Icons.add, color: Colors.white),
                 ),
@@ -53,47 +52,42 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              // Search bar
-              Padding(
-                padding: EdgeInsets.all(12.0),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: "Search",
-                    prefixIcon: Icon(Icons.search),
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 0,
-                      horizontal: 16,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(30)),
-                      borderSide: BorderSide.none,
-                    ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                SizedBox(height: 20),
+                CustomSearchBar(),
+
+                SizedBox(height: 15),
+                Text(
+                  "Game Reminder",
+                  style: TextStyle(
+                    color: AppColors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
                   ),
                 ),
-              ),
-              SizedBox(height: 20),
+                SizedBox(height: 12),
 
-              GameReminderWidget(),
-              SizedBox(height: 20),
+                GameReminderWidget(),
+                SizedBox(height: 20),
 
-              LeagueUpdateWidget(),
-              SizedBox(height: 20),
+                LeagueUpdateWidget(),
+                SizedBox(height: 20),
 
-              NextMatchWidget(),
-              SizedBox(height: 20),
+                NextMatchWidget(),
+                SizedBox(height: 20),
 
-              QuickStatsWidget(),
-              SizedBox(height: 20),
+                QuickStatsWidget(),
+                SizedBox(height: 20),
 
-              FixturesWidget(),
-            ],
+                FixturesWidget(),
+              ],
+            ),
           ),
         ),
       ),

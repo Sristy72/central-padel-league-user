@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:karlfive/core/theme/app_theme.dart';
 import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
 import 'package:karlfive/features/home/presentation/screens/home_screen.dart';
+import 'package:karlfive/features/league/presentation/screens/league_details_screen.dart';
+import 'package:karlfive/features/league/presentation/screens/leagues_screen.dart';
 
 import 'core/init/app_initializer.dart';
 
@@ -20,7 +22,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Flutter Demo',
       theme: AppTheme.dark,
-      home: HomeScreen(),
+      home: LeagueDetailsScreen(),
     );
   }
 }

@@ -1,57 +1,9 @@
 import 'package:get/get.dart';
 
-/// Player model
-class Player {
-  final String name;
-  final String imageUrl;
+import '../models/player_model.dart';
+import '../models/team_model.dart';
+import '../models/match_model.dart';
 
-  Player({required this.name, required this.imageUrl});
-
-  factory Player.fromJson(Map<String, dynamic> json) {
-    return Player(name: json["name"] ?? "", imageUrl: json["imageUrl"] ?? "");
-  }
-}
-
-/// Team model
-class MatchTeam {
-  final String teamName;
-  final List<Player> players;
-
-  MatchTeam({required this.teamName, required this.players});
-
-  factory MatchTeam.fromJson(Map<String, dynamic> json) {
-    return MatchTeam(
-      teamName: json["teamName"] ?? "",
-      players: (json["players"] as List<dynamic>? ?? [])
-          .map((e) => Player.fromJson(e))
-          .toList(),
-    );
-  }
-}
-
-/// Match model
-class Match {
-  final String date;
-  final String time;
-  final MatchTeam team1;
-  final MatchTeam team2;
-
-  Match({
-    required this.date,
-    required this.time,
-    required this.team1,
-    required this.team2,
-  });
-
-  factory Match.fromJson(Map<String, dynamic> json) {
-    return Match(
-      date: json["date"] ?? "",
-      time: json["time"] ?? "",
-      team1: MatchTeam.fromJson(json["team1"] ?? {}),
-      team2: MatchTeam.fromJson(json["team2"] ?? {}),
-    );
-  }
-}
 
 class HomeController extends GetxController {
   var gameReminder = ''.obs;
@@ -101,6 +53,7 @@ class HomeController extends GetxController {
     /// Example Team 1
     team1Players.assignAll([
       Player(
+       
         name: "Alice",
         imageUrl: "https://randomuser.me/api/portraits/women/1.jpg",
       ),

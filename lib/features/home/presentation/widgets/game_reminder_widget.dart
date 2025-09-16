@@ -11,20 +11,21 @@ class GameReminderWidget extends StatelessWidget {
     final controller = Get.find<HomeController>();
 
     return Obx(
-      () => Card(
+      () => Container(
+        alignment: Alignment.centerLeft,
         color: AppColors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
         child: ListTile(
           leading: Container(
+            padding: EdgeInsets.all(11),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4.0),
               color: AppColors.primaryBackground,
             ),
-            padding: EdgeInsets.all(11),
+
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
-                // <-- Need to change this dynamically -->
+                //! <-- Need to change this dynamically -->
                 Text(
                   "Sun",
                   style: TextStyle(color: AppColors.white, fontSize: 12),
@@ -39,7 +40,7 @@ class GameReminderWidget extends StatelessWidget {
           title: Text(
             controller
                 .gameReminder
-                .value, // <-- Whill change after API integration -->
+                .value, //! <-- Whill change after API integration -->
             style: const TextStyle(
               color: AppColors.buttonText,
               fontWeight: FontWeight.w400,
