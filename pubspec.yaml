@@ -21,6 +21,8 @@ dependencies:
   # UI
   google_fonts: ^6.3.1
   flutx_core: ^1.1.0+1
+  image_picker: ^1.1.1
+
 
   # Api and cache
   dio: ^5.9.0

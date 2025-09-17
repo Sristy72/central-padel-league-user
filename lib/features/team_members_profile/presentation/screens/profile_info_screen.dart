@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/edit_profile_info.dart';
+import 'package:karlfive/features/team_members_profile/presentation/screens/profile_contactus_screen.dart';
+import 'package:karlfive/features/team_members_profile/presentation/screens/profile_report_screen.dart';
 import '../../models/edit_profile_model.dart';
 import '../../models/team_member_model.dart';
 
@@ -223,7 +225,22 @@ class ProfileInfoScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          // dummy data for contactUs
+                          final editProfile = EditProfileModel(
+                            firstName: member.name.split(" ").first,
+                            lastName: member.name.contains(" ")
+                                ? member.name.split(" ").last
+                                : "",
+                            email: "test@gmail.com",
+                            phone: "01700000000",
+                            birthday: "2000-01-01",
+                            gender: "Male",
+                            imageUrl: member.imageUrl,
+                          );
+                          Get.to(() => ProfileContactUsScreen(member: editProfile));
+
+                        },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -263,7 +280,9 @@ class ProfileInfoScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
                       InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          Get.to(() => const ProfileReportScreen());
+                        },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [

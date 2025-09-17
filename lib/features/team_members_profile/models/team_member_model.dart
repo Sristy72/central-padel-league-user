@@ -1,3 +1,5 @@
+import 'edit_profile_model.dart';
+
 class TeamMemberModel {
   final String id;
   final String name;
@@ -40,3 +42,4 @@ final TeamMemberModel dummyMember = TeamMemberModel(
   matches: 0,
   level: 1,
 );
+

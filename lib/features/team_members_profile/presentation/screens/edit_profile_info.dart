@@ -34,93 +34,98 @@ class EditProfileInfoScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(top: 22, left: 24, right: 24, bottom: 24),
-        child: Column(
-          children: [
-            // Circular Profile Image
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage(member.imageUrl),
-            ),
-            const SizedBox(height: 20),
-
-            // 1st Row: First Name & Last Name
-            Row(
-              children: [
-                Expanded(
-                  child: _buildTextField(
-                    label: "First Name",
-                    hintText: "Enter First Name",
-                    initialValue: member.firstName,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(top: 22, left: 24, right: 24, bottom: 24),
+          child: Column(
+            children: [
+              // Circular Profile Image
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: AssetImage(member.imageUrl),
+              ),
+              const SizedBox(height: 20),
+        
+              // 1st Row: First Name & Last Name
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildTextField(
+                      label: "First Name",
+                      hintText: "Ken",
+                      initialValue: member.firstName,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildTextField(
-                    label: "Last Name",
-                    hintText: "Enter Last Name",
-                    initialValue: member.lastName,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildTextField(
+                      label: "Last Name",
+                      hintText: "Adams",
+                      initialValue: member.lastName,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // 2nd Row: Email
-            _buildTextField(
-              label: "Email",
-              hintText: "Enter Email",
-              initialValue: member.email,
-            ),
-            const SizedBox(height: 16),
-
-            // 3rd Row: Phone
-            _buildTextField(
-              label: "Phone",
-              hintText: "Enter Phone Number",
-              initialValue: member.phone,
-            ),
-            const SizedBox(height: 16),
-
-            // 4th Row: Birthday
-            _buildTextField(
-              label: "Birthday",
-              hintText: "Enter Birthday",
-              initialValue: member.birthday,
-            ),
-            const SizedBox(height: 16),
-
-            // 5th Row: Gender
-            _buildTextField(
-              label: "Gender",
-              hintText: "Enter Gender",
-              initialValue: member.gender,
-            ),
-            const SizedBox(height: 30),
-
-            // Last Row: Save Button
-            Align(
-              alignment: Alignment.centerLeft,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                onPressed: () {},
-                child: const Text(
-                  "Save",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
+                ],
+              ),
+              const SizedBox(height: 16),
+        
+              // 2nd Row: Email
+              _buildTextField(
+                label: "Email",
+                hintText: "Enter Email",
+                initialValue: member.email,
+              ),
+              const SizedBox(height: 16),
+        
+              // 3rd Row: Phone
+              _buildTextField(
+                label: "Phone",
+                hintText: "Enter Phone Number",
+                initialValue: member.phone,
+              ),
+              const SizedBox(height: 16),
+        
+              // 4th Row: Birthday
+              _buildTextField(
+                label: "Birthday",
+                hintText: "Enter Birthday",
+                initialValue: member.birthday,
+              ),
+              const SizedBox(height: 16),
+        
+              // 5th Row: Gender
+              _buildTextField(
+                label: "Gender",
+                hintText: "Enter Gender",
+                initialValue: member.gender,
+              ),
+              const SizedBox(height: 32),
+        
+              // Last Row: Save Button
+              Align(
+                alignment: Alignment.center,
+                child: SizedBox(
+                  height:39,width: 342,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {},
+                    child: const Text(
+                      "Save",
+                      style: TextStyle(
+                        color: Color(0xFF060606),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -139,8 +144,8 @@ class EditProfileInfoScreen extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 12,
+            color: Colors.white,
+            fontSize: 16,
             fontWeight: FontWeight.w400,
           ),
         ),
@@ -152,15 +157,15 @@ class EditProfileInfoScreen extends StatelessWidget {
             style: const TextStyle(color: Colors.white, fontSize: 14),
             decoration: InputDecoration(
               hintText: hintText,
-              hintStyle: const TextStyle(color: Colors.white38, fontSize: 14),
+              hintStyle: const TextStyle(color: Color(0xFF7D807D), fontSize: 16),
               isDense: true,
               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               enabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.white24),
+                borderSide: const BorderSide(color: Colors.white),
                 borderRadius: BorderRadius.circular(4),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.green),
+                borderSide: const BorderSide(color: Colors.white),
                 borderRadius: BorderRadius.circular(4),
               ),
               fillColor: Colors.grey[900],
