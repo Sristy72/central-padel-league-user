@@ -47,7 +47,7 @@ class ApiClient {
       if (kDebugMode) DPrint.log("Using fallback connectivity: $e");
       // _connectivityService = _FallbackConnectivityService();
     }
-    
+
     _dio = Dio(
       BaseOptions(
         baseUrl: ApiConstants.baseDomain,
@@ -141,6 +141,7 @@ class ApiClient {
     required String endpoint,
     required T Function(dynamic) fromJsonT,
     dynamic data,
+    FormData? fromData,
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
@@ -203,13 +204,18 @@ class ApiClient {
 
       if (kDebugMode) {
         DPrint.log(
-          "🛜  Api Endpoint -> $endpoint ${options.contentType} $method",
+          "🛜 Api Endpoint -> $endpoint ${options.contentType} $method",
+        );
+        DPrint.log(
+          "🛜 Request payload -> FormData: ${fromData != null}, Data: $data",
         );
       }
 
+      final requestData = fromData ?? data;
+
       final response = await _dio.request(
         endpoint,
-        data: data,
+        data: requestData,
         queryParameters: queryParameters,
         options: options..method = method,
         cancelToken: cancelToken,
@@ -304,6 +310,7 @@ class ApiClient {
     Options? options,
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
+    FormData? formData,
     bool isFormData = false,
   }) => _request(
     method: 'POST',
@@ -314,6 +321,7 @@ class ApiClient {
     cancelToken: cancelToken,
     onSendProgress: onSendProgress,
     isFormData: isFormData,
+    fromData: formData,
   );
 
   Future<Either<NetworkFailure, NetworkSuccess<T>>> patch<T>(
@@ -322,6 +330,7 @@ class ApiClient {
     required T Function(dynamic) fromJsonT,
     Options? options,
     CancelToken? cancelToken,
+    FormData? formData,
     bool isFormData = false,
   }) => _request(
     method: 'PATCH',
@@ -330,6 +339,7 @@ class ApiClient {
     data: data,
     options: options,
     cancelToken: cancelToken,
+    fromData: formData,
     isFormData: isFormData,
   );
 
@@ -339,6 +349,7 @@ class ApiClient {
     required T Function(dynamic) fromJsonT,
     Options? options,
     CancelToken? cancelToken,
+    FormData? formData,
     bool isFormData = false,
   }) => _request(
     method: 'PUT',
@@ -347,6 +358,7 @@ class ApiClient {
     data: data,
     options: options,
     cancelToken: cancelToken,
+    fromData: formData,
     isFormData: isFormData,
   );
 
@@ -356,6 +368,7 @@ class ApiClient {
     required T Function(dynamic) fromJsonT,
     Options? options,
     CancelToken? cancelToken,
+    FormData? formData,
     bool isFormData = false,
   }) => _request(
     method: 'DELETE',
@@ -364,6 +377,7 @@ class ApiClient {
     data: data,
     options: options,
     cancelToken: cancelToken,
+    fromData: formData,
     isFormData: isFormData,
   );
 
