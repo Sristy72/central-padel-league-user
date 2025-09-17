@@ -15,7 +15,7 @@ class OtpVerificationScreen extends StatelessWidget {
     return AppScaffold(
       body: SafeArea(
         child: Obx(
-              () => Column(
+          () => Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Center(
@@ -78,13 +78,36 @@ class OtpVerificationScreen extends StatelessWidget {
               ),
 
               const SizedBox(height: 24),
-
+              RichText(
+                text: TextSpan(
+                  text: "Didn't receive the code? ",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.gray,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: "Resend",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primaryGreen,
+                      ),
+                      // recognizer: TapGestureRecognizer()
+                      //   ..onTap = () {
+                      //     controller.resendOtp();
+                      //   },
+                    ),
+                  ],
+                ),
+              ),
               controller.isLoading.value
                   ? const CircularProgressIndicator()
                   : ElevatedButton(
-                onPressed: controller.verifyOtp,
-                child: const Text("Verify OTP"),
-              ),
+                      onPressed: controller.verifyOtp,
+                      child: const Text("Verify OTP"),
+                    ),
             ],
           ),
         ),

@@ -21,7 +21,7 @@ class JoinLeagueScreen extends StatefulWidget {
 }
 
 class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
-  final JoinLeagueController controller = Get.put(JoinLeagueController());
+  final controller = Get.find<JoinLeagueController>();
 
   /// Submit form with validation
   void _submit() {
