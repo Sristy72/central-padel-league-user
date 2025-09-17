@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
       title: 'Profile Demo',
       theme: ThemeData.dark(), // dark theme
       home: ProfileInfoScreen(member: dummyMember),
+
     );
   }
 }

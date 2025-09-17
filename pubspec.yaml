@@ -13,6 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+
   cupertino_icons: ^1.0.8
 
   # State manage
@@ -22,6 +23,8 @@ dependencies:
   google_fonts: ^6.3.1
   flutx_core: ^1.1.0+1
   image_picker: ^1.1.1
+  file_picker: ^10.3.3
+
 
 
   # Api and cache
