@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:karlfive/core/theme/app_theme.dart';
-import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
+import 'package:karlfive/features/team_members_profile/presentation/screens/profile_info_screen.dart';
+import 'features/team_members_profile/models/team_member_model.dart';
+import 'package:karlfive/features/team_members_profile/presentation/screens/profile_info_screen.dart';
+import 'package:karlfive/features/team_members_profile/models/team_member_model.dart';
 
-import 'core/init/app_initializer.dart';
 
-void main() async {
-  await AppInitializer.initializeApp();
+
+void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+
+
     return GetMaterialApp(
-      title: 'Flutter Demo',
-      theme: AppTheme.dark,
-      home: LoginScreen(),
+      debugShowCheckedModeBanner: false,
+      title: 'Profile Demo',
+      theme: ThemeData.dark(), // dark theme
+      home: ProfileInfoScreen(member: dummyMember),
     );
   }
 }
