@@ -18,5 +18,9 @@ class AppColors {
 
   ///Marjana
   static const Color secondaryText = Color(0xFF9A9A9A);
-  static const Color cardColor = Color(0xFF9A9A9A33);
+  static const Color cardColor = Color(0xFF2F2F2F);
+  static const Color textBoxColor = Color(0xFFD9D9D9);
+  static const Color textColor = Color(0xFF151515);
+
+  ///close Marjana
 }

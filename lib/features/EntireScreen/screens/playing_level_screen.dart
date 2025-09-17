@@ -1,85 +1,109 @@
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:karlfive/features/EntireScreen/widgets/custom_card_widget.dart';
-// import '../controllers/playing_level_controller.dart';
-// import '../widgets/custom_card.dart';
-// import '../widgets/playing_level_dropdown.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:karlfive/core/common/widgets/app_scaffold.dart';
+import 'package:karlfive/features/EntireScreen/controller/playing_level_controller.dart';
 
-// class PlayingLevelScreen extends StatelessWidget {
-//   const PlayingLevelScreen({super.key});
+import 'package:karlfive/features/EntireScreen/controller/progress_page_controller.dart';
+import 'package:karlfive/features/EntireScreen/screens/profile_info_next.dart';
 
-//   @override
-//   Widget build(BuildContext context) {
-//     final controller = Get.put(PlayingLevelController());
+import 'package:karlfive/features/EntireScreen/widgets/custom_container_widget.dart';
+import 'package:karlfive/features/EntireScreen/widgets/drop_down_widget.dart';
 
-//     return Scaffold(
-//       backgroundColor: Colors.black,
-//       body: SafeArea(
-//         child: Padding(
-//           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.center,
-//             children: [
-//               // Progress bar
-//               LinearProgressIndicator(
-//                 value: 0.25, // progress step
-//                 color: Colors.green,
-//                 backgroundColor: Colors.white24,
-//                 minHeight: 6,
-//                 borderRadius: BorderRadius.circular(4),
-//               ),
-//               const SizedBox(height: 40),
+class PlayingLevelScreen extends StatelessWidget {
+  const PlayingLevelScreen({super.key});
 
-//               // Card with dropdown
-//               CustomCardWidget(
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     const Text(
-//                       "Your playing level",
-//                       style: TextStyle(
-//                         color: Colors.white,
-//                         fontSize: 16,
-//                         fontWeight: FontWeight.w600,
-//                       ),
-//                     ),
-//                     const SizedBox(height: 16),
-//                     PlayingLevelDropdown(),
-//                   ],
-//                 ),
-//               ),
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.put(PlayingLevelController());
+    final progressController = Get.put(ProgressPageController());
 
-//               const Spacer(),
+    return AppScaffold(
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 138),
+            // Progress bar inside a container
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              child: Obx(() {
+                return Container(
+                  height: 7,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.circular(46),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(46),
+                    child: LinearProgressIndicator(
+                      value: progressController.currentPage.value,
+                      color: Colors.green,
+                      backgroundColor: Colors.transparent,
+                    ),
+                  ),
+                );
+              }),
+            ),
 
-//               // Next button
-//               Align(
-//                 alignment: Alignment.bottomRight,
-//                 child: ElevatedButton(
-//                   onPressed: () {
-//                     if (controller.selectedLevel.value.isEmpty) {
-//                       Get.snackbar("Error", "Please select your playing level",
-//                           snackPosition: SnackPosition.BOTTOM,
-//                           backgroundColor: Colors.red,
-//                           colorText: Colors.white);
-//                     } else {
-//                       // navigate to next step
-//                       // Get.to(() => NextScreen());
-//                     }
-//                   },
-//                   style: ElevatedButton.styleFrom(
-//                     backgroundColor: Colors.white,
-//                     foregroundColor: Colors.black,
-//                     shape: RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.circular(8),
-//                     ),
-//                   ),
-//                   child: const Text("Next"),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
+            const SizedBox(height: 40),
+
+            // Card with dropdown
+            CustomContainerWidget(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Your playing level",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  PlayingLevelDropdown(),
+                ],
+              ),
+            ),
+
+            const Spacer(),
+
+            // Next button
+            Align(
+              alignment: Alignment.bottomRight,
+              child: ElevatedButton(
+                onPressed: () {
+                  if (controller.selectedLevel.value.isEmpty) {
+                    Get.snackbar(
+                      "Error",
+                      "Please select your playing level",
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                  } else {
+                    // update progress to 0.50 when moving to next screen
+                    progressController.updateProgress(0.50);
+
+                    // navigate to next step
+                    Get.to(() => PeofileInfoNextScreen());
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text("Next"),
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
+      ),
+    );
+  }
+}

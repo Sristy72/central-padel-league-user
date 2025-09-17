@@ -1,6 +1,8 @@
-// import 'package:karlfive/core/base/base_controller.dart';
+import 'package:get/get.dart';
+import 'package:karlfive/core/base/base_controller.dart';
 
-// class PlayingLevelController  extends BaseController{
+class PlayingLevelController extends BaseController {
+  var selectedLevel = ''.obs;
 
-//   Future
-// }
+  final levels = ["Beginner", "Intermediate", "Advanced", "Professional"];
+}
