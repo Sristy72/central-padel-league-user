@@ -10,7 +10,7 @@ class LeagueRemoteDataSourceImpl implements LeagueRemoteDataSource {
     await Future.delayed(const Duration(seconds: 2)); 
 
     return [
-      League(//! <--Not needed after API-->
+      League(//! <--Need to change after API-->
         id: '1',
         name: 'Premier League',
         backgroundImageUrl: 'assets/images/example_bg.jpg',
