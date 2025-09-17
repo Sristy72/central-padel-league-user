@@ -1,4 +1,4 @@
-import '../league/models/league_model.dart';
+import '../models/league_model.dart';
 
 abstract class LeagueRemoteDataSource {
   Future<List<League>> getLeagues();

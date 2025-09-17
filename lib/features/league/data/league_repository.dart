@@ -1,5 +1,5 @@
 // features/league/data/repositories/league_repository.dart
-import '../league/models/league_model.dart';
+import '../models/league_model.dart';
 import 'league_remote_data_source.dart';
 
 abstract class LeagueRepository {

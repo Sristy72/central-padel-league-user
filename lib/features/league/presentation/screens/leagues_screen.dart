@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:karlfive/features/league/presentation/widgets/league_card.dart';
 
 // features/league/presentation/pages/leagues_screen.dart
-import '../../../data/league_remote_data_source.dart';
-import '../../../data/league_repository.dart';
+import '../../data/league_remote_data_source.dart';
+import '../../data/league_repository.dart';
 import '../../models/league_model.dart';
 
 class LeaguesScreen extends StatefulWidget {
