@@ -59,15 +59,14 @@ class SelectPaymentScreen extends StatelessWidget {
         constraints: BoxConstraints(
           maxWidth: 500,
           minWidth: 300,
-          maxHeight: MediaQuery.of(context).size.height * 0.8, // Max 80% of screen height
+          maxHeight: MediaQuery.of(context).size.height * 0.8, 
         ),
         padding: const EdgeInsets.all(24),
-        child: SingleChildScrollView( // Allows scrolling if content is too tall
+        child: SingleChildScrollView( 
           child: Column(
-            mainAxisSize: MainAxisSize.min, // Height depends on content
+            mainAxisSize: MainAxisSize.min, 
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header row with title and close button
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
