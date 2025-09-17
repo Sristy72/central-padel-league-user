@@ -6,6 +6,7 @@ class AppScaffold extends StatelessWidget {
   final Widget? drawer;
   final bool removePadding;
   final Widget? floatingActionButton;
+  final Widget? bottomNavigationBar;
 
   const AppScaffold({
     super.key,
@@ -14,6 +15,7 @@ class AppScaffold extends StatelessWidget {
     required this.body,
     this.removePadding = false,
     this.floatingActionButton,
+    this.bottomNavigationBar,
   });
 
   @override
@@ -26,6 +28,7 @@ class AppScaffold extends StatelessWidget {
         child: body,
       ),
       floatingActionButton: floatingActionButton,
+      bottomNavigationBar: bottomNavigationBar,
     );
   }
 }
