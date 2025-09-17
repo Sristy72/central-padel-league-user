@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:karlfive/core/theme/app_theme.dart';
 import 'package:karlfive/features/payment/presentation/screens/select_payment_screen.dart';
 import 'core/init/app_initializer.dart';
-import 'features/privacy policy /presentation/screens/privacypolicy_screen.dart';
+import 'features/privacyPolicy /presentation/screens/privacypolicy_screen.dart';
 
 void main() async {
   await AppInitializer.initializeApp();
