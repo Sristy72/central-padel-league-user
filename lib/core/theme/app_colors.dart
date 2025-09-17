@@ -20,4 +20,6 @@ class AppColors {
   static const Color prefixIconColor = Color(0xFF515151);
   static const Color checkboxColor = Color(0xFF121212);
   static const Color rememberMeColor = Color(0xFF9CA3AF);
+  static const Color googleBorderColor = Color(0xFFD2D2D2);
+  static const Color textFieldTitle = Color(0xFF999999);
 }

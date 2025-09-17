@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutx_core/flutx_core.dart';
 import 'package:get/get.dart';
@@ -5,13 +6,15 @@ import 'package:karlfive/core/common/constants/app_images.dart';
 import 'package:karlfive/core/theme/app_buttoms.dart';
 import 'package:karlfive/core/theme/input_decoration_extensions.dart';
 import 'package:karlfive/features/auth/presentation/controller/remember_me_controller.dart';
+import 'package:karlfive/features/auth/presentation/screens/reset_password_screen.dart';
+import 'package:karlfive/features/auth/presentation/screens/signup_screen.dart';
+import 'package:karlfive/features/auth/presentation/widgets/different_login_approach.dart';
 
 import '../../../../core/common/widgets/app_logo.dart';
 import '../../../../core/common/widgets/app_scaffold.dart';
 import '../../../../core/common/widgets/form_error_message.dart';
 import '../../../../core/common/widgets/or_divider_with_circle.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/debug_print.dart' hide DPrint;
 import '../controller/auth_controller.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -35,6 +38,18 @@ class _LoginScreenState extends State<LoginScreen>
   /// [Controller]
   final _authController = Get.find<AuthController>();
   final rememberMeController = Get.put(RememberMeController());
+  late TapGestureRecognizer _signUpRecognizer;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _signUpRecognizer = TapGestureRecognizer()
+      ..onTap = (){
+        Get.to(SignupScreen());
+    };
+
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -57,18 +72,7 @@ class _LoginScreenState extends State<LoginScreen>
     // Hide keyboard immediately
     if (mounted) FocusScope.of(context).unfocus();
 
-    try {
-      DPrint.log(
-        "Login Form Data ${_emailController.text}, ${_passwordController.text}",
-      );
-
-      await _authController.login(
-        _emailController.text,
-        _passwordController.text,
-      );
-    } catch (e) {
-      DPrint.error(e);
-    }
+    _authController.login(_emailController.text, _passwordController.text);
   }
 
   @override
@@ -160,12 +164,11 @@ class _LoginScreenState extends State<LoginScreen>
                                       color: AppColors.prefixIconColor,
                                     ),
                                     suffixIcon: IconButton(
-                                      icon: SizedBox(
-                                        width: 15,
-                                        height: 7,
-                                        child: Image.asset(
-                                          appImages.suffix_eye_icon,
-                                        ),
+                                      icon: Icon(
+                                        obscure
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                        color: AppColors.buttonText,
                                       ),
                                       onPressed: () =>
                                           _obscurePassword.value = !obscure,
@@ -178,6 +181,7 @@ class _LoginScreenState extends State<LoginScreen>
                           },
                         ),
 
+                        SizedBox(height: 16),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -188,20 +192,35 @@ class _LoginScreenState extends State<LoginScreen>
                                     value:
                                         rememberMeController.rememberMe.value,
                                     activeColor: AppColors.checkboxColor,
+                                    // fill color when checked
+                                    checkColor: AppColors.prefixIconColor,
+                                    //  tick color
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(2),
                                     ),
-                                    checkColor: AppColors.prefixIconColor,
-                                    // color of the check mark
-                                    side: BorderSide(
-                                      color: AppColors.prefixIconColor,
-                                      // border color when unchecked
-                                      width: 1,
-                                    ),
+                                    side: MaterialStateBorderSide.resolveWith((
+                                      states,
+                                    ) {
+                                      if (states.contains(
+                                        MaterialState.selected,
+                                      )) {
+                                        //  Border when checked
+                                        return BorderSide(
+                                          color: AppColors.prefixIconColor,
+                                          width: 2,
+                                        );
+                                      }
+                                      // Border when unchecked
+                                      return BorderSide(
+                                        color: AppColors.prefixIconColor,
+                                        width: 1,
+                                      );
+                                    }),
                                     onChanged: (_) =>
                                         rememberMeController.toggleRememberMe(),
                                   ),
                                 ),
+
                                 GestureDetector(
                                   onTap: rememberMeController.toggleRememberMe,
                                   // tap text also toggles
@@ -216,7 +235,7 @@ class _LoginScreenState extends State<LoginScreen>
                             ),
 
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {Get.to(ResetPasswordScreen());},
                               child: Text(
                                 'Forgot Password?',
                                 style: TextStyle(
@@ -228,16 +247,7 @@ class _LoginScreenState extends State<LoginScreen>
                             ),
                           ],
                         ),
-
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {},
-                            child: 'Forgot Password ?'.text14w400(
-                              color: AppColors.buttonText,
-                            ),
-                          ),
-                        ),
+                        Gap.h16,
 
                         /// [Button] Sign In
                         // ListenableBuilder(
@@ -257,37 +267,43 @@ class _LoginScreenState extends State<LoginScreen>
                             text: "Sign In",
                           ),
                         ),
+
+                        Gap.h16,
+
+                        Center(
+                          child: RichText(text: TextSpan(
+                              text: 'New To our Platform? ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 12,
+                                color: AppColors.rememberMeColor,
+                              ),
+                              children: [
+                                TextSpan(
+                                    text: 'Sign Up Here',
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w400,
+                                        color: AppColors.primaryGreen
+                                    ),
+                                    recognizer: _signUpRecognizer
+                                ),
+                              ]
+                          )),
+                        ),
+
+                        SizedBox(height: 16,),
+
                         OrDividerWithCircle(),
 
-                        Gap.h12,
+                        Gap.h16,
 
-                        // ListenableBuilder(
-                        //   listenable: _authController,
-                        //   builder: (context, _) {
-                        //     return SecondaryButton(
-                        //       isLoading: _authController.isLoading.value,
-                        //       onPressed: _submit,
-                        //       text: "Sign In",
-                        //     );
-                        //   },
-                        // ),
+                        DifferentLoginApproach(
+                          text: 'Continue With Google',
+                          image: appImages.google_logo,
+                        ),
                       ],
                     ),
-                  ),
-                ),
-              ),
-
-              GestureDetector(
-                onTap: () {},
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      "Don't have an account? ".text14w400(),
-
-                      'Sign Up'.text14w400(color: AppColors.buttonText),
-                    ],
                   ),
                 ),
               ),
