@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:karlfive/core/network/network_result.dart';
 
 import '../../model/join_league_model/join_league_model_request.dart';
 import '../../model/join_league_model/join_league_model_response.dart';
@@ -30,3 +31,8 @@ class JoinLeagueRepository {
     }
   }
 }
+
+
+// applicationabstract class JoinLeagueRepository {
+//   NetworkResult<>
+// }
