@@ -492,3 +492,4 @@ class ApiClient {
   /// Get connectivity service instance
   ConnectivityService get connectivityService => _connectivityService;
 }
+
