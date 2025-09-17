@@ -18,4 +18,5 @@ class AppColors {
 
   //! <--- Iftikhar --->
   static const Color leagueFieldBackground = Color(0xFFE2E2E2);
+  static const Color leagueFixtureBackground = Color(0xFF353535);
 }

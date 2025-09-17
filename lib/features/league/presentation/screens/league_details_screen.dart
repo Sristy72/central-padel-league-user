@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:karlfive/features/league/presentation/widgets/custom_league_appbar.dart';
+import 'package:karlfive/features/league/presentation/widgets/fixtures_tab.dart';
 import 'package:karlfive/features/league/presentation/widgets/matches_tab.dart';
 import 'package:karlfive/features/league/presentation/widgets/standing_tab.dart';
 
@@ -24,9 +25,9 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
   //! <--- Dynamic data using the "Match" model --->
   final List<Match> _matchesData = [
     Match(
-      team1LogoPath: 'assets/images/group_icon.png',
+      team1LogoPath: 'assets/images/group_logo.png',
       team1Name: 'Smasher',
-      team2LogoPath: 'assets/images/group_icon.png',
+      team2LogoPath: 'assets/images/group_logo.png',
       team2Name: 'Dribblers',
       matchDate: '9th August 2025',
       matchTime: '18:30',
@@ -36,9 +37,9 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
       winner: 'Smasher',
     ),
     const Match(
-      team1LogoPath: 'assets/images/group_icon.png',
+      team1LogoPath: 'assets/images/group_logo.png',
       team1Name: 'Smasher',
-      team2LogoPath: 'assets/images/group_icon.png',
+      team2LogoPath: 'assets/images/group_logo.png',
       team2Name: 'Dribblers',
       matchDate: '10th August 2025',
       matchTime: '20:00',
@@ -48,9 +49,9 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
       winner: 'Dribblers',
     ),
     const Match(
-      team1LogoPath: 'assets/images/group_icon.png',
+      team1LogoPath: 'assets/images/group_logo.png',
       team1Name: 'Smasher',
-      team2LogoPath: 'assets/images/group_icon.png',
+      team2LogoPath: 'assets/images/group_logo.png',
       team2Name: 'Dribblers',
       matchDate: '10th August 2025',
       matchTime: '20:00',
@@ -64,27 +65,27 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
   //! <--- Dynamic data using the "Team" model --->
   final List<Team> _teamsData = [
     const Team(
-      teamLogoPath: 'assets/images/group_icon.png',
+      teamLogoPath: 'assets/images/group_logo.png',
       teamName: 'Deathrader',
     ),
     const Team(
-      teamLogoPath: 'assets/images/group_icon.png',
+      teamLogoPath: 'assets/images/group_logo.png',
       teamName: 'Team B',
     ),
     const Team(
-      teamLogoPath: 'assets/images/group_icon.png',
+      teamLogoPath: 'assets/images/group_logo.png',
       teamName: 'Team C',
     ),
     const Team(
-      teamLogoPath: 'assets/images/group_icon.png',
+      teamLogoPath: 'assets/images/group_logo.png',
       teamName: 'Team D',
     ),
     const Team(
-      teamLogoPath: 'assets/images/group_icon.png',
+      teamLogoPath: 'assets/images/group_logo.png',
       teamName: 'Team E',
     ),
     const Team(
-      teamLogoPath: 'assets/images/group_icon.png',
+      teamLogoPath: 'assets/images/group_logo.png',
       teamName: 'Team F',
     ),
   ];
@@ -93,7 +94,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
   final List<Standing> _standingsData = [
     const Standing(
       pos: 1,
-      teamLogoPath: 'assets/images/group_icon.png',
+      teamLogoPath: 'assets/images/group_logo.png',
       teamName: 'Deathrader',
       p: 0,
       w: 0,
@@ -104,7 +105,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
     ),
     const Standing(
       pos: 2,
-      teamLogoPath: 'assets/images/group_icon.png',
+      teamLogoPath: 'assets/images/group_logo.png',
       teamName: 'Team B',
       p: 0,
       w: 0,
@@ -115,7 +116,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
     ),
     const Standing(
       pos: 3,
-      teamLogoPath: 'assets/images/group_icon.png',
+      teamLogoPath: 'assets/images/group_logo.png',
       teamName: 'Team C',
       p: 0,
       w: 0,
@@ -126,7 +127,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
     ),
     const Standing(
       pos: 1,
-      teamLogoPath: 'assets/images/group_icon.png',
+      teamLogoPath: 'assets/images/group_logo.png',
       teamName: 'Deathrader',
       p: 0,
       w: 0,
@@ -137,7 +138,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
     ),
     const Standing(
       pos: 2,
-      teamLogoPath: 'assets/images/group_icon.png',
+      teamLogoPath: 'assets/images/group_logo.png',
       teamName: 'Team B',
       p: 0,
       w: 0,
@@ -148,7 +149,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
     ),
     const Standing(
       pos: 3,
-      teamLogoPath: 'assets/images/group_icon.png',
+      teamLogoPath: 'assets/images/group_logo.png',
       teamName: 'Team C',
       p: 0,
       w: 0,
@@ -160,7 +161,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
 
     const Standing(
       pos: 1,
-      teamLogoPath: 'assets/images/group_icon.png',
+      teamLogoPath: 'assets/images/group_logo.png',
       teamName: 'Deathrader',
       p: 0,
       w: 0,
@@ -171,7 +172,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
     ),
     const Standing(
       pos: 2,
-      teamLogoPath: 'assets/images/group_icon.png',
+      teamLogoPath: 'assets/images/group_logo.png',
       teamName: 'Team B',
       p: 0,
       w: 0,
@@ -182,7 +183,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
     ),
     const Standing(
       pos: 3,
-      teamLogoPath: 'assets/images/group_icon.png',
+      teamLogoPath: 'assets/images/group_logo.png',
       teamName: 'Team C',
       p: 0,
       w: 0,
@@ -221,7 +222,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
           StandingTab(standingsData: _standingsData),
           MatchesTab(matchesData: _matchesData),
           TeamsTab(teamsData: _teamsData),
-          const Center(child: Text('Fixtures Tab Content')),
+          FixturesTab(),
         ],
       ),
     );

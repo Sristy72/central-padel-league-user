@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/match_model.dart'; // Import the new model
 import '../../../../core/theme/app_colors.dart'; // Assuming AppColors is defined here
-import '../../../../core/theme/app_colors.dart';
 
 class MatchesTab extends StatelessWidget {
   final List<Match> matchesData;
@@ -29,20 +28,21 @@ class _MatchCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.black, // Dark background for the card
+      color: AppColors.primaryBackground,
       margin: const EdgeInsets.only(bottom: 20),
-
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Match Header: Teams vs Time
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildTeamDisplay(match.team1LogoPath, match.team1Name),
+                _buildTeamDisplay(
+                  match.team1LogoPath,
+                  match.team1Name,
+                ), //* <--- Match API here
                 Column(
                   children: [
                     const Text(
@@ -74,18 +74,30 @@ class _MatchCard extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             _buildDetailRow(
-              Icons.sports_soccer,
-              'Premier League',
+              "assets/images/group_logo.png", //! <--- Whill change after API
+              'League',
               match.leagueName,
             ),
             _buildDetailRow(
-              Icons.calendar_month,
+              "assets/images/wistle_icon.png",
               'Date',
               '${match.matchDate} - ${match.matchTime}',
             ),
-            _buildDetailRow(Icons.location_on, 'Arena', match.arena),
-            _buildDetailRow(Icons.scoreboard, 'Score', match.score),
-            _buildDetailRow(Icons.emoji_events, 'Winner', match.winner),
+            _buildDetailRow(
+              "assets/images/group_icon.png",
+              'Arena',
+              match.arena,
+            ),
+            _buildDetailRow(
+              "assets/images/score_icon.png",
+              'Score',
+              match.score,
+            ),
+            _buildDetailRow(
+              "assets/images/winner_icon.png",
+              'Winner',
+              match.winner,
+            ),
           ],
         ),
       ),
@@ -96,11 +108,10 @@ class _MatchCard extends StatelessWidget {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(25),
           decoration: BoxDecoration(
-            color:
-                AppColors.gray, // A light grey background for the team logo box
-            borderRadius: BorderRadius.circular(10),
+            color: AppColors.leagueFieldBackground,
+            borderRadius: BorderRadius.circular(4),
           ),
           child: Image.asset(logoPath, width: 40, height: 40),
         ),
@@ -110,16 +121,23 @@ class _MatchCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(IconData icon, String label, String value) {
+  Widget _buildDetailRow(String images, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
-          Icon(icon, color: Colors.white70, size: 20),
-          const SizedBox(width: 10),
-          Text(
-            '$label:',
-            style: const TextStyle(color: Colors.white70, fontSize: 14),
+          Column(
+            children: [Image(height: 18, width: 18, image: AssetImage(images))],
+          ),
+          const SizedBox(width: 20),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '$label:', //* <--- Label here
+                style: const TextStyle(color: Colors.white70, fontSize: 14),
+              ),
+            ],
           ),
           const SizedBox(width: 5),
           Expanded(

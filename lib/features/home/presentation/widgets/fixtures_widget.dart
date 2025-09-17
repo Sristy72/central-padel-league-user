@@ -123,7 +123,7 @@ class FixturesWidget extends StatelessWidget {
                 }),
               ],
             );
-          }).toList(),
+          }),
 
           // "See All" button
           Align(

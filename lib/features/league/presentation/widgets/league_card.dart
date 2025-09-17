@@ -14,7 +14,7 @@ class LeagueCard extends StatelessWidget {
 
     return Column(
       children: [
-        Container(
+        SizedBox(
           width: screenWidth,
           height: 220,
           child: Stack(
