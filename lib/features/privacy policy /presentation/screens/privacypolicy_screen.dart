@@ -1,60 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:karlfive/core/common/widgets/app_scaffold.dart';
-import 'package:karlfive/core/theme/app_colors.dart';
+import '../widgets/bullet_point.dart';
+import '../widgets/pragraph.dart';
+import '../widgets/section_title.dart';
 
 class PrivacypolicyScreen extends StatelessWidget {
   const PrivacypolicyScreen({super.key});
-
-  Widget _sectionTitle(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 20, bottom: 8),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
-
-  Widget _paragraph(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 14,
-        color: Colors.white70,
-        height: 1.5,
-      ),
-    );
-  }
-
-  Widget _bullet(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "• ",
-            style: TextStyle(color: Colors.white70, fontSize: 14),
-          ),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.white70,
-                height: 1.5,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
@@ -84,57 +35,59 @@ class PrivacypolicyScreen extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(vertical: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _paragraph(
-              "We value and respect your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your personal information when you visit our website or make a purchase from us.",
-            ),
+            SectionTitle(text: "Privacy Policy"),
+            const SizedBox(height: 16,),
+            Pragraph(text: "we value and respect your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your personal information when you visit our website [yourwebsite.com] or make a purchase from us.\nBy using our website, you agree to the practices described in this Privacy Policy. Please read it carefully to understand our views and practices regarding your personal data."),
 
-            _sectionTitle("Information We Collect"),
-            _bullet("Personal Information: Name, email, phone, billing/shipping address, payment details."),
-            _bullet("Transaction Information: Details of your bidding activity, bids placed, items purchased, and payment history."),
-            _bullet("Usage Data: Interactions with the site including IP address, browser type, pages visited, and time spent."),
-            _bullet("Cookies & Tracking Technologies: To enhance your experience and collect info about site usage."),
+            SectionTitle(text: "Information We Collect"),
+            Pragraph(text: "We collect various types of information to provide and improve our auction services, including:"),
+            BulletPoint(text: "Personal Information: Name, email, phone, billing/shipping address, payment details."),
+            BulletPoint(text: "Transaction Information: Details of your bidding activity, bids placed, items purchased, and payment history."),
+            BulletPoint(text: "Usage Data: Interactions with the site including IP address, browser type, pages visited, and time spent."),
+            BulletPoint(text: "Cookies & Tracking Technologies: To enhance your experience and collect info about site usage."),
 
-            _sectionTitle("How We Use Your Information"),
-            _bullet("Provide and manage services (bids, payments, shipping orders)."),
-            _bullet("Communicate with you about your account, bids, and purchases."),
-            _bullet("Respond to customer service inquiries."),
-            _bullet("Personalize your experience and recommend relevant products."),
-            _bullet("Analyze and improve the performance of the site."),
-            _bullet("Ensure compliance with service terms, obligations, and fraud prevention."),
+            SectionTitle(text: "How We Use Your Information"),
+            Pragraph(text: "We use the information we collect to:"),
+            BulletPoint(text: "Provide and manage services (bids, payments, shipping orders)."),
+            BulletPoint(text: "Communicate with you about your account, bids, and purchases."),
+            BulletPoint(text: "Respond to customer service inquiries."),
+            BulletPoint(text: "Personalize your experience and recommend relevant products."),
+            BulletPoint(text: "Analyze and improve the performance of the site."),
+            BulletPoint(text: "Ensure compliance with service terms, obligations, and fraud prevention."),
 
-            _sectionTitle("How We Share Your Information"),
-            _bullet("Service Providers: Trusted partners for processing payments and services."),
-            _bullet("Legal Requirements: Disclose personal info if required by law."),
-            _bullet("Business Transfers: In case of merger, acquisition, or asset sale."),
+            SectionTitle(text: "How We Share Your Information"),
+            Pragraph(text: "We may share your personal information in the following situations:"),
+            BulletPoint(text: "Service Providers: Trusted partners for processing payments and services."),
+            BulletPoint(text: "Legal Requirements: Disclose personal info if required by law."),
+            BulletPoint(text: "Business Transfers: In case of merger, acquisition, or asset sale."),
 
-            _sectionTitle("Data Security"),
-            _paragraph(
-              "We take the security of your personal information seriously. However, no internet transmission is 100% secure.",
-            ),
+            SectionTitle(text: "Data Security"),
+            Pragraph(text: "We take the security of your personal information seriously. However, no internet transmission is 100% secure."),
 
-            _sectionTitle("Data Retention"),
-            _paragraph(
-              "We retain your data as long as necessary for services, compliance, or dispute resolution.",
-            ),
+            SectionTitle(text: "Your Data Rights"),
+            Pragraph(text: "Depending on your location, you may have certain rights regarding your personal data, including:"),
+            BulletPoint(text: "The right to access the personal information we hold about you."),
+            BulletPoint(text: "The right to correct any inaccuracies in your personal information."),
+            BulletPoint(text: "The right to delete your personal information, subject to legal and contractual obligations."),
+            BulletPoint(text: "The right to withdraw consent where we process data based on consent."),
+            BulletPoint(text: "The right to opt-out of marketing communications."),
+            Pragraph(text: "If you wish to exercise any of these rights, please contact us at [contact@yourwebsite.com]."),
 
-            _sectionTitle("Cookies"),
-            _paragraph(
-              "We use cookies to enhance your browsing experience. You can control cookies via browser settings.",
-            ),
+            SectionTitle(text: "Data Retention"),
+            Pragraph(text: "We retain your personal information for as long as necessary to provide services, comply with legal obligations, and resolve disputes. Once your data is no longer needed, we will securely delete or anonymize it."),
 
-            _sectionTitle("Children’s Privacy"),
-            _paragraph(
-              "Our site is not intended for children under 13. If data is inadvertently collected, we will delete it.",
-            ),
+            SectionTitle(text: "Cookies"),
+            Pragraph(text: "We use cookies to enhance your browsing experience. You can control cookies via browser settings."),
 
-            _sectionTitle("Changes to This Privacy Policy"),
-            _paragraph(
-              "We may update this Privacy Policy from time to time. Please review it periodically.",
-            ),
+            SectionTitle(text: "Children’s Privacy"),
+            Pragraph(text: "Our site is not intended for children under 13. If data is inadvertently collected, we will delete it."),
+
+            SectionTitle(text: "Changes to This Privacy Policy"),
+            Pragraph(text: "We may update this Privacy Policy from time to time. Please review it periodically."),
 
             const SizedBox(height: 24),
           ],
@@ -143,3 +96,9 @@ class PrivacypolicyScreen extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+
