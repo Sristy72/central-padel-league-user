@@ -83,25 +83,25 @@ class AppBottomNavBar extends StatelessWidget {
 
             // Use GetX for navigation with smooth transitions
             if (index == 0) {
-              Get.to(
+              Get.offAll(
                 () => const HomeScreen(),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 300),
               );
             } else if (index == 1) {
-              Get.to(
+              Get.offAll(
                 () => const LeaguesScreen(),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 300),
               );
             } else if (index == 2) {
-              Get.to(
+              Get.offAll(
                 () => const Scaffold(body: Center(child: Text("Notification"))),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 300),
               );
             } else if (index == 3) {
-              Get.to(
+              Get.offAll(
                 () => ProfileInfoScreen(member: dummyMember),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 300),
