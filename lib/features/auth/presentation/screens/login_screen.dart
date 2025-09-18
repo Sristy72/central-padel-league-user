@@ -1,15 +1,20 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutx_core/flutx_core.dart';
 import 'package:get/get.dart';
+import 'package:karlfive/core/common/constants/app_images.dart';
 import 'package:karlfive/core/theme/app_buttoms.dart';
 import 'package:karlfive/core/theme/input_decoration_extensions.dart';
+import 'package:karlfive/features/auth/presentation/controller/remember_me_controller.dart';
+import 'package:karlfive/features/auth/presentation/screens/reset_password_screen.dart';
+import 'package:karlfive/features/auth/presentation/screens/signup_screen.dart';
+import 'package:karlfive/features/auth/presentation/widgets/different_login_approach.dart';
 
 import '../../../../core/common/widgets/app_logo.dart';
 import '../../../../core/common/widgets/app_scaffold.dart';
 import '../../../../core/common/widgets/form_error_message.dart';
 import '../../../../core/common/widgets/or_divider_with_circle.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/debug_print.dart' hide DPrint;
 import '../controller/auth_controller.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -32,6 +37,19 @@ class _LoginScreenState extends State<LoginScreen>
 
   /// [Controller]
   final _authController = Get.find<AuthController>();
+  final rememberMeController = Get.put(RememberMeController());
+  late TapGestureRecognizer _signUpRecognizer;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _signUpRecognizer = TapGestureRecognizer()
+      ..onTap = () {
+        Get.to(SignupScreen());
+      };
+
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -67,143 +85,237 @@ class _LoginScreenState extends State<LoginScreen>
             children: [
               Expanded(
                 child: SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: MediaQuery.of(context).size.height - 100,
-                    ),
-                    child: IntrinsicHeight(
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            AppLogo(),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      //crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        AppLogo(
+                          images: AppImages.appLogoLandscape,
+                          height: 193,
+                          width: 193,
+                        ),
 
-                            /// [Api Error messages]
-                            AnimatedBuilder(
-                              animation: _authController,
-                              builder: (context, _) {
-                                return FormErrorMessage(
-                                  message: _authController.errorMessage.value,
-                                );
-                              },
+                        SizedBox(height: 37),
+
+                        Text(
+                          'Log In Your Account',
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 24,
+                          ),
+                        ),
+
+                        SizedBox(height: 16),
+
+                        /// [Api Error messages]
+                        ///
+                        Obx(() {
+                          final error = _authController.errorMessage.value;
+                          if (error.isNotEmpty) {
+                            return FormErrorMessage(message: error);
+                          }
+                          return const SizedBox.shrink(); // return empty widget
+                        }),
+
+                        // AnimatedBuilder(
+                        //   animation: _authController,
+                        //   builder: (context, _) {
+                        //     return
+                        //
+                        //   },
+                        // ),
+
+                        /// [Text Field] Email
+                        TextFormField(
+                          controller: _emailController,
+                          focusNode: _emailFocus,
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: AppColors.white,
+                          ),
+                          decoration: context.primaryInputDecoration.copyWith(
+                            hintText: "Enter your email",
+                            prefixIcon: Icon(
+                              Icons.email_outlined,
+                              color: AppColors.prefixIconColor,
                             ),
+                          ),
+                          validator: Validators.email,
+                          onFieldSubmitted: (_) => FocusScope.of(
+                            context,
+                          ).requestFocus(_passwordFocus),
+                          autofillHints: const [AutofillHints.email],
+                        ),
 
-                            /// [Text Field] Email
-                            TextFormField(
-                              controller: _emailController,
-                              focusNode: _emailFocus,
-                              keyboardType: TextInputType.emailAddress,
-                              textInputAction: TextInputAction.next,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: AppColors.white,
-                              ),
+                        Gap.h16,
+
+                        /// [Text field] Password
+                        ValueListenableBuilder<bool>(
+                          valueListenable: _obscurePassword,
+                          builder: (context, obscure, _) {
+                            return TextFormField(
+                              controller: _passwordController,
+                              focusNode: _passwordFocus,
+                              obscureText: obscure,
+                              textInputAction: TextInputAction.done,
+                              style: TextStyle(color: AppColors.primaryText),
                               decoration: context.primaryInputDecoration
-                                  .copyWith(hintText: "Enter your email"),
-                              validator: Validators.email,
-                              onFieldSubmitted: (_) => FocusScope.of(
-                                context,
-                              ).requestFocus(_passwordFocus),
-                              autofillHints: const [AutofillHints.email],
-                            ),
-                            Gap.h12,
-
-                            /// [Text field] Password
-                            ValueListenableBuilder<bool>(
-                              valueListenable: _obscurePassword,
-                              builder: (context, obscure, _) {
-                                return TextFormField(
-                                  controller: _passwordController,
-                                  focusNode: _passwordFocus,
-                                  obscureText: obscure,
-                                  textInputAction: TextInputAction.done,
-                                  style: TextStyle(
-                                    color: AppColors.primaryText,
-                                  ),
-                                  decoration: context.primaryInputDecoration
-                                      .copyWith(
-                                        hintText: "Enter your Password",
-
-                                        suffixIcon: IconButton(
-                                          icon: Icon(
-                                            obscure
-                                                ? Icons.visibility_off
-                                                : Icons.visibility,
-                                            color: AppColors.buttonText,
-                                          ),
-                                          onPressed: () =>
-                                              _obscurePassword.value = !obscure,
-                                        ),
+                                  .copyWith(
+                                    hintText: "Enter your Password",
+                                    prefixIcon: Icon(
+                                      Icons.lock_open_outlined,
+                                      color: AppColors.prefixIconColor,
+                                    ),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        obscure
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                        color: AppColors.buttonText,
                                       ),
+                                      onPressed: () =>
+                                          _obscurePassword.value = !obscure,
+                                    ),
+                                  ),
 
-                                  // validator: Validators.password,
-                                  onFieldSubmitted: (_) => _submit(),
-                                );
-                              },
+                              // validator: Validators.password,
+                              onFieldSubmitted: (_) => _submit(),
+                            );
+                          },
+                        ),
+
+                        SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Obx(
+                                  () => Checkbox(
+                                    value:
+                                        rememberMeController.rememberMe.value,
+                                    activeColor: AppColors.checkboxColor,
+                                    // fill color when checked
+                                    checkColor: AppColors.prefixIconColor,
+                                    //  tick color
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(2),
+                                    ),
+                                    side: MaterialStateBorderSide.resolveWith((
+                                      states,
+                                    ) {
+                                      if (states.contains(
+                                        MaterialState.selected,
+                                      )) {
+                                        //  Border when checked
+                                        return BorderSide(
+                                          color: AppColors.prefixIconColor,
+                                          width: 2,
+                                        );
+                                      }
+                                      // Border when unchecked
+                                      return BorderSide(
+                                        color: AppColors.prefixIconColor,
+                                        width: 1,
+                                      );
+                                    }),
+                                    onChanged: (_) =>
+                                        rememberMeController.toggleRememberMe(),
+                                  ),
+                                ),
+
+                                GestureDetector(
+                                  onTap: rememberMeController.toggleRememberMe,
+                                  // tap text also toggles
+                                  child: const Text(
+                                    "Remember Me",
+                                    style: TextStyle(
+                                      color: AppColors.rememberMeColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                onPressed: () {},
-                                child: 'Forgot Password ?'.text14w400(
-                                  color: AppColors.buttonText,
+
+                            TextButton(
+                              onPressed: () {
+                                Get.to(ResetPasswordScreen());
+                              },
+                              child: Text(
+                                'Forgot Password?',
+                                style: TextStyle(
+                                  color: AppColors.primaryGreen,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
                                 ),
                               ),
                             ),
-
-                            /// [Button] Sign In
-                            // ListenableBuilder(
-                            //   listenable: _authController,
-                            //   builder: (context, _) {
-                            //     return PrimaryButton(
-                            //       isLoading: _authController.isLoading.value,
-                            //       onPressed: _submit,
-                            //       text: "Sign In",
-                            //     );
-                            //   },
-                            // ),
-                            Obx(
-                              () => PrimaryButton(
-                                isLoading: _authController.isLoading.value,
-                                onPressed: _submit,
-                                text: "Sign In",
-                              ),
-                            ),
-                            OrDividerWithCircle(),
-
-                            Gap.h12,
-
-                            // ListenableBuilder(
-                            //   listenable: _authController,
-                            //   builder: (context, _) {
-                            //     return SecondaryButton(
-                            //       isLoading: _authController.isLoading.value,
-                            //       onPressed: _submit,
-                            //       text: "Sign In",
-                            //     );
-                            //   },
-                            // ),
                           ],
                         ),
-                      ),
+                        Gap.h16,
+
+                        /// [Button] Sign In
+                        // ListenableBuilder(
+                        //   listenable: _authController,
+                        //   builder: (context, _) {
+                        //     return PrimaryButton(
+                        //       isLoading: _authController.isLoading.value,
+                        //       onPressed: _submit,
+                        //       text: "Sign In",
+                        //     );
+                        //   },
+                        // ),
+                        Obx(
+                          () => PrimaryButton(
+                            isLoading: _authController.isLoading.value,
+                            onPressed: _submit,
+                            text: "Sign In",
+                          ),
+                        ),
+
+                        Gap.h16,
+
+                        Center(
+                          child: RichText(
+                            text: TextSpan(
+                              text: 'New To our Platform? ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 12,
+                                color: AppColors.rememberMeColor,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: 'Sign Up Here',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w400,
+                                    color: AppColors.primaryGreen,
+                                  ),
+                                  recognizer: _signUpRecognizer,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(height: 16),
+
+                        OrDividerWithCircle(),
+
+                        Gap.h16,
+
+                        DifferentLoginApproach(
+                          text: 'Continue With Google',
+                          image: AppImages.googleLogo,
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-              ),
-
-              GestureDetector(
-                onTap: () {},
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      "Don't have an account? ".text14w400(),
-
-                      'Sign Up'.text14w400(color: AppColors.buttonText),
-                    ],
                   ),
                 ),
               ),

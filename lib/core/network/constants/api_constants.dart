@@ -1,6 +1,5 @@
 class ApiConstants {
   /// [Base Configuration]
-  // static const String baseDomain = 'http://10.10.5.48:5001';
   static const String baseDomain = 'https://karlfive223-backend.onrender.com';
   static const String baseUrl = '$baseDomain/api/v1';
 
@@ -26,8 +25,13 @@ class ApiConstants {
 
   /// [Endpoint Groups]
   static AuthEndpoints get auth => AuthEndpoints();
+
+  static UserEndpoints get user => UserEndpoints();
+  static NotificationEndpoints get notification => NotificationEndpoints();
+
   static TeamEndpointcs get team => TeamEndpointcs();
   static LeagueEndpoints get league => LeagueEndpoints();
+
 }
 
 
@@ -36,13 +40,26 @@ class AuthEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/auth';
 
   final String login = '$_base/login';
+  final String register = '$_base/register';
+  final String resetPass = '$_base/send-reset-otp';
   final String refreshToken = '$_base/refresh-token';
+  final String otpVerify = '$_base/verify-reset-otp';
+  final String otpVerifyRegister = '$_base/verify-otp';
+  final String setNewPass = '$_base/reset-password';
 }
 
 class UserEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/user';
+  final String updateProfile = '$_base/update-profile';
+  final String getUserProfile = '$_base/profile';
 
-  final String create = '$_base/create';
+  // final String create = '$_base/create';
+}
+
+class NotificationEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/notification';
+
+  final String getnotifications = '$_base/getnotifications';
 }
 
 class TeamEndpointcs {
