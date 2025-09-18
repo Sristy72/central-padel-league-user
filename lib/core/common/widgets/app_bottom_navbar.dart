@@ -75,80 +75,88 @@ class AppBottomNavBar extends StatelessWidget {
           top: BorderSide(color: Colors.grey.shade900, width: 0.5),
         ),
       ),
-      child: Obx(() => BottomNavigationBar(
-        currentIndex: controller.currentIndex.value,
-        onTap: (index) {
-          controller.changeIndex(index);
+      child: Obx(
+        () => BottomNavigationBar(
+          currentIndex: controller.currentIndex.value,
+          onTap: (index) {
+            controller.changeIndex(index);
 
-          // Use GetX for navigation with smooth transitions
-          if (index == 0) {
-            Get.offAll(() => const HomeScreen(),
+            // Use GetX for navigation with smooth transitions
+            if (index == 0) {
+              Get.to(
+                () => const HomeScreen(),
                 transition: Transition.fadeIn,
-                duration: const Duration(milliseconds: 300));
-          } else if (index == 1) {
-            Get.offAll(() => const LeaguesScreen(),
+                duration: const Duration(milliseconds: 300),
+              );
+            } else if (index == 1) {
+              Get.to(
+                () => const LeaguesScreen(),
                 transition: Transition.fadeIn,
-                duration: const Duration(milliseconds: 300));
-          } else if (index == 2) {
-            Get.offAll(
-                  () => const Scaffold(body: Center(child: Text("Notification"))),
-              transition: Transition.fadeIn,
-              duration: const Duration(milliseconds: 300),
-            );
-          } else if (index == 3) {
-            Get.offAll(() => const Scaffold(body: Center(child: Text("Profile"))),
+                duration: const Duration(milliseconds: 300),
+              );
+            } else if (index == 2) {
+              Get.to(
+                () => const Scaffold(body: Center(child: Text("Notification"))),
                 transition: Transition.fadeIn,
-                duration: const Duration(milliseconds: 300));
-          }
-        },
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        type: BottomNavigationBarType.fixed,
+                duration: const Duration(milliseconds: 300),
+              );
+            } else if (index == 3) {
+              Get.to(
+                () => ProfileInfoScreen(member: dummyMember),
+                transition: Transition.fadeIn,
+                duration: const Duration(milliseconds: 300),
+              );
+            }
+          },
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          type: BottomNavigationBarType.fixed,
 
-        selectedFontSize: 0,
-        unselectedFontSize: 0,
-        selectedItemColor: Colors.transparent,
-        unselectedItemColor: Colors.transparent,
+          selectedFontSize: 0,
+          unselectedFontSize: 0,
+          selectedItemColor: Colors.transparent,
+          unselectedItemColor: Colors.transparent,
 
-        items: [
-          BottomNavigationBarItem(
-            icon: _buildNavItem(
-              index: 0,
-              icon: "assets/images/nav_home_off.png",
-              activeIcon: "assets/images/nav_home_on.png",
-              label: "Home",
+          items: [
+            BottomNavigationBarItem(
+              icon: _buildNavItem(
+                index: 0,
+                icon: "assets/images/nav_home_off.png",
+                activeIcon: "assets/images/nav_home_on.png",
+                label: "Home",
+              ),
+              label: '',
             ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: _buildNavItem(
-              index: 1,
-              icon: "assets/images/nav_match_off.png",
-              activeIcon: "assets/images/nav_match_on.png",
-              label: "Matches",
+            BottomNavigationBarItem(
+              icon: _buildNavItem(
+                index: 1,
+                icon: "assets/images/nav_match_off.png",
+                activeIcon: "assets/images/nav_match_on.png",
+                label: "Matches",
+              ),
+              label: '',
             ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: _buildNavItem(
-              index: 2,
-              icon: "assets/images/nav_noti_off.png",
-              activeIcon: "assets/images/nav_noti_on.png",
-              label: "Notification",
+            BottomNavigationBarItem(
+              icon: _buildNavItem(
+                index: 2,
+                icon: "assets/images/nav_noti_off.png",
+                activeIcon: "assets/images/nav_noti_on.png",
+                label: "Notification",
+              ),
+              label: '',
             ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: _buildNavItem(
-              index: 3,
-              icon: "assets/images/nav_prof_off.png",
-              activeIcon: "assets/images/nav_prof_on.png",
-              label: "Profile",
+            BottomNavigationBarItem(
+              icon: _buildNavItem(
+                index: 3,
+                icon: "assets/images/nav_prof_off.png",
+                activeIcon: "assets/images/nav_prof_on.png",
+                label: "Profile",
+              ),
+              label: '',
             ),
-            label: '',
-          ),
-        ],
-      )),
+          ],
+        ),
+      ),
     );
   }
 }

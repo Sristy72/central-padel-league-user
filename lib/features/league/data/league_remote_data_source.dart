@@ -7,8 +7,6 @@ abstract class LeagueRemoteDataSource {
 class LeagueRemoteDataSourceImpl implements LeagueRemoteDataSource {
   @override
   Future<List<League>> getLeagues() async {
-    await Future.delayed(const Duration(seconds: 2));
-
     return [
       League(
         //! <--Need to change after API-->
