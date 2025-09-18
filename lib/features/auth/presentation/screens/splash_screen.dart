@@ -1,11 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 import 'package:karlfive/core/common/widgets/app_logo.dart';
 import 'package:karlfive/core/common/widgets/app_scaffold.dart';
 import 'package:karlfive/features/auth/presentation/controller/splash_screen_controller.dart';
-import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
 
 import '../../../../core/common/constants/app_images.dart';
 

@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:karlfive/core/common/constants/app_images.dart';
 import 'package:karlfive/core/common/widgets/app_logo.dart';
 import 'package:karlfive/core/theme/app_buttoms.dart';
@@ -12,15 +11,15 @@ import '../../../../core/common/widgets/app_scaffold.dart';
 import '../../../../core/common/widgets/form_error_message.dart';
 import '../../../../core/theme/app_colors.dart';
 
-class OtpVerificationScreen extends StatefulWidget {
-  const OtpVerificationScreen({super.key, required this.email});
+class OtpVerificationToCompleteRegister extends StatefulWidget {
+  const OtpVerificationToCompleteRegister({super.key, required this.email});
   final String email;
 
   @override
-  State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
+  State<OtpVerificationToCompleteRegister> createState() => _OtpVerificationToCompleteRegisterState();
 }
 
-class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
+class _OtpVerificationToCompleteRegisterState extends State<OtpVerificationToCompleteRegister> {
   late TapGestureRecognizer _resendOtp;
   final _authController = Get.find<AuthController>();
   final TextEditingController otpController = TextEditingController();
@@ -38,7 +37,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   }
 
   _submit(){
-    _authController.verifyOTP(widget.email, otpController.text);
+    _authController.verifyOTPRegister(widget.email, otpController.text);
   }
 
   @override
@@ -64,6 +63,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   fontSize: 14,
                   fontWeight: FontWeight.w400, color: AppColors.rememberMeColor
               ),),
+              SizedBox(height: 32,),
 
               Obx(() {
                 final error = _authController.errorMessage.value;
@@ -73,32 +73,30 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 return const SizedBox.shrink(); // return empty widget
               }),
 
-              SizedBox(height: 32,),
-
               PinCode(otpController: otpController,),
 
               SizedBox(height: 24,),
 
               Center(
                 child: RichText(text: TextSpan(
-                      text: 'Didn\'t Receive OTP? ',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 12,
-                        color: AppColors.rememberMeColor,
+                    text: 'Didn\'t Receive OTP? ',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12,
+                      color: AppColors.rememberMeColor,
+                    ),
+                    children: [
+                      TextSpan(
+                          text: 'RESEND OTP',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400,
+                            color:AppColors.primaryGreen,
+                          ),
+                          recognizer: _resendOtp
                       ),
-                      children: [
-                        TextSpan(
-                            text: 'RESEND OTP',
-                            style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w400,
-                              color:AppColors.primaryGreen,
-                            ),
-                            recognizer: _resendOtp
-                        ),
-                      ]
-                  )),
+                    ]
+                )),
 
               ),
 

@@ -111,14 +111,23 @@ class _LoginScreenState extends State<LoginScreen>
                         SizedBox(height: 16),
 
                         /// [Api Error messages]
-                        AnimatedBuilder(
-                          animation: _authController,
-                          builder: (context, _) {
-                            return FormErrorMessage(
-                              message: _authController.errorMessage.value,
-                            );
-                          },
-                        ),
+                        ///
+                        Obx(() {
+                          final error = _authController.errorMessage.value;
+                          if (error.isNotEmpty) {
+                            return FormErrorMessage(message: error);
+                          }
+                          return const SizedBox.shrink(); // return empty widget
+                        }),
+
+
+                        // AnimatedBuilder(
+                        //   animation: _authController,
+                        //   builder: (context, _) {
+                        //     return
+                        //
+                        //   },
+                        // ),
 
                         /// [Text Field] Email
                         TextFormField(

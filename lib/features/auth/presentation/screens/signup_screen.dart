@@ -10,8 +10,10 @@ import 'package:karlfive/core/theme/input_decoration_extensions.dart';
 import 'package:karlfive/features/auth/presentation/controller/auth_controller.dart';
 import 'package:karlfive/features/auth/presentation/controller/term_of_services_and_privacy_policy_controller.dart';
 import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
+import 'package:karlfive/features/auth/presentation/screens/otp_verification_to_complete_register.dart';
 
 import '../../../../core/common/constants/app_images.dart';
+import '../../../../core/common/widgets/form_error_message.dart';
 import '../widgets/different_login_approach.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -117,6 +119,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
 
+
                 SizedBox(height: 16),
                 Form(
                   key: _formKey,
@@ -155,7 +158,6 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                         ),
                         validator: Validators.name,
-
                       ),
 
                       ///Email
@@ -250,7 +252,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 fontWeight: FontWeight.w400,
                               ),
                               prefixIcon: Icon(
-                                Icons.lock_open_outlined,
+                                Icons.lock_outlined,
                                 color: AppColors.prefixIconColor,
                               ),
                               suffixIcon: IconButton(
@@ -403,7 +405,9 @@ class _SignupScreenState extends State<SignupScreen> {
                       Obx(
                         () => PrimaryButton(
                           isLoading: _authController.isLoading.value,
-                          onPressed: _submit,
+                          onPressed: () {
+                            _submit();
+                          },
                           text: "Sign Up",
                         ),
                       ),

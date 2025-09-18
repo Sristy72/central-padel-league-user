@@ -3,12 +3,14 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 
 
 class PinCode extends StatelessWidget {
-  const PinCode({super.key});
+  const PinCode({super.key, required this.otpController});
 
+  final TextEditingController otpController;
   @override
   Widget build(BuildContext context) {
     return PinCodeTextField(
       appContext: context,
+      controller: otpController,
       length: 4,
       animationType: AnimationType.fade,
       keyboardType: TextInputType.number,

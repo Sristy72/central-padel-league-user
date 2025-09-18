@@ -12,6 +12,7 @@ import 'package:karlfive/core/theme/app_colors.dart';
 import 'package:karlfive/core/theme/input_decoration_extensions.dart';
 import 'package:karlfive/features/auth/presentation/screens/otp_verification_screen.dart';
 
+import '../../../../core/common/widgets/form_error_message.dart';
 import '../controller/auth_controller.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -96,7 +97,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                     Gap.h16,
 
-                    PrimaryButton(onPressed: _submit, text: 'Sent OTP'),
+                    Obx(() => PrimaryButton(onPressed: _submit, isLoading: _authController.isLoading.value, text: 'Sent OTP')),
                   ],
                 ),
               ),
