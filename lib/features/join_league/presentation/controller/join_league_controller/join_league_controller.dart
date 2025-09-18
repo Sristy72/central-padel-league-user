@@ -229,7 +229,7 @@ class JoinLeagueController extends BaseController {
   String? validatePartnerName(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter partner name';
-    }
+      }           
     if (value.length < 2) {
       return 'Partner name must be at least 2 characters';
     }
