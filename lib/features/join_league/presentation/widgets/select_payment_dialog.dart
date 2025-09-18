@@ -103,7 +103,7 @@ class SelectPaymentDialog extends StatelessWidget {
                 width: double.infinity,
                 child: PrimaryButton(
                   onPressed: () {
-                    Get.to(PaymentScreen());
+                    Get.to(PaymentScreen(),transition: Transition.leftToRight);
                   },
                   text: "Pay Now",
                   backgroundColor: Colors.blue,

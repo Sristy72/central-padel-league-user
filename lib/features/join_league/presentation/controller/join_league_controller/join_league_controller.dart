@@ -155,7 +155,8 @@ class JoinLeagueController extends BaseController {
         },
         (success) {
           DPrint.log("Application submitted: ${success.message}");
-          Get.to(OtpVerificationScreen());
+          Get.to(OtpVerificationScreen(),transition: Transition.rightToLeft);
+
         },
       );
     } catch (e) {
