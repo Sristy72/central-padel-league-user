@@ -1,71 +1,161 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:karlfive/features/home/presentation/screens/home_screen.dart';
+import 'package:karlfive/features/league/presentation/screens/leagues_screen.dart';
+import 'package:karlfive/features/team_members_profile/models/team_member_model.dart';
+import 'package:karlfive/features/team_members_profile/presentation/screens/profile_info_screen.dart';
 import '../../../core/theme/app_colors.dart';
 
-class AppBottomNavBar extends StatefulWidget {
-  final int currentIndex;
-  final Function(int) onTap;
+// Create a GetX controller for navigation
+class BottomNavController extends GetxController {
+  final RxInt currentIndex = 0.obs;
 
-  const AppBottomNavBar({
-    super.key,
-    required this.currentIndex,
-    required this.onTap,
-  });
-
-  @override
-  State<AppBottomNavBar> createState() => _AppBottomNavBarState();
+  void changeIndex(int index) {
+    currentIndex.value = index;
+  }
 }
 
-class _AppBottomNavBarState extends State<AppBottomNavBar> {
-  late int _selectedIndex;
+class AppBottomNavBar extends StatelessWidget {
+  final int currentIndex;
 
-  @override
-  void initState() {
-    super.initState();
-    _selectedIndex = widget.currentIndex;
-  }
+  const AppBottomNavBar({super.key, required this.currentIndex});
 
   @override
   Widget build(BuildContext context) {
+    // Initialize the controller if not already initialized
+    final BottomNavController controller = Get.put(BottomNavController());
+    controller.currentIndex.value = currentIndex;
+
+    Widget _buildNavItem({
+      required int index,
+      required String icon,
+      required String activeIcon,
+      required String label,
+    }) {
+      return Obx(() {
+        final bool isSelected = controller.currentIndex.value == index;
+
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Green line indicator
+            Container(
+              height: 3,
+              width: 40,
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primaryGreen : Colors.transparent,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 4),
+
+            // Icon
+            Image.asset(isSelected ? activeIcon : icon, width: 24, height: 24),
+
+            const SizedBox(height: 4),
+
+            // Label
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
+                color: isSelected ? AppColors.primaryGreen : AppColors.gray,
+              ),
+            ),
+          ],
+        );
+      });
+    }
+
     return Container(
       decoration: BoxDecoration(
-        color: Color(0xff0D1B2A),
+        color: const Color(0xff0D1B2A),
         border: Border(
           top: BorderSide(color: Colors.grey.shade900, width: 0.5),
         ),
       ),
-      child: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          widget.onTap(index);
-        },
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: AppColors.primaryGreen,
-        unselectedItemColor: AppColors.gray,
-        selectedLabelStyle: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
+      child: Obx(
+        () => BottomNavigationBar(
+          currentIndex: controller.currentIndex.value,
+          onTap: (index) {
+            controller.changeIndex(index);
+
+            // Use GetX for navigation with smooth transitions
+            if (index == 0) {
+              Get.offAll(
+                () => const HomeScreen(),
+                transition: Transition.fadeIn,
+                duration: const Duration(milliseconds: 300),
+              );
+            } else if (index == 1) {
+              Get.offAll(
+                () => const LeaguesScreen(),
+                transition: Transition.fadeIn,
+                duration: const Duration(milliseconds: 300),
+              );
+            } else if (index == 2) {
+              Get.offAll(
+                () => const Scaffold(body: Center(child: Text("Notification"))),
+                transition: Transition.fadeIn,
+                duration: const Duration(milliseconds: 300),
+              );
+            } else if (index == 3) {
+              Get.offAll(
+                () => ProfileInfoScreen(member: dummyMember),
+                transition: Transition.fadeIn,
+                duration: const Duration(milliseconds: 300),
+              );
+            }
+          },
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          type: BottomNavigationBarType.fixed,
+
+          selectedFontSize: 0,
+          unselectedFontSize: 0,
+          selectedItemColor: Colors.transparent,
+          unselectedItemColor: Colors.transparent,
+
+          items: [
+            BottomNavigationBarItem(
+              icon: _buildNavItem(
+                index: 0,
+                icon: "assets/images/nav_home_off.png",
+                activeIcon: "assets/images/nav_home_on.png",
+                label: "Home",
+              ),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: _buildNavItem(
+                index: 1,
+                icon: "assets/images/nav_match_off.png",
+                activeIcon: "assets/images/nav_match_on.png",
+                label: "Matches",
+              ),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: _buildNavItem(
+                index: 2,
+                icon: "assets/images/nav_noti_off.png",
+                activeIcon: "assets/images/nav_noti_on.png",
+                label: "Notification",
+              ),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: _buildNavItem(
+                index: 3,
+                icon: "assets/images/nav_prof_off.png",
+                activeIcon: "assets/images/nav_prof_on.png",
+                label: "Profile",
+              ),
+              label: '',
+            ),
+          ],
         ),
-        unselectedLabelStyle: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w400,
-        ),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.sports_soccer),
-            label: 'Matches',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notification',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
       ),
     );
   }

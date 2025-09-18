@@ -3,6 +3,10 @@ class ApiConstants {
   static const String baseDomain = 'https://karlfive223-backend.onrender.com';
   static const String baseUrl = '$baseDomain/api/v1';
 
+  /// soykot ip
+
+  static const String soyDomain = 'http://10.10.5.91:5002';
+
   /// [Headers]
   static Map<String, String> get defaultHeaders => {
     'Content-Type': 'application/json',
@@ -21,9 +25,15 @@ class ApiConstants {
 
   /// [Endpoint Groups]
   static AuthEndpoints get auth => AuthEndpoints();
+
   static UserEndpoints get user => UserEndpoints();
   static NotificationEndpoints get notification => NotificationEndpoints();
+
+  static TeamEndpointcs get team => TeamEndpointcs();
+  static LeagueEndpoints get league => LeagueEndpoints();
+
 }
+
 
 /// [Authentication Endpoints]
 class AuthEndpoints {
@@ -50,4 +60,16 @@ class NotificationEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/notification';
 
   final String getnotifications = '$_base/getnotifications';
+}
+
+class TeamEndpointcs {
+  static const String _base = '${ApiConstants.baseUrl}/team';
+
+  final String create = '$_base/create';
+}
+
+class LeagueEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/league';
+
+  final String getAllLeagues = '$_base/all-league';
 }

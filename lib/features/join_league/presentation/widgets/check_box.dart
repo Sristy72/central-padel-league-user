@@ -18,7 +18,8 @@ class CheckRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(
       () => Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center  ,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Checkbox(
             value: valueListenable.value,

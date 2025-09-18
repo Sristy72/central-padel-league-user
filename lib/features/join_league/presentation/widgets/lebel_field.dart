@@ -22,7 +22,7 @@ class LabeledField extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
-        style: const TextStyle(color: AppColors.primaryText, fontSize: 16),
+        style: const TextStyle(color: AppColors.primaryText, fontSize: 14,fontWeight: FontWeight.w400),
         decoration: context.primaryInputDecoration.copyWith(hintText: hint),
         validator: validator,
       ),
