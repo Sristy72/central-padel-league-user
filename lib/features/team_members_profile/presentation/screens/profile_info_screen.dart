@@ -20,6 +20,7 @@ class ProfileInfoScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        
         backgroundColor: Colors.black,
         elevation: 0,
         title: const Text(
