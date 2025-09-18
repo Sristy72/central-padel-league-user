@@ -7,7 +7,6 @@ abstract class LeagueRemoteDataSource {
 class LeagueRemoteDataSourceImpl implements LeagueRemoteDataSource {
   @override
   Future<List<League>> getLeagues() async {
-
     return [
       League(
         //! <--Need to change after API-->

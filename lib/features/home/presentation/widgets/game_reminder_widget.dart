@@ -14,7 +14,10 @@ class GameReminderWidget extends StatelessWidget {
     return Obx(
       () => Container(
         alignment: Alignment.centerLeft,
-        color: AppColors.white,
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(4.0),
+        ),
         child: ListTile(
           leading: Container(
             padding: EdgeInsets.all(4.0),

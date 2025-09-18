@@ -73,7 +73,8 @@ class NextMatchWidget extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon( //* Need to add image
+                                const Icon(
+                                  //* Need to add image
                                   Icons.calendar_today,
                                   size: 14,
                                   color: Colors.black54,
@@ -95,9 +96,10 @@ class NextMatchWidget extends StatelessWidget {
                       Expanded(
                         child: Column(
                           children: [
-                            const Icon( //* Need to add image
-                              Icons.sports_tennis,
-                              size: 32,
+                            const Image(
+                              //* Need to add image
+                              image: AssetImage("assets/images/bat.png"),
+                              width: 32,
                               color: Colors.black87,
                             ),
                             const SizedBox(height: 4),
@@ -154,7 +156,8 @@ class NextMatchWidget extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon( //* Need to add image
+                                const Icon(
+                                  //* Need to add image
                                   Icons.access_time,
                                   size: 14,
                                   color: Colors.black54,
@@ -177,12 +180,12 @@ class NextMatchWidget extends StatelessWidget {
                   const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () {
-                      // Navigate or show details
+                      //! Navigate or show details
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
+                      backgroundColor: AppColors.leagueFixtureBackground,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     child: const Text(
