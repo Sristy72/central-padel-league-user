@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/features/join_league/presentation/widgets/select_payment_dialog.dart';
+import 'package:karlfive/features/league/presentation/screens/leagues_screen.dart';
 import '../../../data/repositories/otp_repo/otp.dart';
 
 class OtpController extends GetxController {
@@ -27,12 +28,15 @@ class OtpController extends GetxController {
       if (response.success) {
         Get.snackbar("Success", response.message);
         _showPaymentDialog();
-      } else {
-        Get.snackbar("Error", response.message);
-      }
-      */
+
+        // Get.snackbar("Success", response.message);
+
+        // ✅ Navigate to next screen
+        Get.to(LeaguesScreen());
+
     } catch (e) {
-      // Get.snackbar("Error", "Something went wrong");
+      // Get.snackbar("Error", e.toString());
+      Get.to(LeaguesScreen());
     } finally {
       isLoading.value = false;
     }
