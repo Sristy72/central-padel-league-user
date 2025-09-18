@@ -117,7 +117,7 @@ class PaymentScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: AppBottomNavBar(currentIndex: 0, onTap: (c){}),
+      bottomNavigationBar: AppBottomNavBar(currentIndex: 0,),
     );
   }
 }
