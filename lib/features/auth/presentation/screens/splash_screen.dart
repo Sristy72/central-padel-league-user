@@ -8,18 +8,25 @@ import 'package:karlfive/features/auth/presentation/controller/splash_screen_con
 import '../../../../core/common/constants/app_images.dart';
 
 class SplashScreen extends StatelessWidget {
-   SplashScreen({super.key});
+  SplashScreen({super.key});
 
   final controller = Get.put(SplashController());
   @override
   Widget build(BuildContext context) {
-
-    return AppScaffold(body: Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Center(child: AppLogo(images: appImages.app_logo_portrait, height: 144, width: 144,)),
-      ],
-    ));
+    return AppScaffold(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(
+            child: AppLogo(
+              images: AppImages.appLogoPortrait,
+              height: 144,
+              width: 144,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

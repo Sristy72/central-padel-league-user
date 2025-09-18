@@ -1,6 +1,8 @@
 import 'package:flutx_core/flutx_core.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/base/base_controller.dart';
+import 'package:karlfive/core/services/get_user_profile_service.dart';
+import 'package:karlfive/features/EntireScreen/screens/enter_screen.dart';
 import 'package:karlfive/features/auth/data/models/login_request_model.dart';
 import 'package:karlfive/features/auth/data/models/otp_request_model.dart';
 import 'package:karlfive/features/auth/data/models/otp_request_model_register.dart';
@@ -24,6 +26,8 @@ class AuthController extends BaseController {
 
   AuthController(this._authRepository, this._authStorageService);
 
+  final userProfileService = Get.find<GetUserProfileService>();
+
   // Login
   Future<void> login(String email, String password) async {
     setLoading(true);
@@ -44,13 +48,20 @@ class AuthController extends BaseController {
           refreshToken: success.data.refreshToken,
           userId: success.data.user.id,
         );
+         Get.to(HomeScreen());
+        // final userPredict  = userProfileService.userInfo ?? ;
+        // if (userProfileService.userInfo != null) {
+        //   if (userProfileService.userInfo!.phoneNumber.isNotEmpty ||
+        //       userProfileService.userInfo!.address.isNotEmpty) {
+        //     Get.offAll(() => HomeScreen());
+        //   }
+        // } else {
+        //   Get.to(() => EnterScreen());
+        // }
+
         setLoading(false);
-
-        Get.to(() => HomeScreen());
       },
-
     );
-
   }
 
   Future<void> register(
@@ -85,7 +96,6 @@ class AuthController extends BaseController {
     );
   }
 
-
   Future resetPass(String email) async {
     setLoading(true);
     setError('');
@@ -106,7 +116,6 @@ class AuthController extends BaseController {
       },
     );
   }
-
 
   Future resendOTP(String email) async {
     setLoading(true);
@@ -150,8 +159,6 @@ class AuthController extends BaseController {
     );
   }
 
-
-
   Future verifyOTPRegister(String email, String otp) async {
     setLoading(true);
     setError("");
@@ -167,7 +174,7 @@ class AuthController extends BaseController {
       },
       (success) {
         DPrint.log("verify otp success result : ${success.data.message}");
-        Get.to(LoginScreen());
+        Get.to(EnterScreen());
         setLoading(false);
       },
     );
@@ -200,7 +207,6 @@ class AuthController extends BaseController {
     );
   }
 
-
   Future refreshToken() async {
     setLoading(true);
 
@@ -210,8 +216,7 @@ class AuthController extends BaseController {
 
     final result = await _authRepository.refreshToken(request);
 
-
-   final navi = result.fold(
+    final navi = result.fold(
       (fail) {
         DPrint.log("Refresh token failed: ${fail.message}");
         setLoading(false);

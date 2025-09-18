@@ -31,7 +31,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _authController = Get.find<AuthController>();
 
   void _submit() async {
-
     // Hide keyboard immediately
     if (mounted) FocusScope.of(context).unfocus();
 
@@ -48,7 +47,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             children: [
               SizedBox(height: 51),
               AppLogo(
-                images: appImages.app_logo_landscape,
+                images: AppImages.appLogoLandscape,
                 width: 193,
                 height: 193,
               ),
@@ -97,7 +96,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                     Gap.h16,
 
-                    Obx(() => PrimaryButton(onPressed: _submit, isLoading: _authController.isLoading.value, text: 'Sent OTP')),
+                    Obx(
+                      () => PrimaryButton(
+                        onPressed: _submit,
+                        isLoading: _authController.isLoading.value,
+                        text: 'Sent OTP',
+                      ),
+                    ),
                   ],
                 ),
               ),

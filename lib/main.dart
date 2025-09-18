@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/theme/app_theme.dart';
+import 'package:karlfive/features/EntireScreen/controller/Profile_info_next_controller.dart';
+import 'package:karlfive/features/EntireScreen/screens/enter_screen.dart';
+import 'package:karlfive/features/EntireScreen/screens/profile_info_next.dart';
+import 'package:karlfive/features/EntireScreen/screens/profile_photo_upload_screen.dart';
 import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
 import 'package:karlfive/features/auth/presentation/screens/splash_screen.dart';
 

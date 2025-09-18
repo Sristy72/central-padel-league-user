@@ -1,5 +1,7 @@
-class appImages{
-  static const String app_logo_portrait ='assets/images/app_logo_portrait.png';
-  static const String app_logo_landscape ='assets/images/app_logo_landscape.png';
-  static const String google_logo ='assets/images/google_logo.png';
+class AppImages {
+  static const String appLogoPortrait = 'assets/images/app_logo_portrait.png';
+  static const String appLogoLandscape = 'assets/images/app_logo_landscape.png';
+  static const String googleLogo = 'assets/images/google_logo.png';
+  static const String entireScreen = 'assets/images/EntireScreenlogo.png';
+  static const String personImage = 'assets/images/person.png';
 }

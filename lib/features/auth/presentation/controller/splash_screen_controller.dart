@@ -10,6 +10,7 @@ import '../screens/home_screen.dart';
 class SplashController extends GetxController {
   final _authController = Get.find<AuthController>();
 
+
   @override
   void onInit() {
     super.onInit();

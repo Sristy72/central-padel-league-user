@@ -19,6 +19,7 @@ import '../models/reset_password_request_model.dart';
 import '../models/reset_password_response_model.dart';
 import '../models/set_new_password_request_model.dart';
 import '../models/set_new_password_response_model.dart';
+import '../models/user_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final ApiClient _apiClient;
@@ -67,7 +68,9 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  NetworkResult<OtpResponseModelRegister> otpVerifyRegister(OtpRequestModelRegister request) {
+  NetworkResult<OtpResponseModelRegister> otpVerifyRegister(
+    OtpRequestModelRegister request,
+  ) {
     return _apiClient.post(
       ApiConstants.auth.otpVerifyRegister,
       data: request.toJson(),
@@ -75,9 +78,10 @@ class AuthRepositoryImpl implements AuthRepository {
     );
   }
 
-
   @override
-  NetworkResult<SetNewPasswordResponseModel> setNewPassword(SetNewPasswordRequestModel request){
+  NetworkResult<SetNewPasswordResponseModel> setNewPassword(
+    SetNewPasswordRequestModel request,
+  ) {
     return _apiClient.post(
       ApiConstants.auth.setNewPass,
       data: request.toJson(),
@@ -85,13 +89,22 @@ class AuthRepositoryImpl implements AuthRepository {
     );
   }
 
-
   @override
-  NetworkResult<RefreshTokenResponseModel> refreshToken(RefreshTokenRequestModel request){
+  NetworkResult<RefreshTokenResponseModel> refreshToken(
+    RefreshTokenRequestModel request,
+  ) {
     return _apiClient.post(
       ApiConstants.auth.refreshToken,
       data: request.toJson(),
       fromJsonT: (json) => RefreshTokenResponseModel.fromJson(json),
+    );
+  }
+
+  @override
+  NetworkResult<UserModel> getUserProfile() {
+    return _apiClient.get<UserModel>(
+      ApiConstants.user.getUserProfile,
+      fromJsonT: (json) => UserModel.fromJson(json),
     );
   }
 }

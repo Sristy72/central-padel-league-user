@@ -44,9 +44,9 @@ class _LoginScreenState extends State<LoginScreen>
   void initState() {
     // TODO: implement initState
     _signUpRecognizer = TapGestureRecognizer()
-      ..onTap = (){
+      ..onTap = () {
         Get.to(SignupScreen());
-    };
+      };
 
     super.initState();
   }
@@ -92,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen>
                       //crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         AppLogo(
-                          images: appImages.app_logo_landscape,
+                          images: AppImages.appLogoLandscape,
                           height: 193,
                           width: 193,
                         ),
@@ -119,7 +119,6 @@ class _LoginScreenState extends State<LoginScreen>
                           }
                           return const SizedBox.shrink(); // return empty widget
                         }),
-
 
                         // AnimatedBuilder(
                         //   animation: _authController,
@@ -244,7 +243,9 @@ class _LoginScreenState extends State<LoginScreen>
                             ),
 
                             TextButton(
-                              onPressed: () {Get.to(ResetPasswordScreen());},
+                              onPressed: () {
+                                Get.to(ResetPasswordScreen());
+                              },
                               child: Text(
                                 'Forgot Password?',
                                 style: TextStyle(
@@ -280,7 +281,8 @@ class _LoginScreenState extends State<LoginScreen>
                         Gap.h16,
 
                         Center(
-                          child: RichText(text: TextSpan(
+                          child: RichText(
+                            text: TextSpan(
                               text: 'New To our Platform? ',
                               style: TextStyle(
                                 fontWeight: FontWeight.w400,
@@ -289,19 +291,20 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                               children: [
                                 TextSpan(
-                                    text: 'Sign Up Here',
-                                    style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w400,
-                                        color: AppColors.primaryGreen
-                                    ),
-                                    recognizer: _signUpRecognizer
+                                  text: 'Sign Up Here',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w400,
+                                    color: AppColors.primaryGreen,
+                                  ),
+                                  recognizer: _signUpRecognizer,
                                 ),
-                              ]
-                          )),
+                              ],
+                            ),
+                          ),
                         ),
 
-                        SizedBox(height: 16,),
+                        SizedBox(height: 16),
 
                         OrDividerWithCircle(),
 
@@ -309,7 +312,7 @@ class _LoginScreenState extends State<LoginScreen>
 
                         DifferentLoginApproach(
                           text: 'Continue With Google',
-                          image: appImages.google_logo,
+                          image: AppImages.googleLogo,
                         ),
                       ],
                     ),

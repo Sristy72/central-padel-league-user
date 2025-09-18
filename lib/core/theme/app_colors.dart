@@ -22,4 +22,12 @@ class AppColors {
   static const Color rememberMeColor = Color(0xFF9CA3AF);
   static const Color googleBorderColor = Color(0xFFD2D2D2);
   static const Color textFieldTitle = Color(0xFF999999);
+  ///Marjana
+  static const Color secondaryText = Color(0xFF9A9A9A);
+  static const Color cardColor = Color(0xFF2F2F2F);
+  static const Color textBoxColor = Color(0xFFD9D9D9);
+  static const Color textColor = Color(0xFF151515);
+  static const Color notificationColor = Color(0xFFEDF9FF);
+
+  ///close Marjana
 }

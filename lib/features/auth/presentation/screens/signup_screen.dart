@@ -119,7 +119,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
 
-
                 SizedBox(height: 16),
                 Form(
                   key: _formKey,
@@ -445,7 +444,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       SizedBox(height: 16),
                       DifferentLoginApproach(
                         text: 'Continue With Google',
-                        image: appImages.google_logo,
+                        image: AppImages.googleLogo,
                       ),
                     ],
                   ),

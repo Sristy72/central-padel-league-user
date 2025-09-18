@@ -14,7 +14,11 @@ import '../../../../core/common/widgets/app_scaffold.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class SetNewPasswordScreen extends StatefulWidget {
-  const SetNewPasswordScreen({super.key, required this.email, required this.otp});
+  const SetNewPasswordScreen({
+    super.key,
+    required this.email,
+    required this.otp,
+  });
   final String email;
   final String otp;
 
@@ -30,15 +34,19 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
   final FocusNode _confirmPasswordFocus = FocusNode();
 
   final TextEditingController _passwordTEController = TextEditingController();
-  final TextEditingController _confirmPasswordTEController = TextEditingController();
-
+  final TextEditingController _confirmPasswordTEController =
+      TextEditingController();
 
   final ValueNotifier<bool> _obscurePassword = ValueNotifier<bool>(true);
 
-  _submit(){
+  _submit() {
     if (!_formKey.currentState!.validate()) return;
 
-    _authController.setNewPass(widget.email, widget.otp, _passwordTEController.text);
+    _authController.setNewPass(
+      widget.email,
+      widget.otp,
+      _passwordTEController.text,
+    );
   }
 
   @override
@@ -55,98 +63,120 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
         child: Center(
           child: Column(
             children: [
-              SizedBox(height: 51,),
-              AppLogo(images: appImages.app_logo_landscape),
-              SizedBox(height: 49,),
-              Text('Reset password', style: TextStyle(color: AppColors.white, fontSize: 24, fontWeight: FontWeight.w700),),
-              SizedBox(height: 8,),
-              Text('Set New Password', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColors.rememberMeColor),),
-              SizedBox(height: 32,),
+              SizedBox(height: 51),
+              AppLogo(images: AppImages.appLogoLandscape),
+              SizedBox(height: 49),
+              Text(
+                'Reset password',
+                style: TextStyle(
+                  color: AppColors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Set New Password',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.rememberMeColor,
+                ),
+              ),
+              SizedBox(height: 32),
 
-
-              Form(key: _formKey,child: Column(
-                children: [
-                  ValueListenableBuilder<bool>(
-                    valueListenable: _obscurePassword,
-                    builder: (context, obscure, _) {
-                      return TextFormField(
-                        controller: _passwordTEController,
-                        focusNode: _passwordFocus,
-                        obscureText: obscure,
-                        textInputAction: TextInputAction.next,
-                        style: TextStyle(color: AppColors.primaryText),
-                        decoration: context.primaryInputDecoration.copyWith(
-                          hintText: "New Password",
-                          hintStyle: TextStyle(
-                            color: AppColors.prefixIconColor,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          prefixIcon: Icon(
-                            Icons.lock_outline,
-                            color: AppColors.prefixIconColor,
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              obscure
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    ValueListenableBuilder<bool>(
+                      valueListenable: _obscurePassword,
+                      builder: (context, obscure, _) {
+                        return TextFormField(
+                          controller: _passwordTEController,
+                          focusNode: _passwordFocus,
+                          obscureText: obscure,
+                          textInputAction: TextInputAction.next,
+                          style: TextStyle(color: AppColors.primaryText),
+                          decoration: context.primaryInputDecoration.copyWith(
+                            hintText: "New Password",
+                            hintStyle: TextStyle(
+                              color: AppColors.prefixIconColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.lock_outline,
                               color: AppColors.prefixIconColor,
                             ),
-                            onPressed: () =>
-                            _obscurePassword.value = !obscure,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                obscure
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: AppColors.prefixIconColor,
+                              ),
+                              onPressed: () =>
+                                  _obscurePassword.value = !obscure,
+                            ),
                           ),
-                        ),
-                        //
-                        validator: Validators.password,
-                        // onFieldSubmitted: (_) => _submit(),
-                      );
-                    },
-                  ),
+                          //
+                          validator: Validators.password,
+                          // onFieldSubmitted: (_) => _submit(),
+                        );
+                      },
+                    ),
 
-                  SizedBox(height: 16,),
-                  ValueListenableBuilder<bool>(
-                    valueListenable: _obscurePassword,
-                    builder: (context, obscure, _) {
-                      return TextFormField(
-                        controller: _confirmPasswordTEController,
-                        focusNode: _confirmPasswordFocus,
-                        obscureText: obscure,
-                        textInputAction: TextInputAction.done,
-                        style: TextStyle(color: AppColors.primaryText),
-                        decoration: context.primaryInputDecoration.copyWith(
-                          hintText: "Confirm Password",
-                          hintStyle: TextStyle(
-                            color: AppColors.prefixIconColor,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          prefixIcon: Icon(
-                            Icons.lock_outline,
-                            color: AppColors.prefixIconColor,
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              obscure
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
+                    SizedBox(height: 16),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: _obscurePassword,
+                      builder: (context, obscure, _) {
+                        return TextFormField(
+                          controller: _confirmPasswordTEController,
+                          focusNode: _confirmPasswordFocus,
+                          obscureText: obscure,
+                          textInputAction: TextInputAction.done,
+                          style: TextStyle(color: AppColors.primaryText),
+                          decoration: context.primaryInputDecoration.copyWith(
+                            hintText: "Confirm Password",
+                            hintStyle: TextStyle(
+                              color: AppColors.prefixIconColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.lock_outline,
                               color: AppColors.prefixIconColor,
                             ),
-                            onPressed: () =>
-                            _obscurePassword.value = !obscure,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                obscure
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: AppColors.prefixIconColor,
+                              ),
+                              onPressed: () =>
+                                  _obscurePassword.value = !obscure,
+                            ),
                           ),
-                        ),
-                        validator: Validators.password,
-                        onFieldSubmitted: (_) => _submit(),
-                      );
-                    },
-                  ),
-                ],
-              )),
+                          validator: Validators.password,
+                          onFieldSubmitted: (_) => _submit(),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
 
-              SizedBox(height: 16,),
+              SizedBox(height: 16),
 
-              Obx(() => PrimaryButton(onPressed: _submit, isLoading: _authController.isLoading.value, text: 'Verify Now'))
+              Obx(
+                () => PrimaryButton(
+                  onPressed: _submit,
+                  isLoading: _authController.isLoading.value,
+                  text: 'Verify Now',
+                ),
+              ),
             ],
           ),
         ),

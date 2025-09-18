@@ -22,6 +22,7 @@ class ApiConstants {
   /// [Endpoint Groups]
   static AuthEndpoints get auth => AuthEndpoints();
   static UserEndpoints get user => UserEndpoints();
+  static NotificationEndpoints get notification => NotificationEndpoints();
 }
 
 /// [Authentication Endpoints]
@@ -39,6 +40,14 @@ class AuthEndpoints {
 
 class UserEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/user';
+  final String updateProfile = '$_base/update-profile';
+  final String getUserProfile = '$_base/profile';
 
   // final String create = '$_base/create';
+}
+
+class NotificationEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/notification';
+
+  final String getnotifications = '$_base/getnotifications';
 }
