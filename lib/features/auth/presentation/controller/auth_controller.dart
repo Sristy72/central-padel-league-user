@@ -33,7 +33,7 @@ class AuthController extends BaseController {
         );
         setLoading(false);
 
-        Get.to(() => JoinLeagueScreen());
+        Get.to(() => JoinLeagueScreen(),transition: Transition.rightToLeft);
       },
     );
   }
