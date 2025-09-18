@@ -15,4 +15,8 @@ class AppColors {
   static const Color textFieldBackground = Color(0xFF121212);
   static const Color textFieldTextiHint = gray;
   static const Color textFieldBorder = Color(0xFF1F2937);
+
+  //! <--- Iftikhar --->
+  static const Color leagueFieldBackground = Color(0xFFE2E2E2);
+  static const Color leagueFixtureBackground = Color(0xFF353535);
 }
