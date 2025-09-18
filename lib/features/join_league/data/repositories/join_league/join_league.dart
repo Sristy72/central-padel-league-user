@@ -1,13 +1,11 @@
-import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
+
 import 'package:karlfive/core/network/constants/api_constants.dart';
 import 'package:karlfive/core/network/network_result.dart';
 
 import '../../../../../core/network/api_client.dart';
 import '../../../domain/repo/team_repo.dart';
-import '../../model/join_league_model/join_league_model_request.dart';
-import '../../model/join_league_model/join_league_model_response.dart';
+
 import '../../model/join_response_model.dart';
 import '../../model/league_reponse_model.dart';
 
@@ -52,6 +50,7 @@ class JoinLeagueRepositoryImpl implements JoinLeagueRepository {
     );
   }
 
+  @override
   NetworkResult<List<LeagueResponeModel>> getAllLeague() {
     return _apiClient.get<List<LeagueResponeModel>>(
       ApiConstants.league.getAllLeagues,

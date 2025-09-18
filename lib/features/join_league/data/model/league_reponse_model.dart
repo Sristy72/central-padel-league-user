@@ -1,9 +1,10 @@
-import '../../../auth/data/models/user_model.dart';
+import 'package:karlfive/features/auth/data/models/user_model.dart';
+
 import 'team_model.dart';
 
 class LeagueResponeModel {
   final String id;
-  final User user;
+  final UserModel user;
   final String leagueName;
   final String description;
   final String leagueLogo;
@@ -45,7 +46,7 @@ class LeagueResponeModel {
   factory LeagueResponeModel.fromJson(Map<String, dynamic> json) {
     return LeagueResponeModel(
       id: json['_id'] ?? '',
-      user: User.fromJson(json['user']),
+      user: UserModel.fromJson(json['user']),
       leagueName: json['leagueName'] ?? '',
       description: json['description'] ?? '',
       leagueLogo: json['leagueLogo'] ?? '',

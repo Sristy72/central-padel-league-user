@@ -5,8 +5,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../controller/join_league_controller/join_league_controller.dart';
 
 class PlayerLevelDropdown extends StatelessWidget {
-  final JoinLeagueController controller;
-  const PlayerLevelDropdown({required this.controller});
+  final  controller = Get.find<JoinLeagueController>();
+   PlayerLevelDropdown({super.key});
 
   @override
   Widget build(BuildContext context) {

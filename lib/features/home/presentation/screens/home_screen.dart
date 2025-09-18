@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/common/widgets/app_bottom_navbar.dart';
 import 'package:karlfive/features/home/presentation/widgets/custom_search_bar.dart';
+import 'package:karlfive/features/join_league/presentation/screens/form_screen/join_league_screen.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../controller/home_controller.dart';
@@ -47,6 +48,7 @@ class HomeScreen extends StatelessWidget {
                 child: IconButton(
                   onPressed: () {
                     // TODO: button logic here
+                    Get.to(() => JoinLeagueScreen());
                   },
                   icon: const Icon(Icons.add, color: Colors.white),
                 ),

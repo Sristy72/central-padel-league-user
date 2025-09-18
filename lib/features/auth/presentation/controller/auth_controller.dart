@@ -16,9 +16,7 @@ import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
 import 'package:karlfive/features/auth/presentation/screens/otp_verification_screen.dart';
 import 'package:karlfive/features/auth/presentation/screens/otp_verification_to_complete_register.dart';
 import 'package:karlfive/features/auth/presentation/screens/set_new_password_screen.dart';
-import 'package:karlfive/features/auth/presentation/screens/after_login.dart';
 import 'package:karlfive/features/join_league/presentation/screens/form_screen/join_league_screen.dart';
-
 
 import '../../../../core/network/services/auth_storage_service.dart';
 
@@ -51,7 +49,7 @@ class AuthController extends BaseController {
           refreshToken: success.data.refreshToken,
           userId: success.data.user.id,
         );
-         Get.to(HomeScreen());
+        Get.to(() => HomeScreen());
         // final userPredict  = userProfileService.userInfo ?? ;
         // if (userProfileService.userInfo != null) {
         //   if (userProfileService.userInfo!.phoneNumber.isNotEmpty ||
@@ -114,7 +112,7 @@ class AuthController extends BaseController {
       },
       (success) {
         DPrint.log("reset pass success result : ${success.data.message}");
-        Get.to(OtpVerificationScreen(email: email));
+        Get.offAll(() => OtpVerificationScreen(email: email));
         setLoading(false);
       },
     );
@@ -231,9 +229,8 @@ class AuthController extends BaseController {
         await _authStorageService.storeRefreshToken(success.data.refreshToken);
         // _authStorageService.clearAuthData();
         setLoading(false);
+        Get.to(() => JoinLeagueScreen(), transition: Transition.rightToLeft);
         return _isSuccess = true;
-
-        Get.to(() => JoinLeagueScreen(),transition: Transition.rightToLeft);
       },
     );
     return navi;
