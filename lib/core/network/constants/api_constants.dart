@@ -22,7 +22,10 @@ class ApiConstants {
 
   /// [Endpoint Groups]
   static AuthEndpoints get auth => AuthEndpoints();
+  static TeamEndpointcs get team => TeamEndpointcs();
+  static LeagueEndpoints get league => LeagueEndpoints();
 }
+
 
 /// [Authentication Endpoints]
 class AuthEndpoints {
@@ -36,4 +39,16 @@ class UserEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/user';
 
   final String create = '$_base/create';
+}
+
+class TeamEndpointcs {
+  static const String _base = '${ApiConstants.baseUrl}/team';
+
+  final String create = '$_base/create';
+}
+
+class LeagueEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/league';
+
+  final String getAllLeagues = '$_base/all-league';
 }

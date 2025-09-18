@@ -3,6 +3,7 @@ import 'package:karlfive/core/base/base_controller.dart';
 import 'package:karlfive/features/auth/data/models/login_request_model.dart';
 import 'package:karlfive/features/auth/domain/repo/auth_repo.dart';
 import 'package:karlfive/features/auth/presentation/screens/after_login.dart';
+import 'package:karlfive/features/join_league/presentation/screens/form_screen/join_league_screen.dart';
 
 import '../../../../core/network/services/auth_storage_service.dart';
 
@@ -32,7 +33,7 @@ class AuthController extends BaseController {
         );
         setLoading(false);
 
-        Get.to(() => AfterLoginScreen());
+        Get.to(() => JoinLeagueScreen());
       },
     );
   }
