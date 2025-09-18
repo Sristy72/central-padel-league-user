@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/features/home/presentation/screens/home_screen.dart';
 import 'package:karlfive/features/league/presentation/screens/leagues_screen.dart';
+import 'package:karlfive/features/team_members_profile/models/team_member_model.dart';
+import 'package:karlfive/features/team_members_profile/presentation/screens/profile_info_screen.dart';
 import '../../../core/theme/app_colors.dart';
 
 class AppBottomNavBar extends StatefulWidget {
@@ -83,14 +85,13 @@ class _AppBottomNavBarState extends State<AppBottomNavBar> {
               () => const Scaffold(body: Center(child: Text("Notification"))),
             );
           } else if (index == 3) {
-            Get.to(() => const Scaffold(body: Center(child: Text("Profile"))));
+            Get.to(() => ProfileInfoScreen(member: dummyMember));
           }
         },
         backgroundColor: Colors.transparent,
         elevation: 0,
         type: BottomNavigationBarType.fixed,
 
-        // hide default label & color handling
         selectedFontSize: 0,
         unselectedFontSize: 0,
         selectedItemColor: Colors.transparent,

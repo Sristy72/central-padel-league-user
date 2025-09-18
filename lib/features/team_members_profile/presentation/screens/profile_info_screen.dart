@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:karlfive/core/common/widgets/app_bottom_navbar.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/edit_profile_info.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_contactus_screen.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_report_screen.dart';
@@ -29,7 +30,6 @@ class ProfileInfoScreen extends StatelessWidget {
         ),
         centerTitle: true,
 
-
         actions: [
           IconButton(
             onPressed: () {
@@ -44,8 +44,6 @@ class ProfileInfoScreen extends StatelessWidget {
               );
 
               Get.to(EditProfileInfoScreen(member: editModel));
-
-
             },
             icon: Image.asset(
               'assets/icons/profile_Edit.png',
@@ -56,7 +54,6 @@ class ProfileInfoScreen extends StatelessWidget {
           ),
         ],
       ),
-
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -77,9 +74,8 @@ class ProfileInfoScreen extends StatelessWidget {
               ),
             ),
 
-
             const SizedBox(height: 19),
-           // My Team
+            // My Team
             Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton(
@@ -88,14 +84,16 @@ class ProfileInfoScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-
                 ),
                 onPressed: () {},
                 child: const Text(
-                    style:TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w400, color: Color(0xFF060606)
-                    ),
-                    "My team"),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF060606),
+                  ),
+                  "My team",
+                ),
               ),
             ),
 
@@ -109,7 +107,6 @@ class ProfileInfoScreen extends StatelessWidget {
                 _buildStatBox("${member.level}", "Level"),
               ],
             ),
-
 
             const SizedBox(height: 33),
             Card(
@@ -129,38 +126,50 @@ class ProfileInfoScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Image.asset('assets/icons/profile_phone.png',
-                              width: 11, height: 11),
+                          Image.asset(
+                            'assets/icons/profile_phone.png',
+                            width: 11,
+                            height: 11,
+                          ),
                           const SizedBox(width: 14),
                           const Text(
                             "Phone number",
                             style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16),
+                              color: Colors.white,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                            ),
                           ),
                           const Spacer(),
-                          Text('01712451235',
-                              style: const TextStyle(color: Colors.white)),
+                          Text(
+                            '01712451235',
+                            style: const TextStyle(color: Colors.white),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 24),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Image.asset('assets/icons/profile_mail.png',
-                              width: 12, height: 12),
+                          Image.asset(
+                            'assets/icons/profile_mail.png',
+                            width: 12,
+                            height: 12,
+                          ),
                           const SizedBox(width: 14),
                           const Text(
                             "Email",
                             style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16),
+                              color: Colors.white,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                            ),
                           ),
                           const Spacer(),
-                          Text('asbd@gmail.com',
-                              style: const TextStyle(color: Colors.white)),
+                          Text(
+                            'asbd@gmail.com',
+                            style: const TextStyle(color: Colors.white),
+                          ),
                         ],
                       ),
                     ],
@@ -238,21 +247,26 @@ class ProfileInfoScreen extends StatelessWidget {
                             gender: "Male",
                             imageUrl: member.imageUrl,
                           );
-                          Get.to(() => ProfileContactUsScreen(member: editProfile));
-
+                          Get.to(
+                            () => ProfileContactUsScreen(member: editProfile),
+                          );
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Image.asset('assets/icons/profile_contactus.png',
-                                width: 11, height: 11),
+                            Image.asset(
+                              'assets/icons/profile_contactus.png',
+                              width: 11,
+                              height: 11,
+                            ),
                             const SizedBox(width: 14),
                             const Text(
                               "Contact Us",
                               style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 16),
+                                color: Colors.white,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                              ),
                             ),
                           ],
                         ),
@@ -264,16 +278,18 @@ class ProfileInfoScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Image.asset(
-                                'assets/icons/profile_privacy_policy.png',
-                                width: 11,
-                                height: 11),
+                              'assets/icons/profile_privacy_policy.png',
+                              width: 11,
+                              height: 11,
+                            ),
                             const SizedBox(width: 14),
                             const Text(
                               "Privacy policy",
                               style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 16),
+                                color: Colors.white,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                              ),
                             ),
                           ],
                         ),
@@ -286,15 +302,19 @@ class ProfileInfoScreen extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Image.asset('assets/icons/profile_report.png',
-                                width: 11, height: 11),
+                            Image.asset(
+                              'assets/icons/profile_report.png',
+                              width: 11,
+                              height: 11,
+                            ),
                             const SizedBox(width: 14),
                             const Text(
                               "Report",
                               style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 16),
+                                color: Colors.white,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                              ),
                             ),
                           ],
                         ),
@@ -324,15 +344,19 @@ class ProfileInfoScreen extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Image.asset('assets/icons/profile_Logout.png',
-                            width: 15, height: 15),
+                        Image.asset(
+                          'assets/icons/profile_Logout.png',
+                          width: 15,
+                          height: 15,
+                        ),
                         const SizedBox(width: 9),
                         const Text(
                           "Log out",
                           style: TextStyle(
-                              color: Colors.redAccent,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16),
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                       ],
                     ),
@@ -343,6 +367,7 @@ class ProfileInfoScreen extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: AppBottomNavBar(currentIndex: 3),
     );
   }
 
