@@ -6,8 +6,10 @@ import 'package:karlfive/features/EntireScreen/screens/enter_screen.dart';
 import 'package:karlfive/features/EntireScreen/screens/profile_info_next.dart';
 import 'package:karlfive/features/EntireScreen/screens/profile_photo_upload_screen.dart';
 import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
-
+import 'package:karlfive/features/join_league/presentation/screens/form_screen/join_league_screen.dart';
+import 'package:karlfive/features/notification/presentation/screen/notification_screen.dart';
 import 'core/init/app_initializer.dart';
+import 'features/privacy policy /presentation/screens/privacypolicy_screen.dart';
 
 void main() async {
   await AppInitializer.initializeApp();
@@ -16,15 +18,13 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Flutter Demo',
+      title: 'KarlFive',
       theme: AppTheme.dark,
-      home: EnterScreen(),
-      // home: PhotoUploadScreen(),
+      home: LoginScreen(),
+      // home: NotificationScreen(),
     );
   }
 }

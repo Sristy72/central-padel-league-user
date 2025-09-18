@@ -6,4 +6,8 @@ abstract class NotificationRepo {
   NetworkResult<NotificationResponseModel> getnotifications(
     NotificationRequestModel request,
   );
+
+  NetworkResult<NotificationResponseModel> markAsRead(
+    NotificationRequestModel request,
+  );
 }

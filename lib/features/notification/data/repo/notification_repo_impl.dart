@@ -21,4 +21,16 @@ class NotificationRepoImpl implements NotificationRepo {
       // isFormData: true
     );
   }
+
+  @override
+  NetworkResult<NotificationResponseModel> markAsRead(
+    NotificationRequestModel request,
+  ) {
+    return _apiClient.get<NotificationResponseModel>(
+      ApiConstants.notification.getnotifications,
+      queryParameters: request.toJson(),
+      fromJsonT: (json) => NotificationResponseModel.fromJson(json),
+      // isFormData: true
+    );
+  }
 }

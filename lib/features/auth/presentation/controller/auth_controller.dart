@@ -5,6 +5,7 @@ import 'package:karlfive/features/auth/domain/repo/auth_repo.dart';
 import 'package:karlfive/features/auth/presentation/screens/after_login.dart';
 
 import '../../../../core/network/services/auth_storage_service.dart';
+import '../../../EntireScreen/screens/enter_screen.dart';
 
 class AuthController extends BaseController {
   final AuthRepository _authRepository;
@@ -32,7 +33,7 @@ class AuthController extends BaseController {
         );
         setLoading(false);
 
-        Get.to(() => AfterLoginScreen());
+        Get.to(() => EnterScreen());
       },
     );
   }

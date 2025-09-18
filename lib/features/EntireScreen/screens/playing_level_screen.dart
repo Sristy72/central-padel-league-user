@@ -4,6 +4,8 @@ import 'package:karlfive/core/common/widgets/app_scaffold.dart';
 import 'package:karlfive/features/EntireScreen/controller/playing_level_controller.dart';
 
 import 'package:karlfive/features/EntireScreen/controller/progress_page_controller.dart';
+import 'package:karlfive/features/EntireScreen/controller/user_info_controller.dart';
+import 'package:karlfive/features/EntireScreen/domain/repo/user_info_repo.dart';
 import 'package:karlfive/features/EntireScreen/screens/profile_info_next.dart';
 
 import 'package:karlfive/features/EntireScreen/widgets/custom_container_widget.dart';
@@ -16,6 +18,10 @@ class PlayingLevelScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(PlayingLevelController());
     final progressController = Get.put(ProgressPageController());
+    // final userInfoController = Get.put(UserInfoController());
+    final userInfoController = Get.put(
+      UserInfoController(Get.find<UserInfoRepo>()),
+    );
 
     return AppScaffold(
       body: SafeArea(
@@ -87,7 +93,10 @@ class PlayingLevelScreen extends StatelessWidget {
                     progressController.updateProgress(0.50);
 
                     // navigate to next step
-                    Get.to(() => PeofileInfoNextScreen());
+                    Get.to(
+                      () => PeofileInfoNextScreen(),
+                      transition: Transition.rightToLeft,
+                    );
                   }
                 },
                 style: ElevatedButton.styleFrom(
