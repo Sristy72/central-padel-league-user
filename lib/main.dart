@@ -7,6 +7,7 @@ import 'package:karlfive/features/EntireScreen/screens/profile_info_next.dart';
 import 'package:karlfive/features/EntireScreen/screens/profile_photo_upload_screen.dart';
 import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
 import 'package:karlfive/features/join_league/presentation/screens/form_screen/join_league_screen.dart';
+import 'package:karlfive/features/notification/presentation/screen/notification_dummy_screen.dart';
 import 'package:karlfive/features/notification/presentation/screen/notification_screen.dart';
 import 'core/init/app_initializer.dart';
 import 'features/privacy policy /presentation/screens/privacypolicy_screen.dart';
@@ -23,8 +24,8 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'KarlFive',
       theme: AppTheme.dark,
-      home: LoginScreen(),
-      // home: NotificationScreen(),
+      // home: LoginScreen(),
+      home: NotificationScreen(),
     );
   }
 }

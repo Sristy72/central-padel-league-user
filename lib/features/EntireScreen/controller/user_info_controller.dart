@@ -43,7 +43,9 @@ class UserInfoController extends BaseController {
     _multiFormDataManager.addTextData("name", "Marjana");
     _multiFormDataManager.addTextData("clubAffiliation", "Barcelona");
 
-    _multiFormDataManager.addImageFile(image!);
+    // _multiFormDataManager.addImageFile(image!);
+
+    // _multiFormDataManager.addImageFile(image!);
 
     final formData = await _multiFormDataManager.toFormDataWithValidation(
       // allowedImageTypes: const ['jpg', 'jpeg', 'png', 'gif', 'webp'],

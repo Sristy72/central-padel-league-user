@@ -21,6 +21,7 @@ class AppColors {
   static const Color cardColor = Color(0xFF2F2F2F);
   static const Color textBoxColor = Color(0xFFD9D9D9);
   static const Color textColor = Color(0xFF151515);
+  static const Color notificationColor = Color(0xFFEDF9FF);
 
   ///close Marjana
 }
