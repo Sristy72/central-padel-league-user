@@ -110,14 +110,13 @@ class PaymentScreen extends StatelessWidget {
                     fontWeight: FontWeight.w400,
                     color: Color(0xffACACAC),
                   ),
-
                 ),
               ],
             ),
           ),
         ],
       ),
-      bottomNavigationBar: AppBottomNavBar(currentIndex: 0,),
+      bottomNavigationBar: AppBottomNavBar(currentIndex: 0),
     );
   }
 }

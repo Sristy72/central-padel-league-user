@@ -32,8 +32,7 @@ class OtpController extends GetxController {
 
         // ✅ Navigate to next screen
         Get.to(LeaguesScreen());
-
-    }
+      }
     } catch (e) {
       // Get.snackbar("Error", e.toString());
       Get.to(LeaguesScreen());
