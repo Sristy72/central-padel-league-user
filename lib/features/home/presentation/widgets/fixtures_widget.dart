@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:karlfive/core/theme/app_colors.dart';
 import '../../controller/home_controller.dart';
 
 class FixturesWidget extends StatelessWidget {
@@ -9,8 +10,18 @@ class FixturesWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<HomeController>();
 
-    return Obx(
-      () => Column(
+    return Obx(() {
+      // If no fixtures, show a small placeholder
+      if (controller.groupedFixtures.isEmpty) {
+        return const Center(
+          child: Text(
+            "No fixtures available",
+            style: TextStyle(color: Colors.white70),
+          ),
+        );
+      }
+
+      return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
@@ -19,7 +30,7 @@ class FixturesWidget extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          // Grouped fixtures by date
+          // For each date group
           ...controller.groupedFixtures.entries.map((entry) {
             final date = entry.key;
             final matches = entry.value;
@@ -29,108 +40,207 @@ class FixturesWidget extends StatelessWidget {
               children: [
                 // Date header
                 Container(
+                  width: double.infinity,
                   color: Colors.grey[900],
                   padding: const EdgeInsets.symmetric(
-                    vertical: 6,
+                    vertical: 8,
                     horizontal: 12,
                   ),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.calendar_today,
-                        size: 16,
-                        color: Colors.redAccent,
+                      const Image(
+                        height: 24,
+                        width: 24,
+                        image: AssetImage('assets/images/group_logo.png'),
                       ),
-                      const SizedBox(width: 6),
-                      Text(
-                        date,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          date,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
 
-                // Matches for this date
-                ...matches.map((fix) {
-                  return Container(
-                    color: Colors.grey[850],
-                    child: ListTile(
-                      leading: Row(
-                        mainAxisSize: MainAxisSize.min,
+                // Matches list for this date
+                ListView.separated(
+                  shrinkWrap:
+                      true, // important to allow embedding inside Column
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: matches.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 6),
+                  itemBuilder: (context, matchIndex) {
+                    final fix = matches[matchIndex];
+
+                    // Even rows black, odd rows gray (index starts at 0)
+                    final bool isEvenRow = matchIndex % 2 == 0;
+                    final Color bgColor = isEvenRow
+                        ? AppColors.primaryBackground
+                        : AppColors.gray;
+
+                    // team images (use first player's image if available)
+                    final String team1Img = (fix.team1.players.isNotEmpty)
+                        ? fix.team1.players.first.imageUrl
+                        : '';
+                    final String team2Img = (fix.team2.players.isNotEmpty)
+                        ? fix.team2.players.first.imageUrl
+                        : '';
+
+                    return Container(
+                      color: bgColor,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 12,
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // Team 1 logo (first player's image for now)
-                          Image.network(
-                            fix.team1.players.isNotEmpty
-                                ? fix.team1.players.first.imageUrl
-                                : "",
-                            height: 28,
-                            width: 28,
-                            errorBuilder: (_, __, ___) => const Icon(
-                              Icons.sports_tennis,
-                              color: Colors.white70,
+                          // Team 1 (logo + name)
+                          Expanded(
+                            flex: 4,
+                            child: Row(
+                              children: [
+                                // Logo (circular)
+                                ClipOval(
+                                  child: SizedBox(
+                                    width: 36,
+                                    height: 36,
+                                    child: team1Img.isNotEmpty
+                                        ? Image.network(
+                                            team1Img,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (_, __, ___) =>
+                                                const Icon(
+                                                  Icons.sports,
+                                                  color: Colors.white70,
+                                                ),
+                                          )
+                                        : const Icon(
+                                            Icons.sports,
+                                            color: Colors.white70,
+                                          ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+
+                                // Team name — flexible to avoid overflow
+                                Expanded(
+                                  child: Text(
+                                    fix.team1.teamName,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(width: 6),
-                          Text(
-                            fix.team1.teamName,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
+
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    fix.time ?? '',
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                const Text(
+                                  "VS",
+                                  style: TextStyle(
+                                    color: Colors.white54,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Team 2 (name + logo) and star
+                          Expanded(
+                            flex: 4,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                // Team name aligned to right
+                                Flexible(
+                                  child: Text(
+                                    fix.team2.teamName,
+                                    textAlign: TextAlign.right,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+
+                                // Logo (circular)
+                                ClipOval(
+                                  child: SizedBox(
+                                    width: 36,
+                                    height: 36,
+                                    child: team2Img.isNotEmpty
+                                        ? Image.network(
+                                            team2Img,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (_, __, ___) =>
+                                                const Icon(
+                                                  Icons.sports,
+                                                  color: Colors.white70,
+                                                ),
+                                          )
+                                        : const Icon(
+                                            Icons.sports,
+                                            color: Colors.white70,
+                                          ),
+                                  ),
+                                ),
+
+                                const SizedBox(width: 8),
+
+                                // Favorite icon
+                                const Icon(
+                                  Icons.star_border,
+                                  color: Colors.white70,
+                                  size: 20,
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                      title: Center(
-                        child: Text(
-                          fix.time,
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            fix.team2.teamName,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Image.network(
-                            fix.team2.players.isNotEmpty
-                                ? fix.team2.players.first.imageUrl
-                                : "",
-                            height: 28,
-                            width: 28,
-                            errorBuilder: (_, __, ___) => const Icon(
-                              Icons.sports_tennis,
-                              color: Colors.white70,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          const Icon(Icons.star_border, color: Colors.white70),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
+                    );
+                  },
+                ),
               ],
             );
-          }),
+          }).toList(),
 
           // "See All" button
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
               onPressed: () {
-                // TODO: navigate to full fixtures page
+                // TODO: Navigate to full fixtures page (replace with Get.to)
+                // Get.to(() => const FullFixturesScreen());
               },
               child: const Text(
                 "See All",
@@ -139,7 +249,7 @@ class FixturesWidget extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
+      );
+    });
   }
 }

@@ -102,6 +102,7 @@ class QuickStatsWidget extends StatelessWidget {
                   Expanded(
                     flex: 3,
                     child: Row(
+                      /*************  ✨ Windsurf Command 🌟  *************/
                       children: [
                         Text(
                           "${index + 1}${_getOrdinal(index + 1)}  ",
@@ -116,10 +117,14 @@ class QuickStatsWidget extends StatelessWidget {
                             "assets/player1.png",
                           ), //! replace with stat["imageUrl"] if API provides
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          stat["name"] ?? "",
-                          style: const TextStyle(color: Colors.white),
+                        SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            stat["name"] ?? "",
+                            style: const TextStyle(color: Colors.white),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                          ),
                         ),
                       ],
                     ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/utils.dart';
 
 import '../../../../core/theme/app_colors.dart';
 
@@ -27,12 +29,13 @@ class CustomLeagueAppbar extends StatelessWidget
     return AppBar(
       elevation: 0.0,
       toolbarHeight: 200,
+      automaticallyImplyLeading: false,
       flexibleSpace: Stack(
         children: [
           Positioned.fill(
             child: Image.asset(backgroundImagePath, fit: BoxFit.cover),
           ),
-          Container(color: Colors.black.withOpacity(0.5)),
+          Container(color: Colors.black.withValues(alpha: 0.5)),
           Column(
             children: [
               Padding(
@@ -46,11 +49,22 @@ class CustomLeagueAppbar extends StatelessWidget
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      icon: const Icon(
-                        Icons.close,
-                        color: AppColors.white,
+                      icon: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          color: AppColors.white.withValues(alpha: 0.3),
+                        ),
+                        child: const Image(
+                          height: 20,
+                          width: 20,
+                          image: AssetImage("assets/images/cross_icon.png"),
+                          color: AppColors.white,
+                        ),
                       ), //! <-- Change to Image -->
-                      onPressed: () {},
+                      onPressed: () {
+                        Get.back();
+                      },
                     ),
                     IconButton(
                       icon: const Icon(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:karlfive/core/common/widgets/app_bottom_navbar.dart';
 import 'package:karlfive/features/league/presentation/widgets/league_card.dart';
 
 // features/league/presentation/pages/leagues_screen.dart
@@ -48,6 +49,7 @@ class _LeaguesScreenState extends State<LeaguesScreen> {
           }
         },
       ),
+      bottomNavigationBar: AppBottomNavBar(currentIndex: 1),
     );
   }
 }

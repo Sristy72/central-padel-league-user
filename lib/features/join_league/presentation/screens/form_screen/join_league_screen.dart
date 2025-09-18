@@ -146,7 +146,7 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: AppBottomNavBar(currentIndex: 0, onTap: (index){}),
+      bottomNavigationBar: AppBottomNavBar(currentIndex: 0),
     );
   }
 }

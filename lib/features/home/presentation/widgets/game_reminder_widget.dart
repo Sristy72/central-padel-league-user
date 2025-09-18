@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
-import 'package:karlfive/features/home/controller/home_controller.dart';
+
+import '../../controller/home_controller.dart';
 
 class GameReminderWidget extends StatelessWidget {
   const GameReminderWidget({super.key});
@@ -16,7 +17,7 @@ class GameReminderWidget extends StatelessWidget {
         color: AppColors.white,
         child: ListTile(
           leading: Container(
-            padding: EdgeInsets.all(11),
+            padding: EdgeInsets.all(4.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4.0),
               color: AppColors.primaryBackground,

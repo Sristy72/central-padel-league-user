@@ -7,48 +7,49 @@ abstract class LeagueRemoteDataSource {
 class LeagueRemoteDataSourceImpl implements LeagueRemoteDataSource {
   @override
   Future<List<League>> getLeagues() async {
-    await Future.delayed(const Duration(seconds: 2)); 
+    await Future.delayed(const Duration(seconds: 2));
 
     return [
-      League(//! <--Need to change after API-->
+      League(
+        //! <--Need to change after API-->
         id: '1',
         name: 'Premier League',
         backgroundImageUrl: 'assets/images/example_bg.jpg',
-        logoImageUrl: 'assets/images/group_icon.png',
+        logoImageUrl: 'assets/images/group_logo.png',
         description: 'Top English football league',
-        memberCount: 20,
+        memberCount: 4,
       ),
       League(
         id: '2',
         name: 'La Liga',
         backgroundImageUrl: 'assets/images/example_bg.jpg',
-        logoImageUrl: 'assets/images/group_icon.png',
+        logoImageUrl: 'assets/images/group_logo.png',
         description: 'Top Spanish football league',
-        memberCount: 20,
+        memberCount: 4,
       ),
       League(
         id: '3',
-        name: 'Joshin Liga',
+        name: 'Soikot Liga',
         backgroundImageUrl: 'assets/images/example_bg.jpg',
-        logoImageUrl: 'assets/images/group_icon.png',
+        logoImageUrl: 'assets/images/group_logo.png',
         description: 'Top Spanish football league',
-        memberCount: 20,
+        memberCount: 4,
       ),
       League(
         id: '4',
-        name: 'Korim Liga',
+        name: 'Iftikhar Liga',
         backgroundImageUrl: 'assets/images/example_bg.jpg',
-        logoImageUrl: 'assets/images/group_icon.png',
+        logoImageUrl: 'assets/images/group_logo.png',
         description: 'Top Spanish football league',
-        memberCount: 20,
+        memberCount: 4,
       ),
       League(
         id: '5',
         name: 'Zafor Liga',
         backgroundImageUrl: 'assets/images/example_bg.jpg',
-        logoImageUrl: 'assets/images/group_icon.png',
+        logoImageUrl: 'assets/images/group_logo.png',
         description: 'Top Spanish football league',
-        memberCount: 20,
+        memberCount: 4,
       ),
       // Add more leagues as needed
     ];

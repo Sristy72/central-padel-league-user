@@ -1,5 +1,8 @@
 // features/league/presentation/widgets/league_card.dart
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/utils.dart';
+import 'package:karlfive/features/league/presentation/screens/league_details_screen.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../models/league_model.dart'; // or your model path
 
@@ -19,17 +22,22 @@ class LeagueCard extends StatelessWidget {
           height: 220,
           child: Stack(
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(
-                      //! <-- Need to change to NetworkImage after API -->
-                      league.backgroundImageUrl,
-                    ),
-                    fit: BoxFit.cover,
-                    colorFilter: ColorFilter.mode(
-                      Colors.black.withValues(alpha: 0.5),
-                      BlendMode.darken,
+              InkWell(
+                onTap: () {
+                  Get.to(LeagueDetailsScreen());
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(
+                        //! <-- Need to change to NetworkImage after API -->
+                        league.backgroundImageUrl,
+                      ),
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                        Colors.black.withValues(alpha: 0.5),
+                        BlendMode.darken,
+                      ),
                     ),
                   ),
                 ),

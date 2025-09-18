@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:karlfive/core/common/widgets/app_bottom_navbar.dart';
 import 'package:karlfive/features/home/presentation/widgets/custom_search_bar.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../controller/home_controller.dart';
 import '../widgets/fixtures_widget.dart';
 import '../widgets/game_reminder_widget.dart';
 import '../widgets/league_update_widget.dart';
@@ -13,7 +16,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final controller = Get.put(HomeController());
+    final controller = Get.put(HomeController());
 
     return Scaffold(
       appBar: PreferredSize(
@@ -91,6 +94,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
+      bottomNavigationBar: AppBottomNavBar(currentIndex: 0),
     );
   }
 }
