@@ -3,7 +3,7 @@ import 'user_model.dart';
 class AuthResponseData {
   final String accessToken;
   final String refreshToken;
-  final User user;
+  final UserModel user;
 
   AuthResponseData({
     required this.accessToken,
@@ -15,7 +15,7 @@ class AuthResponseData {
     return AuthResponseData(
       accessToken: json['accessToken'] as String,
       refreshToken: json['refreshToken'] as String,
-      user: User.fromJson(json['user'] as Map<String, dynamic>),
+      user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
     );
   }
 
