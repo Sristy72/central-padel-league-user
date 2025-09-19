@@ -38,27 +38,23 @@ class AuthController extends BaseController {
     final result = await _authRepository.login(request);
 
     result.fold(
-      (fail) {
+          (fail) {
         setError(fail.message);
         setLoading(false);
       },
-      (success) async {
-        await _authStorageService.storeAuthData(
-          accessToken: success.data.accessToken,
-          refreshToken: success.data.refreshToken,
-          userId: success.data.user.id,
-        );
-         Get.to(HomeScreen());
-        // final userPredict  = userProfileService.userInfo ?? ;
-        // if (userProfileService.userInfo != null) {
-        //   if (userProfileService.userInfo!.phoneNumber.isNotEmpty ||
-        //       userProfileService.userInfo!.address.isNotEmpty) {
-        //     Get.offAll(() => HomeScreen());
-        //   }
-        // } else {
-        //   Get.to(() => EnterScreen());
-        // }
-
+          (success) async {
+        final user = success.data.user;
+        if(user.role == 'player'){
+          await _authStorageService.storeAuthData(
+            accessToken: success.data.accessToken,
+            refreshToken: success.data.refreshToken,
+            userId: success.data.user.id,
+          );
+          Get.to(HomeScreen());
+        }
+        else {
+          setError("You are not authorized to login as Manager");
+        }
         setLoading(false);
       },
     );
