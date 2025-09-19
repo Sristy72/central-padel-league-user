@@ -5,26 +5,30 @@ import '../../../../core/theme/app_colors.dart';
 import '../controller/join_league_controller/join_league_controller.dart';
 
 class LeagueDropdown extends StatelessWidget {
-  final JoinLeagueController controller;
-  const LeagueDropdown({required this.controller});
+  final  controller = Get.find<JoinLeagueController>();
+LeagueDropdown({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final leagues = <String>['Premier', 'Challenger', 'Amateur'];
     return Obx(
       () => DropdownButtonFormField<String>(
-        initialValue: controller.selectedLeague.value.isEmpty
+        value: controller.selectedLeague.value.isEmpty
             ? null
             : controller.selectedLeague.value,
-        items: leagues
+        items: controller.leagues
             .map(
-              (e) => DropdownMenuItem<String>(
-                value: e,
-                child: Text(e, style: const TextStyle(color: AppColors.white)),
+              (league) => DropdownMenuItem<String>(
+                value: league.id,
+                child: Text(
+                  league.leagueName,
+                  style: const TextStyle(color: AppColors.white),
+                ),
               ),
             )
             .toList(),
-        onChanged: (v) => controller.selectedLeague.value = v ?? '',
+        onChanged: (v) {
+          controller.selectedLeague.value = v ?? ''; // save id
+        },
         decoration: context.primaryInputDecoration.copyWith(
           hintText: 'Select League',
           suffixIcon: const Icon(

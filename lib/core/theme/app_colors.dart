@@ -30,4 +30,7 @@ class AppColors {
   static const Color notificationColor = Color(0xFFEDF9FF);
 
   ///close Marjana
+  //! <--- Iftikhar --->
+  static const Color leagueFieldBackground = Color(0xFFE2E2E2);
+  static const Color leagueFixtureBackground = Color(0xFF353535);
 }

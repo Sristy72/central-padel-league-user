@@ -16,6 +16,7 @@ import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
 import 'package:karlfive/features/auth/presentation/screens/otp_verification_screen.dart';
 import 'package:karlfive/features/auth/presentation/screens/otp_verification_to_complete_register.dart';
 import 'package:karlfive/features/auth/presentation/screens/set_new_password_screen.dart';
+import 'package:karlfive/features/join_league/presentation/screens/form_screen/join_league_screen.dart';
 
 import '../../../../core/network/services/auth_storage_service.dart';
 
@@ -38,21 +39,20 @@ class AuthController extends BaseController {
     final result = await _authRepository.login(request);
 
     result.fold(
-          (fail) {
+      (fail) {
         setError(fail.message);
         setLoading(false);
       },
-          (success) async {
+      (success) async {
         final user = success.data.user;
-        if(user.role == 'player'){
+        if (user.role == 'player') {
           await _authStorageService.storeAuthData(
             accessToken: success.data.accessToken,
             refreshToken: success.data.refreshToken,
             userId: success.data.user.id,
           );
-          Get.to(HomeScreen());
-        }
-        else {
+          Get.to(() => HomeScreen());
+        } else {
           setError("You are not authorized to login as Manager");
         }
         setLoading(false);
@@ -107,7 +107,7 @@ class AuthController extends BaseController {
       },
       (success) {
         DPrint.log("reset pass success result : ${success.data.message}");
-        Get.to(OtpVerificationScreen(email: email));
+        Get.offAll(() => OtpVerificationScreen(email: email));
         setLoading(false);
       },
     );
@@ -224,6 +224,7 @@ class AuthController extends BaseController {
         await _authStorageService.storeRefreshToken(success.data.refreshToken);
         // _authStorageService.clearAuthData();
         setLoading(false);
+        Get.to(() => JoinLeagueScreen(), transition: Transition.rightToLeft);
         return _isSuccess = true;
       },
     );

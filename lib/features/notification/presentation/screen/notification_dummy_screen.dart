@@ -1,178 +1,10 @@
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:karlfive/core/theme/app_colors.dart';
-// import 'package:karlfive/features/notification/presentation/controller/notifi_dummy_controller.dart';
-
-// class NotificationScreen extends StatelessWidget {
-//   final NotificationController controller = Get.put(NotificationController());
-
-//   NotificationScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.black,
-//       body: SafeArea(
-//         child: Column(
-//           children: [
-//             // Header
-//             Padding(
-//               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-//               child: Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                 children: [
-//                   Row(
-//                     children: [
-//                       Text(
-//                         "Notification ",
-//                         style: TextStyle(
-//                           color: AppColors.primaryText,
-//                           fontSize: 14,
-//                           fontWeight: FontWeight.w600,
-//                         ),
-//                       ),
-//                       Obx(() {
-//                         int unreadCount = controller.notifications
-//                             .where((n) => n.isUnread)
-//                             .length;
-//                         return Container(
-//                           padding: const EdgeInsets.symmetric(
-//                             horizontal: 8,
-//                             vertical: 2,
-//                           ),
-//                           decoration: BoxDecoration(
-//                             color: AppColors.notificationColor,
-//                             borderRadius: BorderRadius.circular(12),
-//                           ),
-//                           child: Text(
-//                             unreadCount.toString(),
-//                             style: const TextStyle(
-//                               color: AppColors.primaryText,
-//                             ),
-//                           ),
-//                         );
-//                       }),
-//                     ],
-//                   ),
-//                   GestureDetector(
-//                     onTap: () => controller.markAllAsRead(),
-//                     child: const Text(
-//                       "Mark As Read",
-//                       style: TextStyle(color: Colors.blueAccent, fontSize: 14),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-
-//             // Notification List
-//             Expanded(
-//               child: Obx(() {
-//                 return ListView.builder(
-//                   itemCount: controller.notifications.length,
-//                   itemBuilder: (context, index) {
-//                     final notification = controller.notifications[index];
-//                     return Container(
-//                       // height: 40,
-//                       width: double.infinity,
-//                       padding: const EdgeInsets.all(12),
-//                       margin: const EdgeInsets.symmetric(
-//                         horizontal: 12,
-//                         vertical: 6,
-//                       ),
-//                       decoration: BoxDecoration(
-//                         color: notification.isUnread
-//                             ? Colors.white
-//                             : Colors.grey[900],
-//                         borderRadius: BorderRadius.circular(8),
-//                         border: Border.all(
-//                           color: Colors.grey.shade800,
-//                           width: 1,
-//                         ),
-//                       ),
-//                       child: Row(
-//                         children: [
-//                           CircleAvatar(
-//                             radius: 18,
-//                             backgroundColor: Colors.grey[400],
-//                             child: const Icon(
-//                               Icons.notifications,
-//                               color: Colors.black,
-//                             ),
-//                           ),
-//                           const SizedBox(width: 12),
-//                           Expanded(
-//                             child: Column(
-//                               crossAxisAlignment: CrossAxisAlignment.start,
-//                               children: [
-//                                 Text(
-//                                   notification.title,
-//                                   style: TextStyle(
-//                                     fontWeight: FontWeight.bold,
-//                                     color: notification.isUnread
-//                                         ? Colors.black
-//                                         : Colors.white,
-//                                   ),
-//                                 ),
-//                                 const SizedBox(height: 4),
-//                                 Text(
-//                                   notification.message,
-//                                   style: TextStyle(
-//                                     color: notification.isUnread
-//                                         ? Colors.black87
-//                                         : Colors.grey[400],
-//                                   ),
-//                                 ),
-//                                 const SizedBox(height: 6),
-//                                 Text(
-//                                   notification.timeAgo,
-//                                   style: TextStyle(
-//                                     fontSize: 12,
-//                                     color: Colors.grey[500],
-//                                   ),
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                     );
-//                   },
-//                 );
-//               }),
-//             ),
-
-//             // Bottom Navigation
-//             Container(
-//               padding: const EdgeInsets.symmetric(vertical: 8),
-//               decoration: BoxDecoration(
-//                 color: Colors.grey[900],
-//                 border: Border(
-//                   top: BorderSide(color: Colors.grey.shade800, width: 1),
-//                 ),
-//               ),
-//               child: Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-//                 children: const [
-//                   Icon(Icons.home, color: Colors.white),
-//                   Icon(Icons.sports_tennis, color: Colors.white),
-//                   Icon(Icons.notifications, color: Colors.green, size: 28),
-//                   Icon(Icons.person, color: Colors.white),
-//                 ],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/common/widgets/app_scaffold.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
 import 'package:karlfive/features/notification/presentation/controller/notifi_dummy_controller.dart';
+
+import '../../../../core/common/widgets/app_bottom_navbar.dart';
 
 class NotificationScreen extends StatelessWidget {
   final NotificationController controller = Get.put(NotificationController());
@@ -312,29 +144,10 @@ class NotificationScreen extends StatelessWidget {
                 );
               }),
             ),
-
-            // Bottom Navigation
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.grey[900],
-                border: Border(
-                  top: BorderSide(color: Colors.grey.shade800, width: 1),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: const [
-                  Icon(Icons.home, color: Colors.white),
-                  Icon(Icons.sports_tennis, color: Colors.white),
-                  Icon(Icons.notifications, color: Colors.green, size: 28),
-                  Icon(Icons.person, color: Colors.white),
-                ],
-              ),
-            ),
           ],
         ),
       ),
+      bottomNavigationBar: AppBottomNavBar(currentIndex: 2),
     );
   }
 }

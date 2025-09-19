@@ -21,7 +21,7 @@ class JoinLeagueScreen extends StatefulWidget {
 }
 
 class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
-  final JoinLeagueController controller = Get.put(JoinLeagueController());
+  final controller = Get.find<JoinLeagueController>();
 
   /// Submit form with validation
   void _submit() {
@@ -45,10 +45,11 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 24),
                   Text(
                     'Join League',
                     style: TextStyle(
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: AppColors.white,
                     ),
@@ -57,19 +58,16 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
                   Text(
                     'Build your team and join the league—add players, set details, and get ready to compete!',
                     style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.gray,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w300,
+                      color: AppColors.white,
                     ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 20),
 
                   /// Error message from controller
-                  Obx(
-                    () => FormErrorMessage(
-                      message: controller.errorMessage.value,
-                    ),
-                  ),
+                  //
 
                   const SizedBox(height: 8),
 
@@ -88,8 +86,8 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
                     hint: 'Partner Name',
                     controller: controller.partnerNameController,
                   ),
-                  PlayerLevelDropdown(controller: controller),
-                  const SizedBox(height: 8),
+                  PlayerLevelDropdown(),
+                  const SizedBox(height: 12             ),
                   LabeledField(
                     hint: 'Email',
                     controller: controller.emailController,
@@ -106,10 +104,10 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
                   const SizedBox(height: 8),
                   'Upload your logo/photo'.text14w500(color: AppColors.white),
                   const SizedBox(height: 8),
-                  UploadBox(controller: controller),
+                  UploadBox(),
 
                   const SizedBox(height: 8),
-                  LeagueDropdown(controller: controller),
+                  LeagueDropdown(),
 
                   const SizedBox(height: 8),
                   CheckRow(
@@ -146,7 +144,7 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: AppBottomNavBar(currentIndex: 0, onTap: (index){}),
+      bottomNavigationBar: AppBottomNavBar(currentIndex: 0),
     );
   }
 }
