@@ -1,0 +1,6 @@
+class StripeKey {
+    static const String key = 'pk_test_51RLzmKCctG7Qj84qNjgKWboUmkPrp8NqtgCulW4D8fH1EqH9yPAsJl6YnsSB9lxFFaa0BA9E47JzsGuOMItrqgr900Lu39OPrz';
+    // static const String key = 'sk_test_51RLzmKCctG7Qj84qUuHfTQkx16eK33EzS585wy4jO9k6jwBFne2VlQCuOuH5k56yO4a0kEV0HbMGY2COkCVpge6q00x97HBQk3';
+}
+
+// sk_test_51RLzmKCctG7Qj84qUuHfTQkx16eK33EzS585wy4jO9k6jwBFne2VlQCuOuH5k56yO4a0kEV0HbMGY2COkCVpge6q00x97HBQk3
