@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:karlfive/core/init/stripe_initializer.dart';
 
 import '../di/service_locator.dart';
 import 'hive_intialization.dart';
@@ -12,6 +13,8 @@ class AppInitializer {
     await HiveInitialization.initHive();
 
     setupServiceLocator();
+
+    StripeInitializer.intiStripe();
 
     // SocketService.initializeSocket(sl());
   }

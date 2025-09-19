@@ -223,7 +223,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
                   onPressed: () {
                     Get.back(); // Close the dialog
                     controller.makeTestPayment(
-                      amount: "359.00",
+                      amount: "35900",
                       currency: "USD",
                     );
                   },

@@ -65,7 +65,7 @@ class PaymentController extends GetxController {
 
       // In production, replace with actual server-side integration to fetch paymentIntent client secret
       const clientSecret =
-          "sk_test_51S8xuVJIhH0D9e0PFnJCn8SVf4rnEIdRTLqLQi8RKpiUlCpDcI6CXAOptwebUGUEHGuA9X1cEFanevcPTeEjEyVe00z9Bhhg6d"; // Mocked for testing
+          "pk_test_51RXwQACcgOOj8cVfdYyp6jF1oOS1Qg6PHycZbBrPSQ0wuXrCKyEjAA8XSmIl802REjz3qZj5VpWF0XXwVxC7buU5007AlTzQJ1"; // Mocked for testing
 
       // Initialize Stripe Payment Sheet
       await Stripe.instance.initPaymentSheet(
