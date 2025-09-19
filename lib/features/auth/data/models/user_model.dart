@@ -37,22 +37,22 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      otp: json['otp'],
-      otpExpiry: json['otpExpiry'],
-      id: json['_id'] ?? '',
-      name: json['name'] ?? '',
-      email: json['email'] ?? '',
-      password: json['password'] ?? '',
-      profileImage: json['profileImage'],
-      role: json['role'] ?? '',
-      phoneNumber: json['phoneNumber'] ?? '',
-      isVerified: json['isVerified'] ?? false,
-      resetOtp: json['reset_otp'],
-      resetOtpExpiry: json['reset_otpExpiry'],
-      refreshToken: json['refreshToken'] ?? '',
-      createdAt: json['createdAt'] ?? '',
-      updatedAt: json['updatedAt'] ?? '',
-      v: json['__v'] ?? 0,
+      otp: json['otp'] as String?,
+      otpExpiry: json['otpExpiry'] as String?,
+      id: json['_id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      password: json['password'] as String? ?? '',
+      profileImage: json['profileImage'] as String?,
+      role: json['role'] as String? ?? '',
+      phoneNumber: json['phoneNumber'] as String? ?? '',
+      isVerified: json['isVerified'] as bool? ?? false,
+      resetOtp: json['reset_otp'] as String?,
+      resetOtpExpiry: json['reset_otpExpiry'] as String?,
+      refreshToken: json['refreshToken'] as String? ?? '',
+      createdAt: json['createdAt'] as String? ?? '',
+      updatedAt: json['updatedAt'] as String? ?? '',
+      v: json['__v'] as int? ?? 0,
     );
   }
 
