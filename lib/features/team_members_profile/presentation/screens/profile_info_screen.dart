@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:karlfive/core/common/widgets/app_bottom_navbar.dart';
-import 'package:karlfive/features/privacy_policy/presentation/screens/privacy_pilicy_screen.dart';
-import 'package:karlfive/features/team_members_profile/presentation/screens/edit_profile_info.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_contactus_screen.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_report_screen.dart';
-import '../../../auth/presentation/screens/login_screen.dart';
-import '../../models/edit_profile_model.dart';
-import '../../models/team_member_model.dart';
+import '../../../../core/common/widgets/app_bottom_navbar.dart';
+import '../../../privacy_policy/presentation/screens/privacy_pilicy_screen.dart';
+import '../../../team_details/presentation/screens/team_details_screens.dart';
+import '../../data/models/edit_profile_model.dart';
+import '../../data/models/team_member_model.dart';
+import 'edit_profile_info.dart';
+
 
 class ProfileInfoScreen extends StatelessWidget {
   final TeamMemberModel member;
 
   const ProfileInfoScreen({super.key, required this.member});
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        
+
         backgroundColor: Colors.black,
         elevation: 0,
         title: const Text(
@@ -88,7 +89,9 @@ class ProfileInfoScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  Get.to(TeamDetailsScreen());
+                },
                 child: const Text(
                   style: TextStyle(
                     fontSize: 16,
@@ -251,7 +254,7 @@ class ProfileInfoScreen extends StatelessWidget {
                             imageUrl: member.imageUrl,
                           );
                           Get.to(
-                            () => ProfileContactUsScreen(member: editProfile),
+                                () => ProfileContactUsScreen(member: editProfile),
                           );
                         },
                         child: Row(

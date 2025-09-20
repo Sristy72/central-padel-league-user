@@ -31,6 +31,7 @@ class ApiConstants {
 
   static TeamEndpointcs get team => TeamEndpointcs();
   static LeagueEndpoints get league => LeagueEndpoints();
+  static ContactEndpoints get contact => ContactEndpoints();
 
 }
 
@@ -72,4 +73,9 @@ class LeagueEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/league';
 
   final String getAllLeagues = '$_base/all-league';
+}
+
+class ContactEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/contact';
+  final String createContact = '$_base/create';
 }

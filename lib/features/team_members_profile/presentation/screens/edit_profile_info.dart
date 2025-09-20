@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import '../../models/edit_profile_model.dart';
+import 'package:image_picker/image_picker.dart';
+
+import '../../data/models/edit_profile_model.dart';
 
 class EditProfileInfoScreen extends StatefulWidget {
   final EditProfileModel member;
@@ -13,6 +16,7 @@ class EditProfileInfoScreen extends StatefulWidget {
 class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
   late TextEditingController _birthdayController;
   String _selectedGender = "";
+  File? _pickedImage;
 
   @override
   void initState() {
@@ -27,9 +31,10 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
     super.dispose();
   }
 
-  // 🔹 Date Picker
+  // Date Picker
   Future<void> _selectDate() async {
-    DateTime initialDate = DateTime.tryParse(_birthdayController.text) ?? DateTime.now();
+    DateTime initialDate =
+        DateTime.tryParse(_birthdayController.text) ?? DateTime.now();
 
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -58,6 +63,50 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
     }
   }
 
+  // Image Picker
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: source);
+
+    if (image != null) {
+      setState(() {
+        _pickedImage = File(image.path);
+      });
+    }
+  }
+
+  void _showImagePickerDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.black12,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo, color: Colors.green),
+              title: const Text("Gallery"),
+              onTap: () {
+                _pickImage(ImageSource.gallery);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt, color: Colors.green),
+              title: const Text("Camera"),
+              onTap: () {
+                _pickImage(ImageSource.camera);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,13 +126,24 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.only(top: 22, left: 24, right: 24, bottom: 24),
+          padding:
+          const EdgeInsets.only(top: 22, left: 24, right: 24, bottom: 24),
           child: Column(
             children: [
-              // Profile Image
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: AssetImage(widget.member.imageUrl),
+              // Profile Image with picker
+              GestureDetector(
+                onTap: _showImagePickerDialog,
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage: _pickedImage != null
+                          ? FileImage(_pickedImage!)
+                          : AssetImage(widget.member.imageUrl) as ImageProvider,
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 20),
 
@@ -131,7 +191,10 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                 children: [
                   const Text(
                     "Birthday",
-                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w400),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400),
                   ),
                   const SizedBox(height: 4),
                   SizedBox(
@@ -140,12 +203,15 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                       controller: _birthdayController,
                       readOnly: true,
                       onTap: _selectDate,
-                      style: const TextStyle(color: Colors.white, fontSize: 14),
+                      style:
+                      const TextStyle(color: Colors.white, fontSize: 14),
                       decoration: InputDecoration(
                         hintText: "29/02/1555",
-                        hintStyle: const TextStyle(color: Color(0xFF7D807D), fontSize: 16),
+                        hintStyle: const TextStyle(
+                            color: Color(0xFF7D807D), fontSize: 16),
                         isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
                         enabledBorder: OutlineInputBorder(
                           borderSide: const BorderSide(color: Colors.white),
                           borderRadius: BorderRadius.circular(4),
@@ -159,7 +225,9 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                         suffixIcon: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Image.asset(
-                            "assets/icons/editProfile_Calendar.png", width: 16,height: 16,
+                            "assets/icons/editProfile_Calendar.png",
+                            width: 16,
+                            height: 16,
                             color: Colors.white,
                           ),
                         ),
@@ -176,19 +244,25 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                 children: [
                   const Text(
                     "Gender",
-                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w400),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400),
                   ),
                   const SizedBox(height: 4),
                   SizedBox(
                     height: 38,
                     child: DropdownButtonFormField<String>(
-                      value: _selectedGender.isNotEmpty ? _selectedGender : null,
+                      value:
+                      _selectedGender.isNotEmpty ? _selectedGender : null,
                       dropdownColor: Colors.black,
                       style: const TextStyle(color: Colors.white, fontSize: 14),
-                      icon: const Icon(Icons.keyboard_arrow_down_sharp, color: Color(0xFF7D807D)),
+                      icon: const Icon(Icons.keyboard_arrow_down_sharp,
+                          color: Color(0xFF7D807D)),
                       decoration: InputDecoration(
                         isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
                         enabledBorder: OutlineInputBorder(
                           borderSide: const BorderSide(color: Colors.white),
                           borderRadius: BorderRadius.circular(4),
@@ -203,7 +277,9 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                       items: ["Male", "Female", "Other"]
                           .map((gender) => DropdownMenuItem(
                         value: gender,
-                        child: Text(gender, style: const TextStyle(color: Colors.white)),
+                        child: Text(gender,
+                            style:
+                            const TextStyle(color: Colors.white)),
                       ))
                           .toList(),
                       onChanged: (value) {
@@ -226,7 +302,8 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -249,7 +326,7 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
     );
   }
 
-  //Reusable TextField Builder
+  // Reusable TextField Builder
   Widget _buildTextField({
     required String label,
     required String hintText,
@@ -261,7 +338,10 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
         // Label
         Text(
           label,
-          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w400),
+          style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w400),
         ),
         const SizedBox(height: 4),
         SizedBox(
@@ -271,9 +351,11 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
             style: const TextStyle(color: Colors.white, fontSize: 14),
             decoration: InputDecoration(
               hintText: hintText,
-              hintStyle: const TextStyle(color: Color(0xFF7D807D), fontSize: 16),
+              hintStyle: const TextStyle(
+                  color: Color(0xFF7D807D), fontSize: 16),
               isDense: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              contentPadding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               enabledBorder: OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.white),
                 borderRadius: BorderRadius.circular(4),
