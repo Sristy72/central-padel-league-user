@@ -86,7 +86,7 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
                     hint: 'Partner Name',
                     controller: controller.partnerNameController,
                   ),
-                  PlayerLevelDropdown(controller: controller),
+                  PlayerLevelDropdown(),
                   const SizedBox(height: 12             ),
                   LabeledField(
                     hint: 'Email',
@@ -104,10 +104,10 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
                   const SizedBox(height: 8),
                   'Upload your logo/photo'.text14w500(color: AppColors.white),
                   const SizedBox(height: 8),
-                  UploadBox(controller: controller),
+                  UploadBox(),
 
                   const SizedBox(height: 8),
-                  LeagueDropdown(controller: controller),
+                  LeagueDropdown(),
 
                   const SizedBox(height: 8),
                   CheckRow(

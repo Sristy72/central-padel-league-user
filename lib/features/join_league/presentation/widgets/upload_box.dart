@@ -8,11 +8,11 @@ import '../../../../core/theme/app_colors.dart';
 import '../controller/join_league_controller/join_league_controller.dart';
 
 class UploadBox extends StatelessWidget {
-  final JoinLeagueController? controller;
-  const UploadBox({this.controller});
+  final controller = Get.find<JoinLeagueController>();
+  UploadBox({super.key});
   @override
   Widget build(BuildContext context) {
-    final ctrl = controller ?? Get.find<JoinLeagueController>();
+    final ctrl = controller;
     return Obx(() {
       final hasImage = ctrl.selectedLogo.value != null;
       return InkWell(
