@@ -1,4 +1,3 @@
-import 'edit_profile_model.dart';
 
 class TeamMemberModel {
   final String id;

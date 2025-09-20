@@ -39,11 +39,10 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            dialogBackgroundColor: Colors.black,
             colorScheme: const ColorScheme.dark(
               primary: Colors.blue,
               onSurface: Colors.white,
-            ),
+            ), dialogTheme: DialogThemeData(backgroundColor: Colors.black),
           ),
           child: child!,
         );
@@ -182,7 +181,7 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                   SizedBox(
                     height: 38,
                     child: DropdownButtonFormField<String>(
-                      value: _selectedGender.isNotEmpty ? _selectedGender : null,
+                      initialValue: _selectedGender.isNotEmpty ? _selectedGender : null,
                       dropdownColor: Colors.black,
                       style: const TextStyle(color: Colors.white, fontSize: 14),
                       icon: const Icon(Icons.keyboard_arrow_down_sharp, color: Color(0xFF7D807D)),

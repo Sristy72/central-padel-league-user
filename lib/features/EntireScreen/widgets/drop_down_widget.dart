@@ -21,7 +21,7 @@ class PlayingLevelDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       return DropdownButtonFormField<String>(
-        value: controller.selectedLevel.value.isEmpty
+        initialValue: controller.selectedLevel.value.isEmpty
             ? null
             : controller.selectedLevel.value,
         decoration: InputDecoration(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/features/join_league/presentation/widgets/select_payment_dialog.dart';
 import 'package:karlfive/features/league/presentation/screens/leagues_screen.dart';

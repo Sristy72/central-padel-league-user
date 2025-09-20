@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:karlfive/core/common/constants/app_images.dart';
 import 'package:karlfive/core/common/widgets/app_logo.dart';
 import 'package:karlfive/core/theme/app_buttoms.dart';

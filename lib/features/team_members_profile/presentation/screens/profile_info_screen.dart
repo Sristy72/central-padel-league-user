@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:karlfive/core/common/widgets/app_bottom_navbar.dart';
 import 'package:karlfive/features/privacy_policy/presentation/screens/privacy_pilicy_screen.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/edit_profile_info.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_contactus_screen.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_report_screen.dart';
-import '../../../auth/presentation/screens/login_screen.dart';
 import '../../models/edit_profile_model.dart';
 import '../../models/team_member_model.dart';
 

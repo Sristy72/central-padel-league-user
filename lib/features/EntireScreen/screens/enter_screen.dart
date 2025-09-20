@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/common/constants/app_images.dart';
-import 'package:karlfive/core/common/widgets/app_logo.dart';
 import 'package:karlfive/core/common/widgets/app_scaffold.dart';
 import 'package:karlfive/core/common/widgets/form_error_message.dart';
 import 'package:karlfive/core/theme/app_colors.dart';

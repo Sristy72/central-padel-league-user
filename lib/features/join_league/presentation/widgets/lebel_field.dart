@@ -8,7 +8,7 @@ class LabeledField extends StatelessWidget {
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
 
-  const LabeledField({
+  const LabeledField({super.key, 
     required this.hint,
     required this.controller,
     this.keyboardType,
