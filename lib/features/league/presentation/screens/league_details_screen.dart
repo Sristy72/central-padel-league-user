@@ -5,12 +5,14 @@ import 'package:karlfive/features/league/presentation/widgets/matches_tab.dart';
 import 'package:karlfive/features/league/presentation/widgets/standing_tab.dart';
 
 import '../../models/standing_model.dart';
-import '../../models/team_model.dart';
+import '../../models/league_model.dart';
 import '../../models/match_model.dart';
 import '../widgets/teams_tab.dart'; // Import the model class
 
 class LeagueDetailsScreen extends StatefulWidget {
-  const LeagueDetailsScreen({super.key});
+  final League league;
+
+  const LeagueDetailsScreen({super.key, required this.league});
 
   @override
   State<LeagueDetailsScreen> createState() => _LeagueDetailsScreenState();
@@ -63,32 +65,32 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
   ];
 
   //! <--- Dynamic data using the "Team" model --->
-  final List<Team> _teamsData = [
-    const Team(
-      teamLogoPath: 'assets/images/group_logo.png',
-      teamName: 'Deathrader',
-    ),
-    const Team(
-      teamLogoPath: 'assets/images/group_logo.png',
-      teamName: 'Team B',
-    ),
-    const Team(
-      teamLogoPath: 'assets/images/group_logo.png',
-      teamName: 'Team C',
-    ),
-    const Team(
-      teamLogoPath: 'assets/images/group_logo.png',
-      teamName: 'Team D',
-    ),
-    const Team(
-      teamLogoPath: 'assets/images/group_logo.png',
-      teamName: 'Team E',
-    ),
-    const Team(
-      teamLogoPath: 'assets/images/group_logo.png',
-      teamName: 'Team F',
-    ),
-  ];
+  // final List<Team> _teamsData = [
+  //   const Team(
+  //     teamLogoPath: 'assets/images/group_logo.png',
+  //     teamName: 'Deathrader',
+  //   ),
+  //   const Team(
+  //     teamLogoPath: 'assets/images/group_logo.png',
+  //     teamName: 'Team B',
+  //   ),
+  //   const Team(
+  //     teamLogoPath: 'assets/images/group_logo.png',
+  //     teamName: 'Team C',
+  //   ),
+  //   const Team(
+  //     teamLogoPath: 'assets/images/group_logo.png',
+  //     teamName: 'Team D',
+  //   ),
+  //   const Team(
+  //     teamLogoPath: 'assets/images/group_logo.png',
+  //     teamName: 'Team E',
+  //   ),
+  //   const Team(
+  //     teamLogoPath: 'assets/images/group_logo.png',
+  //     teamName: 'Team F',
+  //   ),
+  // ];
 
   //! <--- Dynamic data using the "Standing" model --->
   final List<Standing> _standingsData = [
@@ -211,9 +213,13 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomLeagueAppbar(
-        leagueName: 'Premier League',
-        leagueLogoPath: 'assets/images/group_icon.png',
-        backgroundImagePath: 'assets/images/example_bg.jpg',
+        leagueName: widget.league.leagueName,
+        leagueLogoPath: widget.league.leagueLogo.isNotEmpty
+            ? widget.league.leagueLogo
+            : 'assets/images/group_icon.png',
+        backgroundImagePath: widget.league.leagueLogo.isNotEmpty
+            ? widget.league.leagueLogo
+            : 'assets/images/example_bg.jpg',
         tabController: _tabController,
       ),
       body: TabBarView(
@@ -221,7 +227,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
         children: [
           StandingTab(standingsData: _standingsData),
           MatchesTab(matchesData: _matchesData),
-          TeamsTab(teamsData: _teamsData),
+          TeamsTab(teamsData: widget.league.addTeams),
           FixturesTab(),
         ],
       ),

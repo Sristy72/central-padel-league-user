@@ -1,55 +1,35 @@
-import '../models/league_model.dart';
+// features/league/data/league_remote_data_source.dart
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:karlfive/core/network/constants/api_constants.dart';
 
 abstract class LeagueRemoteDataSource {
-  Future<List<League>> getLeagues();
+  Future<List<dynamic>> fetchLeagues();
 }
 
 class LeagueRemoteDataSourceImpl implements LeagueRemoteDataSource {
+  static const String baseUrl = ApiConstants.baseUrl;
   @override
-  Future<List<League>> getLeagues() async {
-    return [
-      League(
-        //! <--Need to change after API-->
-        id: '1',
-        name: 'Premier League',
-        backgroundImageUrl: 'assets/images/example_bg.jpg',
-        logoImageUrl: 'assets/images/group_logo.png',
-        description: 'Top English football league',
-        memberCount: 4,
-      ),
-      League(
-        id: '2',
-        name: 'La Liga',
-        backgroundImageUrl: 'assets/images/example_bg.jpg',
-        logoImageUrl: 'assets/images/group_logo.png',
-        description: 'Top Spanish football league',
-        memberCount: 4,
-      ),
-      League(
-        id: '3',
-        name: 'Soikot Liga',
-        backgroundImageUrl: 'assets/images/example_bg.jpg',
-        logoImageUrl: 'assets/images/group_logo.png',
-        description: 'Top Spanish football league',
-        memberCount: 4,
-      ),
-      League(
-        id: '4',
-        name: 'Iftikhar Liga',
-        backgroundImageUrl: 'assets/images/example_bg.jpg',
-        logoImageUrl: 'assets/images/group_logo.png',
-        description: 'Top Spanish football league',
-        memberCount: 4,
-      ),
-      League(
-        id: '5',
-        name: 'Zafor Liga',
-        backgroundImageUrl: 'assets/images/example_bg.jpg',
-        logoImageUrl: 'assets/images/group_logo.png',
-        description: 'Top Spanish football league',
-        memberCount: 4,
-      ),
-      // Add more leagues as needed
-    ];
+  Future<List<dynamic>> fetchLeagues() async {
+    final response = await http.get(Uri.parse("$baseUrl"));
+
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body);
+
+      //* Case 1: response is a Map with "data"
+      if (decoded is Map<String, dynamic> && decoded['data'] is List) {
+        return decoded['data'];
+      }
+
+      //* Case 2: response is already a List
+      if (decoded is List) {
+        return decoded;
+      }
+
+      throw Exception("Unexpected response format: $decoded");
+    } else {
+      throw Exception("Failed to fetch leagues!!!");
+    }
   }
 }
