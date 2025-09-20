@@ -33,7 +33,18 @@ class CustomLeagueAppbar extends StatelessWidget
       flexibleSpace: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset(backgroundImagePath, fit: BoxFit.cover),
+            child:
+                backgroundImagePath.startsWith('http') ||
+                    backgroundImagePath.startsWith('https')
+                ? Image.network(
+                    backgroundImagePath,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Image.asset(
+                      'assets/images/example_bg.jpg',
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : Image.asset(backgroundImagePath, fit: BoxFit.cover),
           ),
           Container(color: Colors.black.withValues(alpha: 0.5)),
           Column(
@@ -90,8 +101,13 @@ class CustomLeagueAppbar extends StatelessWidget
                       ),
                     ),
                     CircleAvatar(
-                      backgroundImage: AssetImage(leagueLogoPath),
                       radius: 16.0,
+                      backgroundImage:
+                          leagueLogoPath.startsWith('http') ||
+                              leagueLogoPath.startsWith('https')
+                          ? NetworkImage(leagueLogoPath)
+                          : AssetImage(leagueLogoPath) as ImageProvider,
+                      onBackgroundImageError: (_, __) {},
                     ),
                   ],
                 ),

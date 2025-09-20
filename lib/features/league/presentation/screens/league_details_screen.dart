@@ -217,8 +217,8 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
         leagueLogoPath: widget.league.leagueLogo.isNotEmpty
             ? widget.league.leagueLogo
             : 'assets/images/group_icon.png',
-        backgroundImagePath: widget.league.leagueLogo.isNotEmpty
-            ? widget.league.leagueLogo
+        backgroundImagePath: (widget.league.bannerImage?.isNotEmpty ?? false)
+            ? widget.league.bannerImage!
             : 'assets/images/example_bg.jpg',
         tabController: _tabController,
       ),
