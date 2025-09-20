@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutx_core/core/theme/gap.dart';
 import 'package:flutx_core/core/validation/validators.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:karlfive/core/common/constants/app_images.dart';
 import 'package:karlfive/core/common/widgets/app_logo.dart';
 import 'package:karlfive/core/common/widgets/app_scaffold.dart';
@@ -10,9 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:karlfive/core/theme/app_buttoms.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
 import 'package:karlfive/core/theme/input_decoration_extensions.dart';
-import 'package:karlfive/features/auth/presentation/screens/otp_verification_screen.dart';
-
-import '../../../../core/common/widgets/form_error_message.dart';
 import '../controller/auth_controller.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
