@@ -130,6 +130,7 @@ class AppBottomNavBar extends StatelessWidget {
             ),
             BottomNavigationBarItem(
               icon: _buildNavItem(
+                
                 index: 1,
                 icon: "assets/images/nav_match_off.png",
                 activeIcon: "assets/images/nav_match_on.png",

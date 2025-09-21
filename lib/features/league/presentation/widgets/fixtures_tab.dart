@@ -142,41 +142,63 @@ class _FixturesTabState extends State<FixturesTab> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // Home team
+                          //* Home team
                           Expanded(
-                            child: Text(
-                              match["home"]!,
-                              style: const TextStyle(color: Colors.white),
-                              overflow: TextOverflow.ellipsis,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  match["home"]!,
+                                  style: const TextStyle(color: Colors.white),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(left: 4),
+                                  child: Image(
+                                    height: 22,
+                                    width: 22,
+                                    image: AssetImage(
+                                      "assets/images/example_team_logo.png",
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
 
-                          // Time
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.sports_soccer,
-                                color: Colors.green,
-                                size: 18,
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                match["time"]!,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
+                          //* Time
+                          const SizedBox(width: 6),
+                          Text(
+                            match["time"]!,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
 
-                          // Away team
+                          //* Away team
                           Expanded(
-                            child: Text(
-                              match["away"]!,
-                              style: const TextStyle(color: Colors.white),
-                              textAlign: TextAlign.end,
-                              overflow: TextOverflow.ellipsis,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 4),
+                                  child: Image(
+                                    height: 22,
+                                    width: 22,
+                                    image: AssetImage(
+                                      "assets/images/example_team_logo.png",
+                                    ),
+                                  ),
+                                ),
+
+                                Text(
+                                  match["away"]!,
+                                  style: const TextStyle(color: Colors.white),
+                                  textAlign: TextAlign.end,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
                           ),
 
