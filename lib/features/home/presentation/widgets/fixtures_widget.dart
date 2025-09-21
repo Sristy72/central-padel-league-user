@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
 import '../../controller/home_controller.dart';
+import '../screens/home_fixtures_screen.dart';
 
 class FixturesWidget extends StatelessWidget {
   const FixturesWidget({super.key});
@@ -245,8 +246,8 @@ class FixturesWidget extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: TextButton(
               onPressed: () {
-                // TODO: Navigate to full fixtures page (replace with Get.to)
-                // Get.to(() => const FullFixturesScreen());
+                // Navigate to the full fixtures screen using HomeFixturesScreen
+                Get.to(() => const HomeFixturesScreen());
               },
               child: const Text(
                 "See All",

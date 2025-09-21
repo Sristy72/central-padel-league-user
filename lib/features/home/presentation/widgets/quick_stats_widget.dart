@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controller/home_controller.dart';
+import '../screens/home_standings_screen.dart';
 
 class QuickStatsWidget extends StatelessWidget {
   const QuickStatsWidget({super.key});
@@ -169,7 +170,8 @@ class QuickStatsWidget extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: TextButton(
               onPressed: () {
-                // TODO: Navigate to full stats page
+                // Navigate to the full standings screen
+                Get.to(() => const HomeStandingsScreen());
               },
               child: const Text(
                 "See All",

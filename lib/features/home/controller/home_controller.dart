@@ -5,6 +5,7 @@ import '../models/team_model.dart';
 import '../models/match_model.dart';
 import '../data/home_repository.dart';
 import '../../league/models/match_model.dart' as league_match;
+import '../../league/models/standing_model.dart';
 import '../../../core/services/get_user_profile_service.dart';
 // league models imported on demand where required
 
@@ -33,6 +34,11 @@ class HomeController extends GetxController {
 
   var quickStats = [].obs;
   var fixtures = <Match>[].obs;
+  // Keep the original league match objects so we can show full fixtures screen
+  var leagueMatches = <league_match.Match>[].obs;
+
+  // Full standings list from API (used by See All -> StandingTab)
+  var standingsList = <Standing>[].obs;
 
   /// Grouped fixtures (by date)
   Map<String, List<Match>> get groupedFixtures {
@@ -68,6 +74,9 @@ class HomeController extends GetxController {
       matchesResult.fold((failure) {}, (success) {
         final data = success.data;
         if (data.isNotEmpty) {
+          // store original league match objects
+          leagueMatches.assignAll(data);
+
           //* Map league.Match -> home Match model (lightweight)
           fixtures.assignAll(data.map(_mapLeagueMatchToHome).toList());
 
@@ -85,7 +94,10 @@ class HomeController extends GetxController {
       standingsResult.fold((failure) {}, (success) {
         final sdata = success.data;
         if (sdata.isNotEmpty) {
-          //* pick two recent standings
+          // keep full standings for See All
+          standingsList.assignAll(sdata);
+
+          //* pick two recent standings for quick view
           final two = sdata
               .take(2)
               .map(
