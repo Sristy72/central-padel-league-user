@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(HomeController());
+    final controller = Get.put(HomeController()); //! Do not comment this line
 
     return Scaffold(
       appBar: PreferredSize(

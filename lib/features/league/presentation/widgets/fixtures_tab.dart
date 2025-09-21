@@ -3,20 +3,19 @@ import 'package:intl/intl.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
 import '../../models/match_model.dart';
 
-/// FixturesTab now renders a list of [Match] grouped by day.
 class FixturesTab extends StatelessWidget {
   final List<Match> matches;
 
   const FixturesTab({super.key, required this.matches});
 
-  // Group matches by local date (yyyy-MM-dd) for display
+  //* Group matches by Date
   Map<String, List<Match>> _groupByDate(List<Match> input) {
     final map = <String, List<Match>>{};
     for (final m in input) {
       final key = DateFormat('yyyy-MM-dd').format(m.matchDateTime.toLocal());
       map.putIfAbsent(key, () => []).add(m);
     }
-    // Keep the map sorted by date ascending
+    //* Keep the map sorted by date ascending
     final sortedKeys = map.keys.toList()..sort();
     return {for (var k in sortedKeys) k: map[k]!};
   }
@@ -64,7 +63,6 @@ class FixturesTab extends StatelessWidget {
             itemBuilder: (context, index) {
               final dateKey = grouped.keys.elementAt(index);
               final items = grouped[dateKey]!;
-              // human friendly date
               final displayDate = DateFormat(
                 'EEE, d MMM yyyy',
               ).format(DateTime.parse(dateKey));
@@ -97,7 +95,8 @@ class FixturesTab extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          // Home team
+
+                          //* <--- Home team --->
                           Expanded(
                             child: Row(
                               children: [
@@ -146,7 +145,7 @@ class FixturesTab extends StatelessWidget {
 
                           const SizedBox(width: 12),
 
-                          // Away team
+                          //* <--- Away team --->
                           Expanded(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,

@@ -37,7 +37,7 @@ class GameReminderWidget extends StatelessWidget {
                 Text(
                   controller.nextMatchTime.value.isNotEmpty
                       ? controller.nextMatchTime.value
-                      : 'TBD',
+                      : 'TBA',
                   style: const TextStyle(color: AppColors.white, fontSize: 12),
                 ),
               ],

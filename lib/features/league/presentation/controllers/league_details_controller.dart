@@ -37,7 +37,7 @@ class LeagueDetailsController extends GetxController {
           final data = success.data;
           final filtered = data.where((s) => s.leagueId == leagueId).toList();
           if (filtered.isEmpty) {
-            standingsError.value = 'No standings returned for this league';
+            standingsError.value = 'Nothing to show!';
           } else {
             standings.assignAll(filtered);
             standingsError.value = '';
@@ -65,7 +65,7 @@ class LeagueDetailsController extends GetxController {
           //* <--- filter by league id (match.leagueId) --->
           final filtered = data.where((m) => m.leagueId == leagueId).toList();
           if (filtered.isEmpty) {
-            matchesError.value = 'No matches returned for this league';
+            matchesError.value = 'No matches to show!';
           } else {
             matches.assignAll(filtered);
             matchesError.value = '';
