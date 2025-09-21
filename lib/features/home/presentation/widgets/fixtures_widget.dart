@@ -216,11 +216,17 @@ class FixturesWidget extends StatelessWidget {
 
                                 const SizedBox(width: 8),
 
-                                // Favorite icon
-                                const Icon(
-                                  Icons.star_border,
-                                  color: Colors.white70,
-                                  size: 20,
+                                //! Favorite icon
+                                IconButton(
+                                  icon: const Image(
+                                    height: 18,
+                                    width: 18,
+                                    image: AssetImage(
+                                      "assets/images/star_icon_off.png",
+                                    ),
+                                  ),
+                                  onPressed:
+                                      () {}, //TODO: Add favorite logic here
                                 ),
                               ],
                             ),

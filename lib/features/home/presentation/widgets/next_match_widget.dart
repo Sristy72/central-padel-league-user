@@ -73,11 +73,12 @@ class NextMatchWidget extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(
-                                  //* Need to add image
-                                  Icons.calendar_today,
-                                  size: 14,
-                                  color: Colors.black54,
+                                const Image(
+                                  image: AssetImage(
+                                    "assets/images/calender_icon.png",
+                                  ),
+                                  height: 14,
+                                  width: 14,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
@@ -97,7 +98,6 @@ class NextMatchWidget extends StatelessWidget {
                         child: Column(
                           children: [
                             const Image(
-                              //* Need to add image
                               image: AssetImage("assets/images/bat.png"),
                               width: 32,
                               color: Colors.black87,
@@ -156,11 +156,12 @@ class NextMatchWidget extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(
-                                  //* Need to add image
-                                  Icons.access_time,
-                                  size: 14,
-                                  color: Colors.black54,
+                                const Image(
+                                  image: AssetImage(
+                                    "assets/images/time_icon.png",
+                                  ),
+                                  height: 14,
+                                  width: 14,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
