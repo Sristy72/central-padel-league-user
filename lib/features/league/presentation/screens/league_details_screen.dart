@@ -6,7 +6,6 @@ import 'package:karlfive/features/league/presentation/widgets/standing_tab.dart'
 import 'package:get/get.dart';
 import '../controllers/league_details_controller.dart';
 
-import '../../models/standing_model.dart';
 import '../../models/league_model.dart';
 import '../widgets/teams_tab.dart'; // Import the model class
 
@@ -93,110 +92,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
   //   ),
   // ];
 
-  //! <--- Dynamic data using the "Standing" model --->
-  final List<Standing> _standingsData = [
-    const Standing(
-      pos: 1,
-      teamLogoPath: 'assets/images/group_logo.png',
-      teamName: 'Deathrader',
-      p: 0,
-      w: 0,
-      d: 0,
-      l: 0,
-      plusMinus: 0,
-      pts: 0,
-    ),
-    const Standing(
-      pos: 2,
-      teamLogoPath: 'assets/images/group_logo.png',
-      teamName: 'Team B',
-      p: 0,
-      w: 0,
-      d: 0,
-      l: 0,
-      plusMinus: 0,
-      pts: 0,
-    ),
-    const Standing(
-      pos: 3,
-      teamLogoPath: 'assets/images/group_logo.png',
-      teamName: 'Team C',
-      p: 0,
-      w: 0,
-      d: 0,
-      l: 0,
-      plusMinus: 0,
-      pts: 0,
-    ),
-    const Standing(
-      pos: 1,
-      teamLogoPath: 'assets/images/group_logo.png',
-      teamName: 'Deathrader',
-      p: 0,
-      w: 0,
-      d: 0,
-      l: 0,
-      plusMinus: 0,
-      pts: 0,
-    ),
-    const Standing(
-      pos: 2,
-      teamLogoPath: 'assets/images/group_logo.png',
-      teamName: 'Team B',
-      p: 0,
-      w: 0,
-      d: 0,
-      l: 0,
-      plusMinus: 0,
-      pts: 0,
-    ),
-    const Standing(
-      pos: 3,
-      teamLogoPath: 'assets/images/group_logo.png',
-      teamName: 'Team C',
-      p: 0,
-      w: 0,
-      d: 0,
-      l: 0,
-      plusMinus: 0,
-      pts: 0,
-    ),
-
-    const Standing(
-      pos: 1,
-      teamLogoPath: 'assets/images/group_logo.png',
-      teamName: 'Deathrader',
-      p: 0,
-      w: 0,
-      d: 0,
-      l: 0,
-      plusMinus: 0,
-      pts: 0,
-    ),
-    const Standing(
-      pos: 2,
-      teamLogoPath: 'assets/images/group_logo.png',
-      teamName: 'Team B',
-      p: 0,
-      w: 0,
-      d: 0,
-      l: 0,
-      plusMinus: 0,
-      pts: 0,
-    ),
-    const Standing(
-      pos: 3,
-      teamLogoPath: 'assets/images/group_logo.png',
-      teamName: 'Team C',
-      p: 0,
-      w: 0,
-      d: 0,
-      l: 0,
-      plusMinus: 0,
-      pts: 0,
-    ),
-  ];
-  //! <-------- END -------->
+  // Standings will be provided by LeagueDetailsController at runtime
 
   @override
   void initState() {
@@ -233,7 +129,20 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          StandingTab(standingsData: _standingsData),
+          Obx(() {
+            final ctrl = Get.find<LeagueDetailsController>();
+            if (ctrl.isLoadingStandings.value)
+              return const Center(child: CircularProgressIndicator());
+            if (ctrl.standings.isEmpty) {
+              final msg = ctrl.standingsError.value.isNotEmpty
+                  ? ctrl.standingsError.value
+                  : 'No standings available';
+              return Center(
+                child: Text(msg, style: const TextStyle(color: Colors.white)),
+              );
+            }
+            return StandingTab(standingsData: ctrl.standings.toList());
+          }),
           // Matches tab now driven by LeagueDetailsController
           Obx(() {
             final ctrl = Get.find<LeagueDetailsController>();

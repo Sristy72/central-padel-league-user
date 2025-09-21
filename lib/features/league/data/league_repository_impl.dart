@@ -4,6 +4,7 @@ import 'package:karlfive/core/network/constants/api_constants.dart';
 import '../../../core/network/network_result.dart';
 import '../models/league_model.dart';
 import '../models/match_model.dart';
+import '../models/standing_model.dart';
 import 'league_repository.dart';
 
 class LeagueRepositoryImpl implements LeagueRepository {
@@ -33,6 +34,17 @@ class LeagueRepositoryImpl implements LeagueRepository {
         // Try to filter by nested league id if present on match json
         return list;
       },
+    );
+  }
+
+  @override
+  NetworkResult<List<Standing>> getStandingsAll() {
+    final endpoint = '${ApiConstants.baseUrl}/standing/all';
+    return _apiClient.get<List<Standing>>(
+      endpoint,
+      fromJsonT: (json) => (json as List)
+          .map((e) => Standing.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 }

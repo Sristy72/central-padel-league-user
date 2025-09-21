@@ -1,38 +1,51 @@
 class Standing {
-  final int pos;
-  final String teamLogoPath;
+  final String id;
+  final String leagueId;
+  final String leagueName;
+  final String teamId;
   final String teamName;
-  final int p;
-  final int w;
-  final int d;
-  final int l;
-  final int plusMinus;
-  final int pts;
+  final String teamLogoUrl;
+  final int position;
+  final int played;
+  final int won;
+  final int drawn;
+  final int lost;
+  final int goalDifference;
+  final int points;
 
-  const Standing({
-    required this.pos,
-    required this.teamLogoPath,
+  Standing({
+    required this.id,
+    required this.leagueId,
+    required this.leagueName,
+    required this.teamId,
     required this.teamName,
-    required this.p,
-    required this.w,
-    required this.d,
-    required this.l,
-    required this.plusMinus,
-    required this.pts,
+    required this.teamLogoUrl,
+    required this.position,
+    required this.played,
+    required this.won,
+    required this.drawn,
+    required this.lost,
+    required this.goalDifference,
+    required this.points,
   });
 
-  // Factory constructor to create a Standing object from a JSON map
   factory Standing.fromJson(Map<String, dynamic> json) {
+    final team = json['team'] as Map<String, dynamic>?;
+    final league = json['league'] as Map<String, dynamic>?;
     return Standing(
-      pos: json['pos'] as int,
-      teamLogoPath: json['teamLogoPath'] as String,
-      teamName: json['teamName'] as String,
-      p: json['p'] as int,
-      w: json['w'] as int,
-      d: json['d'] as int,
-      l: json['l'] as int,
-      plusMinus: json['plusMinus'] as int,
-      pts: json['pts'] as int,
+      id: json['_id'] ?? '',
+      leagueId: league?['_id'] ?? '',
+      leagueName: league?['leagueName'] ?? '',
+      teamId: team?['_id'] ?? '',
+      teamName: team?['teamName'] ?? '',
+      teamLogoUrl: team?['logoPhotoUrl'] ?? '',
+      position: (json['position'] ?? 0) as int,
+      played: (json['played'] ?? 0) as int,
+      won: (json['won'] ?? 0) as int,
+      drawn: (json['drawn'] ?? 0) as int,
+      lost: (json['lost'] ?? 0) as int,
+      goalDifference: (json['goalDifference'] ?? 0) as int,
+      points: (json['points'] ?? 0) as int,
     );
   }
 }

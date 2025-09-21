@@ -98,27 +98,32 @@ class StandingTab extends StatelessWidget {
           ],
           rows: standingsData
               .map(
-                (team) => DataRow(
+                (standing) => DataRow(
                   cells: [
-                    DataCell(Text(team.pos.toString())),
+                    DataCell(Text(standing.position.toString())),
                     DataCell(
                       Row(
                         children: [
                           CircleAvatar(
-                            backgroundImage: AssetImage(team.teamLogoPath),
                             radius: 12.0,
+                            backgroundImage:
+                                (standing.teamLogoUrl.startsWith('http') ||
+                                    standing.teamLogoUrl.startsWith('https'))
+                                ? NetworkImage(standing.teamLogoUrl)
+                                : AssetImage(standing.teamLogoUrl)
+                                      as ImageProvider,
                           ),
                           const SizedBox(width: 8.0),
-                          Text(team.teamName),
+                          Text(standing.teamName),
                         ],
                       ),
                     ),
-                    DataCell(Text(team.p.toString())),
-                    DataCell(Text(team.w.toString())),
-                    DataCell(Text(team.d.toString())),
-                    DataCell(Text(team.l.toString())),
-                    DataCell(Text(team.plusMinus.toString())),
-                    DataCell(Text(team.pts.toString())),
+                    DataCell(Text(standing.played.toString())),
+                    DataCell(Text(standing.won.toString())),
+                    DataCell(Text(standing.drawn.toString())),
+                    DataCell(Text(standing.lost.toString())),
+                    DataCell(Text(standing.goalDifference.toString())),
+                    DataCell(Text(standing.points.toString())),
                   ],
                 ),
               )
