@@ -8,6 +8,8 @@ import 'package:karlfive/features/join_league/data/repositories/join_league/join
 import 'package:karlfive/features/join_league/domain/repo/team_repo.dart';
 import 'package:karlfive/features/league/data/league_repository.dart';
 import 'package:karlfive/features/league/data/league_repository_impl.dart';
+import 'package:karlfive/features/home/data/home_repository_impl.dart';
+import 'package:karlfive/features/home/data/home_repository.dart';
 
 void setupRepository() {
   Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl(apiClient: Get.find()));
@@ -21,4 +23,7 @@ void setupRepository() {
   Get.lazyPut<LeagueRepository>(
     () => LeagueRepositoryImpl(apiClient: Get.find()),
   );
+
+  // Home repository for fetching matches/standings/leagues used by home screen
+  Get.lazyPut<HomeRepository>(() => HomeRepositoryImpl(apiClient: Get.find()));
 }
