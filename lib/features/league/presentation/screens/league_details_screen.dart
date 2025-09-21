@@ -159,7 +159,21 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
             return MatchesTab(matchesData: ctrl.matches.toList());
           }),
           TeamsTab(teamsData: widget.league.addTeams),
-          FixturesTab(),
+          // Fixtures tab driven by controller.matches (already filtered by leagueId)
+          Obx(() {
+            final ctrl = Get.find<LeagueDetailsController>();
+            if (ctrl.isLoadingMatches.value)
+              return const Center(child: CircularProgressIndicator());
+            if (ctrl.matches.isEmpty) {
+              final msg = ctrl.matchesError.value.isNotEmpty
+                  ? ctrl.matchesError.value
+                  : 'No fixtures available';
+              return Center(
+                child: Text(msg, style: const TextStyle(color: Colors.white)),
+              );
+            }
+            return FixturesTab(matches: ctrl.matches.toList());
+          }),
         ],
       ),
     );
