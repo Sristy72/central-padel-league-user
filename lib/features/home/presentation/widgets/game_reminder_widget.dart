@@ -28,23 +28,25 @@ class GameReminderWidget extends StatelessWidget {
 
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                //! <-- Need to change this dynamically -->
+              children: [
+                // Day abbreviation
                 Text(
-                  "Sun",
-                  style: TextStyle(color: AppColors.white, fontSize: 12),
+                  _weekdayAbbrev(controller.nextMatchDate.value),
+                  style: const TextStyle(color: AppColors.white, fontSize: 12),
                 ),
                 Text(
-                  "08:00 AM",
-                  style: TextStyle(color: AppColors.white, fontSize: 12),
+                  controller.nextMatchTime.value.isNotEmpty
+                      ? controller.nextMatchTime.value
+                      : 'TBD',
+                  style: const TextStyle(color: AppColors.white, fontSize: 12),
                 ),
               ],
             ),
           ),
           title: Text(
-            controller
-                .gameReminder
-                .value, //! <-- Whill change after API integration -->
+            controller.gameReminder.value.isNotEmpty
+                ? controller.gameReminder.value
+                : '${controller.leagueName.value} - ${controller.status.value}',
             style: const TextStyle(
               color: AppColors.buttonText,
               fontWeight: FontWeight.w400,
@@ -53,5 +55,16 @@ class GameReminderWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _weekdayAbbrev(String isoDate) {
+    try {
+      if (isoDate.isEmpty) return 'N/A';
+      final d = DateTime.parse(isoDate);
+      const names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      return names[d.weekday - 1];
+    } catch (_) {
+      return 'N/A';
+    }
   }
 }

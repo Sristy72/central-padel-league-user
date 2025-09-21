@@ -28,13 +28,19 @@ class HomeScreen extends StatelessWidget {
           elevation: 0,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
-                "Hello Mosh,",
-                style: TextStyle(color: AppColors.white, fontSize: 18),
-              ),
-              SizedBox(height: 4),
-              Text(
+            children: [
+              Obx(() {
+                final controller = Get.find<HomeController>();
+                final name = controller.userName.value.isNotEmpty
+                    ? controller.userName.value
+                    : 'Guest';
+                return Text(
+                  'Hello $name,',
+                  style: const TextStyle(color: AppColors.white, fontSize: 18),
+                );
+              }),
+              const SizedBox(height: 4),
+              const Text(
                 "Welcome to Padel app",
                 style: TextStyle(color: AppColors.white, fontSize: 14),
               ),

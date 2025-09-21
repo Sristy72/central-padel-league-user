@@ -19,7 +19,7 @@ class QuickStatsWidget extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          // Table Header
+          //* <--- Table Header --->
           Container(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             color: Colors.grey.shade900,
@@ -84,10 +84,11 @@ class QuickStatsWidget extends StatelessWidget {
             ),
           ),
 
-          // Table Body
+          //! <--- Quick Stats --->
           ...controller.quickStats.asMap().entries.map((entry) {
             final index = entry.key;
             final stat = entry.value; // Map<String, dynamic>
+            final imageUrl = (stat["imageUrl"] ?? '').toString();
 
             return Container(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -102,7 +103,6 @@ class QuickStatsWidget extends StatelessWidget {
                   Expanded(
                     flex: 3,
                     child: Row(
-                      /*************  ✨ Windsurf Command 🌟  *************/
                       children: [
                         Text(
                           "${index + 1}${_getOrdinal(index + 1)}  ",
@@ -111,11 +111,11 @@ class QuickStatsWidget extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const CircleAvatar(
+                        CircleAvatar(
                           radius: 14,
-                          backgroundImage: AssetImage(
-                            "assets/player1.png",
-                          ), //! replace with stat["imageUrl"] if API provides
+                          backgroundImage: imageUrl.isNotEmpty
+                              ? NetworkImage(imageUrl)
+                              : null,
                         ),
                         SizedBox(width: 4),
                         Flexible(

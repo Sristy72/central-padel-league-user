@@ -5,6 +5,7 @@ import '../models/team_model.dart';
 import '../models/match_model.dart';
 import '../data/home_repository.dart';
 import '../../league/models/match_model.dart' as league_match;
+import '../../../core/services/get_user_profile_service.dart';
 // league models imported on demand where required
 
 class HomeController extends GetxController {
@@ -12,6 +13,10 @@ class HomeController extends GetxController {
 
   HomeController({HomeRepository? repository})
     : repository = repository ?? Get.find<HomeRepository>();
+
+  GetUserProfileService? userProfileService;
+
+  var userName = ''.obs;
 
   var gameReminder = ''.obs;
   var leagueName = ''.obs;
@@ -45,36 +50,42 @@ class HomeController extends GetxController {
   }
 
   Future<void> fetchHomeData() async {
-    // Try to load data from APIs. If any call fails, keep sample fallbacks.
+    // Load user profile first so UI can greet the user. Only use the service
+    // if it was registered during app startup to avoid Get.find exceptions.
     try {
-      // Matches (for fixtures and next match)
+      if (Get.isRegistered<GetUserProfileService>()) {
+        userProfileService = Get.find<GetUserProfileService>();
+        await userProfileService!.getUserProfile();
+        userName.value = userProfileService!.userInfo?.name ?? '';
+      }
+    } catch (_) {
+      // ignore errors; keep fallback name
+    }
+    //* Try to load data from APIs. If any call fails, keep sample fallbacks.
+    try {
+      //* Matches (for fixtures and next match)
       final matchesResult = await repository.getAllMatches();
-      matchesResult.fold(
-        (failure) {
-          // keep existing sample data if available
-        },
-        (success) {
-          final data = success.data;
-          if (data.isNotEmpty) {
-            // Map league.Match -> home Match model (lightweight)
-            fixtures.assignAll(data.map(_mapLeagueMatchToHome).toList());
+      matchesResult.fold((failure) {}, (success) {
+        final data = success.data;
+        if (data.isNotEmpty) {
+          //* Map league.Match -> home Match model (lightweight)
+          fixtures.assignAll(data.map(_mapLeagueMatchToHome).toList());
 
-            // For next match, pick the earliest upcoming or the first one
-            final upcoming = data
-                .where((m) => m.matchDateTime.isAfter(DateTime.now()))
-                .toList();
-            final next = upcoming.isNotEmpty ? upcoming.first : data.first;
-            _populateNextMatchFromLeague(next);
-          }
-        },
-      );
+          //* For next match, pick the earliest upcoming or the first one
+          final upcoming = data
+              .where((m) => m.matchDateTime.isAfter(DateTime.now()))
+              .toList();
+          final next = upcoming.isNotEmpty ? upcoming.first : data.first;
+          _populateNextMatchFromLeague(next);
+        }
+      });
 
-      // Standings (quick stats)
+      //* Standings (quick stats)
       final standingsResult = await repository.getAllStandings();
       standingsResult.fold((failure) {}, (success) {
         final sdata = success.data;
         if (sdata.isNotEmpty) {
-          // pick two recent standings
+          //* pick two recent standings
           final two = sdata
               .take(2)
               .map(
@@ -92,7 +103,7 @@ class HomeController extends GetxController {
         }
       });
 
-      // Leagues (for league update)
+      //* League Update
       final leaguesResult = await repository.getAllLeagues();
       leaguesResult.fold((failure) {}, (success) {
         final ldata = success.data;
@@ -104,17 +115,18 @@ class HomeController extends GetxController {
         }
       });
     } catch (e) {
-      // keep sample fallback data provided in original controller
+      print('Error fetching home data: $e'); //! <-- Remove when in production
     }
 
-    // If after API calls fixtures still empty, populate sample data (keeps prior behavior)
+    //! <-- Dummy data population --->
     if (fixtures.isEmpty) {
       _populateSampleData();
     }
     if (quickStats.isEmpty) {
       quickStats.assignAll([
-        {"name": "Ab Moses", "GP": 13, "W": 13, "L": 13, "Pts": 13, "+/-": 13},
-        {"name": "John Doe", "GP": 11, "W": 8, "L": 3, "Pts": 24, "+/-": 10},
+        //! <-- Dummy data population --->
+        {"name": "N/A", "GP": 0, "W": 0, "L": 0, "Pts": 0, "+/-": 0},
+        {"name": "N/A", "GP": 0, "W": 0, "L": 0, "Pts": 0, "+/-": 0},
       ]);
     }
   }
@@ -152,6 +164,12 @@ class HomeController extends GetxController {
         '${m.matchDateTime.toLocal().hour}:${m.matchDateTime.toLocal().minute.toString().padLeft(2, '0')}';
     nextMatchCourt.value = m.venueName;
 
+    // Set a human-readable game reminder title
+    final t1 = m.teamOne.teamName;
+    final t2 = m.teamTwo.teamName;
+    gameReminder.value =
+        '$t1 vs $t2 on ${nextMatchDate.value} at ${nextMatchTime.value}';
+
     team1Players.assignAll([
       Player(name: m.teamOne.teamName, imageUrl: m.teamOne.logoPhotoUrl),
     ]);
@@ -160,38 +178,42 @@ class HomeController extends GetxController {
     ]);
   }
 
+  //! <-- Dummy data population function --->
   void _populateSampleData() {
-    gameReminder.value =
-        "Get ready for your padel game at Padel it on August 17th!";
-    leagueName.value = "Padel Premier League 2025";
-    seasonDates.value = "June 1  September 30, 2025";
-    status.value = "Ongoing  Week 3";
+    gameReminder.value = "N/A";
+    leagueName.value = "N/A";
+    seasonDates.value = "None";
+    status.value = "Not Started";
 
-    nextMatchDate.value = "17/02/2025";
-    nextMatchTime.value = "01:00 PM";
-    nextMatchCourt.value = "Court - 01";
+    nextMatchDate.value = "00/00/0000";
+    nextMatchTime.value = "00:00 PM";
+    nextMatchCourt.value = "Court - 00";
 
     /// Example Team 1
     team1Players.assignAll([
       Player(
-        name: "Alice",
-        imageUrl: "https://randomuser.me/api/portraits/women/1.jpg",
+        name: "N/A",
+        imageUrl:
+            "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F49917726%2Fretrieving-default-image-all-url-profile-picture-from-facebook-graph-api&psig=AOvVaw3NHjSypnn9PiQGGYvy14QX&ust=1758529667866000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJjlhtm36Y8DFQAAAAAdAAAAABAE",
       ),
       Player(
-        name: "Bob",
-        imageUrl: "https://randomuser.me/api/portraits/men/2.jpg",
+        name: "N/A",
+        imageUrl:
+            "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F49917726%2Fretrieving-default-image-all-url-profile-picture-from-facebook-graph-api&psig=AOvVaw3NHjSypnn9PiQGGYvy14QX&ust=1758529667866000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJjlhtm36Y8DFQAAAAAdAAAAABAE",
       ),
     ]);
 
     /// Example Team 2
     team2Players.assignAll([
       Player(
-        name: "Charlie",
-        imageUrl: "https://randomuser.me/api/portraits/men/3.jpg",
+        name: "N/A",
+        imageUrl:
+            "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F49917726%2Fretrieving-default-image-all-url-profile-picture-from-facebook-graph-api&psig=AOvVaw3NHjSypnn9PiQGGYvy14QX&ust=1758529667866000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJjlhtm36Y8DFQAAAAAdAAAAABAE",
       ),
       Player(
-        name: "Daisy",
-        imageUrl: "https://randomuser.me/api/portraits/women/4.jpg",
+        name: "N/A",
+        imageUrl:
+            "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F49917726%2Fretrieving-default-image-all-url-profile-picture-from-facebook-graph-api&psig=AOvVaw3NHjSypnn9PiQGGYvy14QX&ust=1758529667866000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJjlhtm36Y8DFQAAAAAdAAAAABAE",
       ),
     ]);
 
@@ -203,40 +225,44 @@ class HomeController extends GetxController {
           teamName: "Baseline Smashers",
           players: [
             Player(
-              name: "Alice",
-              imageUrl: "https://randomuser.me/api/portraits/women/1.jpg",
+              name: "N/A",
+              imageUrl:
+                  "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F49917726%2Fretrieving-default-image-all-url-profile-picture-from-facebook-graph-api&psig=AOvVaw3NHjSypnn9PiQGGYvy14QX&ust=1758529667866000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJjlhtm36Y8DFQAAAAAdAAAAABAE",
             ),
             Player(
-              name: "Bob",
-              imageUrl: "https://randomuser.me/api/portraits/men/2.jpg",
+              name: "N/A",
+              imageUrl:
+                  "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F49917726%2Fretrieving-default-image-all-url-profile-picture-from-facebook-graph-api&psig=AOvVaw3NHjSypnn9PiQGGYvy14QX&ust=1758529667866000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJjlhtm36Y8DFQAAAAAdAAAAABAE",
             ),
           ],
         ),
         team2: MatchTeam(
-          teamName: "Topspin Titans",
+          teamName: "N/A",
           players: [
             Player(
-              name: "Charlie",
-              imageUrl: "https://randomuser.me/api/portraits/men/3.jpg",
+              name: "N/A",
+              imageUrl:
+                  "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F49917726%2Fretrieving-default-image-all-url-profile-picture-from-facebook-graph-api&psig=AOvVaw3NHjSypnn9PiQGGYvy14QX&ust=1758529667866000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJjlhtm36Y8DFQAAAAAdAAAAABAE",
             ),
             Player(
-              name: "Daisy",
-              imageUrl: "https://randomuser.me/api/portraits/women/4.jpg",
+              name: "N/A",
+              imageUrl:
+                  "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F49917726%2Fretrieving-default-image-all-url-profile-picture-from-facebook-graph-api&psig=AOvVaw3NHjSypnn9PiQGGYvy14QX&ust=1758529667866000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJjlhtm36Y8DFQAAAAAdAAAAABAE",
             ),
           ],
         ),
       ),
       Match(
-        date: "SAT 16 AUG 2025",
-        time: "03:00",
-        team1: MatchTeam(teamName: "Rally Kings", players: []),
-        team2: MatchTeam(teamName: "Net Ninjas", players: []),
+        date: "N/A",
+        time: "00:00",
+        team1: MatchTeam(teamName: "N/A", players: []),
+        team2: MatchTeam(teamName: "N/A", players: []),
       ),
       Match(
-        date: "SUN 17 AUG 2025",
-        time: "05:00",
-        team1: MatchTeam(teamName: "Smash Masters", players: []),
-        team2: MatchTeam(teamName: "Spin Doctors", players: []),
+        date: "N/A",
+        time: "00:00",
+        team1: MatchTeam(teamName: "N/A", players: []),
+        team2: MatchTeam(teamName: "N/A", players: []),
       ),
     ]);
   }

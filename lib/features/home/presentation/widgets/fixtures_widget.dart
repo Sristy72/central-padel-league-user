@@ -152,7 +152,7 @@ class FixturesWidget extends StatelessWidget {
                                 FittedBox(
                                   fit: BoxFit.scaleDown,
                                   child: Text(
-                                    fix.time ?? '',
+                                    fix.time,
                                     style: const TextStyle(
                                       color: Colors.white70,
                                       fontWeight: FontWeight.bold,
