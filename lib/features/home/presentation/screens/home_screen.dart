@@ -11,7 +11,7 @@ import '../widgets/game_reminder_widget.dart';
 import '../widgets/league_update_widget.dart';
 import '../widgets/next_match_widget.dart';
 import '../widgets/quick_stats_widget.dart';
-  
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -24,7 +24,7 @@ class HomeScreen extends StatelessWidget {
         preferredSize: const Size.fromHeight(60),
         child: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: Colors.black,
+          backgroundColor: AppColors.primaryBackground,
           elevation: 0,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,8 +63,8 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      body: Container(
+        color: AppColors.primaryBackground,
         child: SafeArea(
           child: SingleChildScrollView(
             child: Column(
@@ -74,28 +74,31 @@ class HomeScreen extends StatelessWidget {
                 CustomSearchBar(),
 
                 SizedBox(height: 15),
-                Text(
-                  "Game Reminder",
-                  style: TextStyle(
-                    color: AppColors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Text(
+                    "Game Reminder",
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
                   ),
                 ),
+
                 SizedBox(height: 12),
-
                 GameReminderWidget(),
-                SizedBox(height: 20),
 
+                SizedBox(height: 20),
                 LeagueUpdateWidget(),
-                SizedBox(height: 20),
 
+                SizedBox(height: 20),
                 NextMatchWidget(),
-                SizedBox(height: 20),
 
+                SizedBox(height: 20),
                 QuickStatsWidget(),
-                SizedBox(height: 20),
 
+                SizedBox(height: 20),
                 FixturesWidget(),
               ],
             ),

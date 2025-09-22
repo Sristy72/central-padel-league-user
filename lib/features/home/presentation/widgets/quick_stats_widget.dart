@@ -100,7 +100,7 @@ class QuickStatsWidget extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  //* Rank + Team Members + Avatar
+                  //* <--- Rank + Team Members + Avatar --->
                   Expanded(
                     flex: 3,
                     child: Row(
@@ -153,7 +153,7 @@ class QuickStatsWidget extends StatelessWidget {
                             }
 
                             if (players.isNotEmpty) {
-                              // Render up to two players inline.
+                              //* <--- Render up to two players inline. --->
                               final toShow = players.take(2).toList();
                               return Column(
                                 children: toShow.map((pl) {
@@ -194,7 +194,6 @@ class QuickStatsWidget extends StatelessWidget {
                               );
                             }
 
-                            // Fallback: show single avatar + team name (old UI)
                             return Row(
                               children: [
                                 CircleAvatar(
@@ -262,12 +261,11 @@ class QuickStatsWidget extends StatelessWidget {
             );
           }),
 
-          // "See All" link
+          //* <--- "See All" link --->
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
               onPressed: () {
-                // Navigate to the full standings screen
                 Get.to(() => const HomeStandingsScreen());
               },
               child: const Text(
