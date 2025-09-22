@@ -150,7 +150,7 @@ class FixturesWidget extends StatelessWidget {
                           ),
 
                           Expanded(
-                            flex: 2,
+                            flex: 3,
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -178,7 +178,7 @@ class FixturesWidget extends StatelessWidget {
 
                           //* <--- Team 2 (name + logo) and star --->
                           Expanded(
-                            flex: 4,
+                            flex: 5,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
@@ -197,7 +197,6 @@ class FixturesWidget extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 10),
 
-                                // Logo (circular)
                                 ClipOval(
                                   child: SizedBox(
                                     width: 36,
@@ -219,9 +218,9 @@ class FixturesWidget extends StatelessWidget {
                                   ),
                                 ),
 
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 4),
 
-                                //! Favorite icon
+                                //! Star Icon Here
                                 IconButton(
                                   icon: const Image(
                                     height: 18,
@@ -243,14 +242,12 @@ class FixturesWidget extends StatelessWidget {
                 ),
               ],
             );
-          }).toList(),
+          }),
 
-          // "See All" button
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
               onPressed: () {
-                // Navigate to the full fixtures screen using HomeFixturesScreen
                 Get.to(() => const HomeFixturesScreen());
               },
               child: const Text(
