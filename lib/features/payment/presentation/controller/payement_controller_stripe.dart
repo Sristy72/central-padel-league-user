@@ -1,4 +1,3 @@
-// lib/features/payment/controller/payement_controller.dart
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +12,6 @@ class PaymentController extends GetxController {
   final RxString paymentIntentId = ''.obs;
   final RxString errorMessage = ''.obs;
 
-  /// Creates a PaymentIntent on Stripe, initializes and presents the Payment Sheet.
-  /// If [externalTransactionId] is provided it will be used instead of generating one.
   Future<bool> processStripePayment({
     required double amount,
     required String currency,
@@ -69,7 +66,6 @@ class PaymentController extends GetxController {
 
       paymentIntentId.value = intentId;
 
-      // init and present sheet
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           paymentIntentClientSecret: clientSecret,

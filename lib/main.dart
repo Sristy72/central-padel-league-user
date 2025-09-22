@@ -8,6 +8,7 @@ import 'package:karlfive/features/auth/presentation/screens/signup_screen.dart';
 import 'package:karlfive/features/auth/presentation/screens/splash_screen.dart';
 import 'package:karlfive/features/home/presentation/screens/home_screen.dart';
 import 'package:karlfive/features/join_league/presentation/screens/form_screen/join_league_screen.dart';
+import 'package:karlfive/features/payment/presentation/screens/confirm_payment_screen.dart';
 import 'package:karlfive/features/payment/presentation/screens/payment_font_screen.dart';
 import 'package:karlfive/features/payment/presentation/screens/payment_screen.dart';
 import 'package:karlfive/features/team_members_profile/models/team_member_model.dart';
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
       title: 'KarlFive',
       theme: AppTheme.dark,
       // home: SplashScreen(),
-      home: PaymentDialog(),
+      home: ConfirmPaymentScreen(),
       debugShowCheckedModeBanner: true,
     );
   }
