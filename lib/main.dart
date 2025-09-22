@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
       title: 'KarlFive',
       theme: AppTheme.dark,
       // home: SplashScreen(),
-      home: ConfirmPaymentScreen(),
+      home: PaymentDialog(),
       debugShowCheckedModeBanner: true,
     );
   }

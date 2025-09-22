@@ -4,6 +4,7 @@ import 'package:karlfive/core/common/widgets/app_bottom_navbar.dart';
 import 'package:karlfive/core/common/widgets/app_scaffold.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
 import 'package:karlfive/features/home/presentation/screens/home_screen.dart';
+import 'package:karlfive/features/payment/presentation/screens/confirm_payment_screen.dart';
 import '../controller/payement_controller_stripe.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -60,7 +61,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
       // Optionally navigate to home after successful payment
       Future.delayed(Duration(seconds: 2), () {
-        Get.offAll(() => HomeScreen());
+        Get.offAll(() => ConfirmPaymentScreen());
       });
     } else {
       Get.snackbar(
