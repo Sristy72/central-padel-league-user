@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
 import '../../controller/home_controller.dart';
+import '../screens/home_fixtures_screen.dart';
 
 class FixturesWidget extends StatelessWidget {
   const FixturesWidget({super.key});
@@ -24,13 +25,19 @@ class FixturesWidget extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Fixtures",
-            style: TextStyle(color: Colors.white, fontSize: 18),
+          Padding(
+            padding: const EdgeInsets.only(left: 24.0, right: 25, bottom: 12),
+            child: const Text(
+              "Fixtures",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-          const SizedBox(height: 8),
 
-          // For each date group
+          //*<--- For each date group --->
           ...controller.groupedFixtures.entries.map((entry) {
             final date = entry.key;
             final matches = entry.value;
@@ -43,7 +50,7 @@ class FixturesWidget extends StatelessWidget {
                   width: double.infinity,
                   color: Colors.grey[900],
                   padding: const EdgeInsets.symmetric(
-                    vertical: 8,
+                    vertical: 12,
                     horizontal: 12,
                   ),
                   child: Row(
@@ -67,10 +74,9 @@ class FixturesWidget extends StatelessWidget {
                   ),
                 ),
 
-                // Matches list for this date
+                //* <--- MATCHES LIST Per Date -->
                 ListView.separated(
-                  shrinkWrap:
-                      true, // important to allow embedding inside Column
+                  shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: matches.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 6),
@@ -94,18 +100,17 @@ class FixturesWidget extends StatelessWidget {
                     return Container(
                       color: bgColor,
                       padding: const EdgeInsets.symmetric(
-                        vertical: 10,
+                        vertical: 4,
                         horizontal: 12,
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // Team 1 (logo + name)
+                          //* Team 1 (logo + name)
                           Expanded(
                             flex: 4,
                             child: Row(
                               children: [
-                                // Logo (circular)
                                 ClipOval(
                                   child: SizedBox(
                                     width: 36,
@@ -126,7 +131,7 @@ class FixturesWidget extends StatelessWidget {
                                           ),
                                   ),
                                 ),
-                                const SizedBox(width: 10),
+                                const SizedBox(width: 8),
 
                                 // Team name — flexible to avoid overflow
                                 Expanded(
@@ -145,14 +150,14 @@ class FixturesWidget extends StatelessWidget {
                           ),
 
                           Expanded(
-                            flex: 2,
+                            flex: 3,
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 FittedBox(
                                   fit: BoxFit.scaleDown,
                                   child: Text(
-                                    fix.time ?? '',
+                                    fix.time,
                                     style: const TextStyle(
                                       color: Colors.white70,
                                       fontWeight: FontWeight.bold,
@@ -171,9 +176,9 @@ class FixturesWidget extends StatelessWidget {
                             ),
                           ),
 
-                          // Team 2 (name + logo) and star
+                          //* <--- Team 2 (name + logo) and star --->
                           Expanded(
-                            flex: 4,
+                            flex: 5,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
@@ -192,7 +197,6 @@ class FixturesWidget extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 10),
 
-                                // Logo (circular)
                                 ClipOval(
                                   child: SizedBox(
                                     width: 36,
@@ -214,13 +218,19 @@ class FixturesWidget extends StatelessWidget {
                                   ),
                                 ),
 
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 4),
 
-                                // Favorite icon
-                                const Icon(
-                                  Icons.star_border,
-                                  color: Colors.white70,
-                                  size: 20,
+                                //! Star Icon Here
+                                IconButton(
+                                  icon: const Image(
+                                    height: 18,
+                                    width: 18,
+                                    image: AssetImage(
+                                      "assets/images/star_icon_off.png",
+                                    ),
+                                  ),
+                                  onPressed:
+                                      () {}, //TODO: Add favorite logic here
                                 ),
                               ],
                             ),
@@ -232,15 +242,13 @@ class FixturesWidget extends StatelessWidget {
                 ),
               ],
             );
-          }).toList(),
+          }),
 
-          // "See All" button
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
               onPressed: () {
-                // TODO: Navigate to full fixtures page (replace with Get.to)
-                // Get.to(() => const FullFixturesScreen());
+                Get.to(() => const HomeFixturesScreen());
               },
               child: const Text(
                 "See All",

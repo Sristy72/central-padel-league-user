@@ -6,6 +6,7 @@ import 'package:karlfive/features/privacy_policy/presentation/screens/privacy_pi
 import 'package:karlfive/features/team_members_profile/presentation/screens/edit_profile_info.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_contactus_screen.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_report_screen.dart';
+import '../../../auth/presentation/controller/auth_controller.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
 import '../../models/edit_profile_model.dart';
 import '../../models/team_member_model.dart';
@@ -359,12 +360,15 @@ class ProfileInfoScreen extends StatelessWidget {
                             height: 15,
                           ),
                           const SizedBox(width: 9),
-                          const Text(
-                            "Log out",
-                            style: TextStyle(
-                              color: Colors.redAccent,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                          GestureDetector(
+                            onTap: () => Get.find<AuthController>().logout(),
+                            child: const Text(
+                              "Log out",
+                              style: TextStyle(
+                                color: Colors.redAccent,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
                         ],

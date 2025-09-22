@@ -9,6 +9,10 @@ import 'package:karlfive/features/join_league/domain/repo/team_repo.dart';
 import 'package:karlfive/features/payment/data/repo/payment_repo_impl.dart';
 
 import '../../features/payment/domain/payment_repo.dart';
+import 'package:karlfive/features/league/data/league_repository.dart';
+import 'package:karlfive/features/league/data/league_repository_impl.dart';
+import 'package:karlfive/features/home/data/home_repository_impl.dart';
+import 'package:karlfive/features/home/data/home_repository.dart';
 
 void setupRepository() {
   Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl(apiClient: Get.find()));
@@ -23,4 +27,9 @@ void setupRepository() {
   Get.lazyPut<PaymentApiRepository>(
     () => PaymentApiRepositoryImpl(apiClient: Get.find()),
   );
+  Get.lazyPut<LeagueRepository>(
+    () => LeagueRepositoryImpl(apiClient: Get.find()),
+  );
+
+  Get.lazyPut<HomeRepository>(() => HomeRepositoryImpl(apiClient: Get.find()));
 }

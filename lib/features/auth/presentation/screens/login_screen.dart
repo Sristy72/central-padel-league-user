@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutx_core/flutx_core.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/common/constants/app_images.dart';
+import 'package:karlfive/core/network/services/secure_store_services.dart';
 import 'package:karlfive/core/theme/app_buttoms.dart';
 import 'package:karlfive/core/theme/input_decoration_extensions.dart';
 import 'package:karlfive/features/auth/presentation/controller/remember_me_controller.dart';
@@ -72,8 +73,10 @@ class _LoginScreenState extends State<LoginScreen>
     // Hide keyboard immediately
     if (mounted) FocusScope.of(context).unfocus();
 
-    _authController.login(_emailController.text, _passwordController.text);
+
+    _authController.login(email:  _emailController.text, password:  _passwordController.text, rememberMeController);
   }
+
 
   @override
   Widget build(BuildContext context) {
