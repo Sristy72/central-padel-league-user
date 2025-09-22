@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_contactus_screen.dart';
+import 'package:karlfive/features/team_members_profile/presentation/controllers/profile_controller.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_report_screen.dart';
 import '../../../../core/common/widgets/app_bottom_navbar.dart';
 import '../../../privacy_policy/presentation/screens/privacy_pilicy_screen.dart';
@@ -18,6 +19,8 @@ class ProfileInfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<ProfileController>();
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -63,20 +66,30 @@ class ProfileInfoScreen extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            // Profile Image
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage(member.imageUrl),
-            ),
+            // Profile Image (from API if available)
+            Obx(() {
+              final p = controller.profile.value;
+              final displayImage = p?.profileImage ?? member.imageUrl;
+              return CircleAvatar(
+                radius: 50,
+        backgroundImage: displayImage.isNotEmpty
+          ? (displayImage.startsWith('http') ? NetworkImage(displayImage) : AssetImage(displayImage) as ImageProvider)
+          : const AssetImage('assets/images/profile.png'),
+              );
+            }),
             const SizedBox(height: 14),
-            Text(
-              member.name,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: Colors.white,
-              ),
-            ),
+            Obx(() {
+              final p = controller.profile.value;
+              final displayName = (p?.name?.isNotEmpty == true) ? p!.name! : member.name;
+              return Text(
+                displayName,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
+                ),
+              );
+            }),
 
             const SizedBox(height: 19),
             // My Team
@@ -147,10 +160,13 @@ class ProfileInfoScreen extends StatelessWidget {
                             ),
                           ),
                           const Spacer(),
-                          Text(
-                            '01712451235',
-                            style: const TextStyle(color: Colors.white),
-                          ),
+                          Obx(() {
+                            final p = controller.profile.value;
+                            return Text(
+                              p?.phoneNumber ?? member.phone,
+                              style: const TextStyle(color: Colors.white),
+                            );
+                          }),
                         ],
                       ),
                       const SizedBox(height: 24),
@@ -172,10 +188,13 @@ class ProfileInfoScreen extends StatelessWidget {
                             ),
                           ),
                           const Spacer(),
-                          Text(
-                            'asbd@gmail.com',
-                            style: const TextStyle(color: Colors.white),
-                          ),
+                          Obx(() {
+                            final p = controller.profile.value;
+                            return Text(
+                              p?.email ?? member.email,
+                              style: const TextStyle(color: Colors.white),
+                            );
+                          }),
                         ],
                       ),
                     ],
