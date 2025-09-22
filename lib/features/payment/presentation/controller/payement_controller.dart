@@ -1,103 +1,85 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_stripe/flutter_stripe.dart';
-// import 'package:get/get.dart';
-
-// class PaymentController extends GetxController {
-//   var isLoading = false.obs;
-
-//   Future<void> makeTestPayment({
-//     required String amount,
-//     required String Currency,
-//   }) async {
-//     try {
-//       isLoading.value = true;
-
-//       // ⚠️ Replace with your PaymentIntent client_secret from Stripe Dashboard
-//       const clientSecret =
-//           "Bearer sk_test_51S8xuVJIhH0D9e0PFnJCn8SVf4rnEIdRTLqLQi8RKpiUlCpDcI6CXAOptwebUGUEHGuA9X1cEFanevcPTeEjEyVe00z9Bhhg6d";
-
-//       // 1️⃣ Initialize Payment Sheet
-//       await Stripe.instance.initPaymentSheet(
-//         paymentSheetParameters: SetupPaymentSheetParameters(
-//           paymentIntentClientSecret: clientSecret,
-//           merchantDisplayName: "KarlFive",
-//           style: ThemeMode.dark,
-//         ),
-//       );
-
-//       // 2️⃣ Present Payment Sheet
-//       await Stripe.instance.presentPaymentSheet();
-
-//       Get.snackbar(
-//         "Success",
-//         "Payment completed ✅",
-//         snackPosition: SnackPosition.BOTTOM,
-//         backgroundColor: Colors.green,
-//         colorText: Colors.white,
-//       );
-//     } catch (e) {
-//       Get.snackbar(
-//         "Error",
-//         e.toString(),
-//         snackPosition: SnackPosition.BOTTOM,
-//         backgroundColor: Colors.red,
-//         colorText: Colors.white,
-//       );
-//     } finally {
-//       isLoading.value = false;
-//     }
-//   }
-// }
-
+// lib/features/payment/controller/payement_controller.dart
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:karlfive/features/payment/data/data_source/stripe_service.dart';
+import 'package:karlfive/features/payment/data/model/create_pay_request.dart';
+import 'package:karlfive/features/payment/data/model/create_pay_response.dart';
 
 class PaymentController extends GetxController {
-  var isLoading = false.obs;
+  final RxBool isProcessing = false.obs;
+  final RxString paymentIntentId = ''.obs;
+  final RxString errorMessage = ''.obs;
 
-  Future<void> makeTestPayment({
-    required String amount,
+  /// Creates a PaymentIntent on Stripe, initializes and presents the Payment Sheet.
+  Future<void> processStripePayment({
+    required double amount, // dollars (e.g. 20.0)
     required String currency,
   }) async {
+    isProcessing.value = true;
+    errorMessage.value = '';
+    paymentIntentId.value = '';
+
+    // Convert to smallest currency unit (cents for USD)
+    final int amountInCents = (amount * 100).round();
+
+    final String transactionId = DateTime.now().millisecondsSinceEpoch
+        .toString();
+
+    final req = PaymentRequest(
+      amount: amountInCents,
+      currency: currency,
+      transactionId: transactionId,
+    );
+
     try {
-      isLoading.value = true;
+      // Create PaymentIntent using the helper service
+      final Map<String, dynamic> intentJson = await StripeService.instance
+          .createPaymentIntent(req);
 
-      // In production, replace with actual server-side integration to fetch paymentIntent client secret
-      const clientSecret =
-          "pk_test_51RXwQACcgOOj8cVfdYyp6jF1oOS1Qg6PHycZbBrPSQ0wuXrCKyEjAA8XSmIl802REjz3qZj5VpWF0XXwVxC7buU5007AlTzQJ1"; // Mocked for testing
+      // Convert to model (optional)
+      final PaymentResponse resp = PaymentResponse.fromJson(intentJson);
 
-      // Initialize Stripe Payment Sheet
+      final String clientSecret = resp.clientSecret;
+      final String intentId = resp.id;
+
+      if (kDebugMode) {
+        debugPrint(
+          'Stripe Intent created: id=$intentId clientSecret=$clientSecret',
+        );
+      }
+
+      if (clientSecret.isEmpty) {
+        throw Exception('Missing client_secret from Stripe response');
+      }
+
+      paymentIntentId.value = intentId;
+
+      // Initialize payment sheet
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           paymentIntentClientSecret: clientSecret,
-          merchantDisplayName: "KarlFive",
+          merchantDisplayName: 'KarlFive',
           style: ThemeMode.dark,
+          // You can add other optional parameters here (customerId, etc)
         ),
       );
 
-      // Show the payment sheet
+      // Present the sheet
       await Stripe.instance.presentPaymentSheet();
 
-      // On success
-      Get.snackbar(
-        "Payment Success",
-        "Payment completed ✅",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      if (kDebugMode) debugPrint('Payment completed for Intent: $intentId');
+    } on StripeException catch (se) {
+      if (kDebugMode)
+        debugPrint('StripeException: ${se.error.localizedMessage}');
+      errorMessage.value = se.error.localizedMessage ?? 'Stripe error';
     } catch (e) {
-      // On failure
-      Get.snackbar(
-        "Payment Failed",
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      if (kDebugMode) debugPrint('Payment error: $e');
+      errorMessage.value = e.toString();
     } finally {
-      isLoading.value = false;
+      isProcessing.value = false;
     }
   }
 }
