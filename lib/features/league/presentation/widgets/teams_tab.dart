@@ -93,8 +93,12 @@ class _TeamGridItem extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircleAvatar(
-            backgroundImage: AssetImage(team.teamLogoPath),
             radius: 18.0,
+            backgroundColor: Colors.transparent,
+            backgroundImage: team.logoPhotoUrl.isNotEmpty
+                ? NetworkImage(team.logoPhotoUrl)
+                : const AssetImage('assets/images/group_logo.png')
+                      as ImageProvider,
           ),
           const SizedBox(height: 8),
           Text(

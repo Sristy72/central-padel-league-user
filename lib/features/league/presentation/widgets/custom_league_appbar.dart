@@ -33,7 +33,18 @@ class CustomLeagueAppbar extends StatelessWidget
       flexibleSpace: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset(backgroundImagePath, fit: BoxFit.cover),
+            child:
+                backgroundImagePath.startsWith('http') ||
+                    backgroundImagePath.startsWith('https')
+                ? Image.network(
+                    backgroundImagePath,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Image.asset(
+                      'assets/images/example_bg.jpg',
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : Image.asset(backgroundImagePath, fit: BoxFit.cover),
           ),
           Container(color: Colors.black.withValues(alpha: 0.5)),
           Column(
@@ -56,22 +67,24 @@ class CustomLeagueAppbar extends StatelessWidget
                           color: AppColors.white.withValues(alpha: 0.3),
                         ),
                         child: const Image(
-                          height: 20,
-                          width: 20,
+                          height: 22,
+                          width: 22,
                           image: AssetImage("assets/images/cross_icon.png"),
                           color: AppColors.white,
                         ),
-                      ), //! <-- Change to Image -->
+                      ),
                       onPressed: () {
                         Get.back();
                       },
                     ),
+                    //! Favorite icon
                     IconButton(
-                      icon: const Icon(
-                        Icons.star,
-                        color: AppColors.white,
-                      ), //! <-- Change to Image -->
-                      onPressed: () {},
+                      icon: const Image(
+                        height: 22,
+                        width: 22,
+                        image: AssetImage("assets/images/star_icon_off.png"),
+                      ),
+                      onPressed: () {}, // TODO: Add favorite logic here
                     ),
                   ],
                 ),
@@ -81,17 +94,26 @@ class CustomLeagueAppbar extends StatelessWidget
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      leagueName,
-                      style: const TextStyle(
-                        color: AppColors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w500,
+                    Expanded(
+                      child: Text(
+                        leagueName,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        style: const TextStyle(
+                          color: AppColors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                     CircleAvatar(
-                      backgroundImage: AssetImage(leagueLogoPath),
                       radius: 16.0,
+                      backgroundImage:
+                          leagueLogoPath.startsWith('http') ||
+                              leagueLogoPath.startsWith('https')
+                          ? NetworkImage(leagueLogoPath)
+                          : AssetImage(leagueLogoPath) as ImageProvider,
+                      onBackgroundImageError: (_, __) {},
                     ),
                   ],
                 ),

@@ -1,18 +1,10 @@
-// features/league/data/repositories/league_repository.dart
+import '../../../core/network/network_result.dart';
 import '../models/league_model.dart';
-import 'league_remote_data_source.dart';
+import '../models/match_model.dart';
+import '../models/standing_model.dart';
 
 abstract class LeagueRepository {
-  Future<List<League>> getLeagues();
-}
-
-class LeagueRepositoryImpl implements LeagueRepository {
-  final LeagueRemoteDataSource remoteDataSource;
-
-  LeagueRepositoryImpl({required this.remoteDataSource});
-
-  @override
-  Future<List<League>> getLeagues() async {
-    return await remoteDataSource.getLeagues();
-  }
+  NetworkResult<List<League>> getAllLeagues();
+  NetworkResult<List<Match>> getMatchesByLeague(String leagueId);
+  NetworkResult<List<Standing>> getStandingsAll();
 }
