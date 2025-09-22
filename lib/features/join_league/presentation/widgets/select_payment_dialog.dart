@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:karlfive/features/payment/presentation/screens/payment_screen.dart';
+import 'package:karlfive/features/payment/presentation/screens/payment_font_screen.dart';
 import '../../../../core/theme/app_buttoms.dart';
 import '../../../../core/theme/app_colors.dart';
 
@@ -103,7 +103,13 @@ class SelectPaymentDialog extends StatelessWidget {
                 width: double.infinity,
                 child: PrimaryButton(
                   onPressed: () {
-                    Get.to(PaymentScreen(),transition: Transition.leftToRight);
+                    // Close dialog then open PaymentDialog so server payment flow runs
+                    Navigator.of(context).pop();
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (_) => const PaymentDialog(),
+                    );
                   },
                   text: "Pay Now",
                   backgroundColor: Colors.blue,

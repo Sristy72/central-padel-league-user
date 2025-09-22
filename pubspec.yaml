@@ -14,6 +14,7 @@ dependencies:
     sdk: flutter
   draggable_home: ^1.0.5
   cupertino_icons: ^1.0.8
+  flutter_stripe: ^12.0.2
 
   # State manage
   get: ^4.7.2
