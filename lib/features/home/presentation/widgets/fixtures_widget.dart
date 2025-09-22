@@ -25,13 +25,19 @@ class FixturesWidget extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Fixtures",
-            style: TextStyle(color: Colors.white, fontSize: 18),
+          Padding(
+            padding: const EdgeInsets.only(left: 24.0, right: 25, bottom: 12),
+            child: const Text(
+              "Fixtures",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-          const SizedBox(height: 8),
 
-          // For each date group
+          //*<--- For each date group --->
           ...controller.groupedFixtures.entries.map((entry) {
             final date = entry.key;
             final matches = entry.value;
@@ -44,7 +50,7 @@ class FixturesWidget extends StatelessWidget {
                   width: double.infinity,
                   color: Colors.grey[900],
                   padding: const EdgeInsets.symmetric(
-                    vertical: 8,
+                    vertical: 12,
                     horizontal: 12,
                   ),
                   child: Row(
@@ -68,10 +74,9 @@ class FixturesWidget extends StatelessWidget {
                   ),
                 ),
 
-                // Matches list for this date
+                //* <--- MATCHES LIST Per Date -->
                 ListView.separated(
-                  shrinkWrap:
-                      true, // important to allow embedding inside Column
+                  shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: matches.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 6),
@@ -95,18 +100,17 @@ class FixturesWidget extends StatelessWidget {
                     return Container(
                       color: bgColor,
                       padding: const EdgeInsets.symmetric(
-                        vertical: 10,
+                        vertical: 4,
                         horizontal: 12,
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // Team 1 (logo + name)
+                          //* Team 1 (logo + name)
                           Expanded(
                             flex: 4,
                             child: Row(
                               children: [
-                                // Logo (circular)
                                 ClipOval(
                                   child: SizedBox(
                                     width: 36,
@@ -127,7 +131,7 @@ class FixturesWidget extends StatelessWidget {
                                           ),
                                   ),
                                 ),
-                                const SizedBox(width: 10),
+                                const SizedBox(width: 8),
 
                                 // Team name — flexible to avoid overflow
                                 Expanded(
@@ -172,7 +176,7 @@ class FixturesWidget extends StatelessWidget {
                             ),
                           ),
 
-                          // Team 2 (name + logo) and star
+                          //* <--- Team 2 (name + logo) and star --->
                           Expanded(
                             flex: 4,
                             child: Row(
