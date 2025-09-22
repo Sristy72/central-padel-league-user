@@ -24,6 +24,5 @@ void setupRepository() {
     () => LeagueRepositoryImpl(apiClient: Get.find()),
   );
 
-  // Home repository for fetching matches/standings/leagues used by home screen
   Get.lazyPut<HomeRepository>(() => HomeRepositoryImpl(apiClient: Get.find()));
 }

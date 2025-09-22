@@ -88,7 +88,7 @@ class QuickStatsWidget extends StatelessWidget {
           //! <--- Quick Stats --->
           ...controller.quickStats.asMap().entries.map((entry) {
             final index = entry.key;
-            final stat = entry.value; // Map<String, dynamic>
+            final stat = entry.value;
             final imageUrl = (stat["imageUrl"] ?? '').toString();
 
             return Container(
@@ -100,7 +100,7 @@ class QuickStatsWidget extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  // Rank + Team + Avatar
+                  //* Rank + Team Members + Avatar
                   Expanded(
                     flex: 3,
                     child: Row(
@@ -112,20 +112,117 @@ class QuickStatsWidget extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        CircleAvatar(
-                          radius: 14,
-                          backgroundImage: imageUrl.isNotEmpty
-                              ? NetworkImage(imageUrl)
-                              : null,
-                        ),
-                        SizedBox(width: 4),
-                        Flexible(
-                          child: Text(
-                            stat["name"] ?? "",
-                            style: const TextStyle(color: Colors.white),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
-                          ),
+
+                        Builder(
+                          builder: (_) {
+                            final controller = Get.find<HomeController>();
+                            final teamName = (stat["name"] ?? '').toString();
+
+                            List<Map<String, String>> players = [];
+                            for (final lm in controller.leagueMatches) {
+                              if (lm.teamOne.teamName == teamName) {
+                                final cap = lm.teamOne.captainName;
+                                final partner = lm.teamOne.partnerName;
+                                final logo = lm.teamOne.logoPhotoUrl;
+                                if (cap.isNotEmpty) {
+                                  players.add({'name': cap, 'imageUrl': logo});
+                                }
+                                if (partner.isNotEmpty) {
+                                  players.add({
+                                    'name': partner,
+                                    'imageUrl': logo,
+                                  });
+                                }
+                                break;
+                              }
+                              if (lm.teamTwo.teamName == teamName) {
+                                final cap = lm.teamTwo.captainName;
+                                final partner = lm.teamTwo.partnerName;
+                                final logo = lm.teamTwo.logoPhotoUrl;
+                                if (cap.isNotEmpty) {
+                                  players.add({'name': cap, 'imageUrl': logo});
+                                }
+                                if (partner.isNotEmpty) {
+                                  players.add({
+                                    'name': partner,
+                                    'imageUrl': logo,
+                                  });
+                                }
+                                break;
+                              }
+                            }
+
+                            if (players.isNotEmpty) {
+                              // Render up to two players inline.
+                              final toShow = players.take(2).toList();
+                              return Column(
+                                children: toShow.map((pl) {
+                                  final playerName = pl['name'] ?? '';
+                                  final playerImage = (pl['imageUrl'] ?? '')
+                                      .toString();
+                                  return Row(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 12,
+                                        backgroundColor: Colors.grey[800],
+                                        backgroundImage: playerImage.isNotEmpty
+                                            ? NetworkImage(playerImage)
+                                            : null,
+                                        child: playerImage.isEmpty
+                                            ? const Icon(
+                                                Icons.person,
+                                                size: 14,
+                                                color: Colors.white70,
+                                              )
+                                            : null,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      SizedBox(
+                                        width: 80,
+                                        child: Text(
+                                          playerName,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                              );
+                            }
+
+                            // Fallback: show single avatar + team name (old UI)
+                            return Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 14,
+                                  backgroundImage: imageUrl.isNotEmpty
+                                      ? NetworkImage(imageUrl)
+                                      : null,
+                                  child: imageUrl.isEmpty
+                                      ? const Icon(
+                                          Icons.sports,
+                                          size: 14,
+                                          color: Colors.white70,
+                                        )
+                                      : null,
+                                ),
+                                const SizedBox(width: 4),
+                                SizedBox(
+                                  width: 110,
+                                  child: Text(
+                                    stat["name"] ?? "",
+                                    style: const TextStyle(color: Colors.white),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ],
                     ),
