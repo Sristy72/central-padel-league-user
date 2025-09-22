@@ -10,8 +10,6 @@ import '../controller/payement_controller.dart';
 
 class PaymentScreen extends StatelessWidget {
   PaymentScreen({super.key});
-
-  // Keep the same controller instance the screen uses
   final PaymentController paymentController = Get.put(PaymentController());
   final double amount = 20.0; // dollars
 
@@ -127,19 +125,19 @@ class PaymentScreen extends StatelessWidget {
                       ),
 
                     // Success message
-                    if (paymentController.paymentIntentId.value.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Text(
-                          'Payment Successful!\nTransaction ID: ${paymentController.paymentIntentId.value}',
-                          style: TextStyle(
-                            color: Colors.green,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
+                    // if (paymentController.paymentIntentId.value.isNotEmpty)
+                    //   Padding(
+                    //     padding: const EdgeInsets.symmetric(vertical: 10),
+                    //     child: Text(
+                    //       'Payment Successful!\nTransaction ID: ${paymentController.paymentIntentId.value}',
+                    //       style: TextStyle(
+                    //         color: Colors.green,
+                    //         fontSize: 14,
+                    //         fontWeight: FontWeight.w500,
+                    //       ),
+                    //       textAlign: TextAlign.center,
+                    //     ),
+                    //   ),
 
                     // Error message
                     if (paymentController.errorMessage.value.isNotEmpty)
@@ -156,7 +154,7 @@ class PaymentScreen extends StatelessWidget {
                         ),
                       ),
 
-                    const SizedBox(height: 20,),
+                    const SizedBox(height: 20),
 
                     Center(
                       child: ElevatedButton(
@@ -171,43 +169,33 @@ class PaymentScreen extends StatelessWidget {
                         onPressed: paymentController.isProcessing.value
                             ? null
                             : () async {
-                                await paymentController.processStripePayment(
-                                  amount: amount,
-                                  currency: "USD",
-                                );
-
-                                // If payment was successful, navigate to home
-                                if (paymentController
-                                    .paymentIntentId
-                                    .value
-                                    .isNotEmpty) {
+                                final ok = await paymentController
+                                    .processStripePayment(
+                                      amount: amount,
+                                      currency: 'USD',
+                                    );
+                                if (ok) {
                                   Future.delayed(
                                     const Duration(seconds: 2),
                                     () {
                                       Get.offAll(() => HomeScreen());
                                     },
                                   );
+                                } else {
+                                  Get.snackbar(
+                                    'Payment failed',
+                                    paymentController
+                                            .errorMessage
+                                            .value
+                                            .isNotEmpty
+                                        ? paymentController.errorMessage.value
+                                        : 'Payment was not completed',
+                                  );
                                 }
                               },
                         child: paymentController.isProcessing.value
-                            ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation(
-                                    Colors.white,
-                                  ),
-                                ),
-                              )
-                            : Text(
-                                "Pay Now",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
+                            ? const CircularProgressIndicator()
+                            : const Text('Pay Now'),
                       ),
                     ),
 

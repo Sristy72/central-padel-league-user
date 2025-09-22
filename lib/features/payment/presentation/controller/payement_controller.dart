@@ -14,17 +14,17 @@ class PaymentController extends GetxController {
   final RxString errorMessage = ''.obs;
 
   /// Creates a PaymentIntent on Stripe, initializes and presents the Payment Sheet.
-  Future<void> processStripePayment({
-    required double amount, // dollars (e.g. 20.0)
+  /// Verifies status from Stripe and returns true only if final status is "succeeded".
+  Future<bool> processStripePayment({
+    required double amount,
     required String currency,
   }) async {
+    bool success = false;
     isProcessing.value = true;
     errorMessage.value = '';
     paymentIntentId.value = '';
 
-    // Convert to smallest currency unit (cents for USD)
     final int amountInCents = (amount * 100).round();
-
     final String transactionId = DateTime.now().millisecondsSinceEpoch
         .toString();
 
@@ -35,19 +35,17 @@ class PaymentController extends GetxController {
     );
 
     try {
-      // Create PaymentIntent using the helper service
+      // call service with the PaymentRequest model
       final Map<String, dynamic> intentJson = await StripeService.instance
           .createPaymentIntent(req);
 
-      // Convert to model (optional)
       final PaymentResponse resp = PaymentResponse.fromJson(intentJson);
-
       final String clientSecret = resp.clientSecret;
       final String intentId = resp.id;
 
       if (kDebugMode) {
         debugPrint(
-          'Stripe Intent created: id=$intentId clientSecret=$clientSecret',
+          'Stripe Intent created: id=$intentId clientSecret=${clientSecret.isNotEmpty}',
         );
       }
 
@@ -57,29 +55,52 @@ class PaymentController extends GetxController {
 
       paymentIntentId.value = intentId;
 
-      // Initialize payment sheet
+      // init and present sheet
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           paymentIntentClientSecret: clientSecret,
           merchantDisplayName: 'KarlFive',
           style: ThemeMode.dark,
-          // You can add other optional parameters here (customerId, etc)
         ),
       );
 
-      // Present the sheet
       await Stripe.instance.presentPaymentSheet();
 
-      if (kDebugMode) debugPrint('Payment completed for Intent: $intentId');
+      // After successful presentation, verify PaymentIntent status from Stripe
+      try {
+        if (intentId.isEmpty) {
+          throw Exception('No payment intent id to verify');
+        }
+        final Map<String, dynamic> fetched = await StripeService.instance
+            .fetchPaymentIntent(intentId);
+        final String status = (fetched['status'] ?? '').toString();
+        if (kDebugMode) debugPrint('Verified PaymentIntent status: $status');
+        if (status == 'succeeded') {
+          success = true;
+        } else {
+          success = false;
+          errorMessage.value = 'Payment not completed. Status: $status';
+        }
+      } catch (verifyErr) {
+        // If verification request fails, treat as failure and report message
+        if (kDebugMode)
+          debugPrint('Failed to verify PaymentIntent: $verifyErr');
+        success = false;
+        errorMessage.value = 'Payment verification failed: $verifyErr';
+      }
     } on StripeException catch (se) {
       if (kDebugMode)
         debugPrint('StripeException: ${se.error.localizedMessage}');
       errorMessage.value = se.error.localizedMessage ?? 'Stripe error';
+      success = false;
     } catch (e) {
       if (kDebugMode) debugPrint('Payment error: $e');
       errorMessage.value = e.toString();
+      success = false;
     } finally {
       isProcessing.value = false;
     }
+
+    return success;
   }
 }
