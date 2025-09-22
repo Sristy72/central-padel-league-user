@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:karlfive/features/payment/data/data_source/stripe_service.dart';
-import 'package:karlfive/features/payment/data/model/create_pay_request.dart';
-import 'package:karlfive/features/payment/data/model/create_pay_response.dart';
+import 'package:karlfive/features/payment/data/model/create_pay_request_stripe.dart';
+import 'package:karlfive/features/payment/data/model/create_pay_response_stripe.dart';
 
 class PaymentController extends GetxController {
   final RxBool isProcessing = false.obs;
@@ -14,10 +14,11 @@ class PaymentController extends GetxController {
   final RxString errorMessage = ''.obs;
 
   /// Creates a PaymentIntent on Stripe, initializes and presents the Payment Sheet.
-  /// Verifies status from Stripe and returns true only if final status is "succeeded".
+  /// If [externalTransactionId] is provided it will be used instead of generating one.
   Future<bool> processStripePayment({
     required double amount,
     required String currency,
+    String? externalTransactionId,
   }) async {
     bool success = false;
     isProcessing.value = true;
@@ -25,8 +26,17 @@ class PaymentController extends GetxController {
     paymentIntentId.value = '';
 
     final int amountInCents = (amount * 100).round();
-    final String transactionId = DateTime.now().millisecondsSinceEpoch
-        .toString();
+
+    final String transactionId =
+        (externalTransactionId != null && externalTransactionId.isNotEmpty)
+        ? externalTransactionId
+        : DateTime.now().millisecondsSinceEpoch.toString();
+
+    if (kDebugMode) {
+      debugPrint(
+        'Starting Stripe flow. amountInCents=$amountInCents currency=$currency transactionId=$transactionId',
+      );
+    }
 
     final req = PaymentRequest(
       amount: amountInCents,
@@ -39,13 +49,17 @@ class PaymentController extends GetxController {
       final Map<String, dynamic> intentJson = await StripeService.instance
           .createPaymentIntent(req);
 
+      if (kDebugMode) {
+        debugPrint('Stripe createPaymentIntent response JSON: $intentJson');
+      }
+
       final PaymentResponse resp = PaymentResponse.fromJson(intentJson);
       final String clientSecret = resp.clientSecret;
       final String intentId = resp.id;
 
       if (kDebugMode) {
         debugPrint(
-          'Stripe Intent created: id=$intentId clientSecret=${clientSecret.isNotEmpty}',
+          'Stripe Intent created: id=$intentId clientSecret present=${clientSecret.isNotEmpty}',
         );
       }
 
@@ -73,6 +87,9 @@ class PaymentController extends GetxController {
         }
         final Map<String, dynamic> fetched = await StripeService.instance
             .fetchPaymentIntent(intentId);
+        if (kDebugMode) {
+          debugPrint('Fetched PaymentIntent from Stripe: $fetched');
+        }
         final String status = (fetched['status'] ?? '').toString();
         if (kDebugMode) debugPrint('Verified PaymentIntent status: $status');
         if (status == 'succeeded') {
@@ -82,7 +99,6 @@ class PaymentController extends GetxController {
           errorMessage.value = 'Payment not completed. Status: $status';
         }
       } catch (verifyErr) {
-        // If verification request fails, treat as failure and report message
         if (kDebugMode)
           debugPrint('Failed to verify PaymentIntent: $verifyErr');
         success = false;
@@ -101,6 +117,11 @@ class PaymentController extends GetxController {
       isProcessing.value = false;
     }
 
+    if (kDebugMode) {
+      debugPrint(
+        'Stripe flow finished. success=$success paymentIntentId=${paymentIntentId.value} error=${errorMessage.value}',
+      );
+    }
     return success;
   }
 }

@@ -1,12 +1,10 @@
-import '../data/data_source/stripe_service.dart';
-import '../data/model/create_pay_request.dart';
-import '../data/model/create_pay_response.dart';
+import 'package:karlfive/core/network/network_result.dart';
 
-class PaymentRepository {
-  final StripeService _service = StripeService.instance;
+import '../data/model/create_payment_requesr.dart';
+import '../data/model/create_payment_response.dart';
 
-  Future<PaymentResponse> createPaymentIntent(PaymentRequest request) async {
-    final json = await _service.createPaymentIntent(request);
-    return PaymentResponse.fromJson(json);
-  }
+abstract class PaymentApiRepository {
+  NetworkResult<CreatePaymentApiResponse> createPayment(
+    CreatePaymentRequest request,
+  );
 }

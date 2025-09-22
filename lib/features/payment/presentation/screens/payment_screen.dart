@@ -1,17 +1,79 @@
-// lib/features/payment/presentation/screens/payment_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/common/widgets/app_bottom_navbar.dart';
 import 'package:karlfive/core/common/widgets/app_scaffold.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
 import 'package:karlfive/features/home/presentation/screens/home_screen.dart';
+import '../controller/payement_controller_stripe.dart';
 
-import '../controller/payement_controller.dart';
+class PaymentScreen extends StatefulWidget {
+  final String? transactionId;
+  final double amount;
 
-class PaymentScreen extends StatelessWidget {
-  PaymentScreen({super.key});
-  final PaymentController paymentController = Get.put(PaymentController());
-  final double amount = 20.0; // dollars
+  const PaymentScreen({super.key, this.transactionId, this.amount = 359.00});
+
+  @override
+  State<PaymentScreen> createState() => _PaymentScreenState();
+}
+
+class _PaymentScreenState extends State<PaymentScreen> {
+  late final PaymentController paymentController;
+
+  @override
+  void initState() {
+    super.initState();
+    paymentController = Get.put(PaymentController());
+    // Start stripe flow after first frame so UI exists
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.transactionId != null && widget.transactionId!.isNotEmpty) {
+        _startStripeFlow();
+      } else {
+        debugPrint('No transactionId provided to PaymentScreen');
+      }
+    });
+  }
+
+  Future<void> _startStripeFlow() async {
+    final tx = widget.transactionId!;
+    debugPrint(
+      'PaymentScreen: starting Stripe with transactionId: $tx, amount: ${widget.amount}',
+    );
+
+    final success = await paymentController.processStripePayment(
+      amount: widget.amount,
+      currency: 'usd',
+      externalTransactionId: tx,
+    );
+
+    debugPrint(
+      'PaymentScreen: stripe success=$success intentId=${paymentController.paymentIntentId.value} error=${paymentController.errorMessage.value}',
+    );
+
+    if (success) {
+      Get.snackbar(
+        'Payment Completed',
+        'Payment succeeded! Transaction ID: ${paymentController.paymentIntentId.value}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+
+      // Optionally navigate to home after successful payment
+      Future.delayed(Duration(seconds: 2), () {
+        Get.offAll(() => HomeScreen());
+      });
+    } else {
+      Get.snackbar(
+        'Payment Error',
+        paymentController.errorMessage.value.isNotEmpty
+            ? paymentController.errorMessage.value
+            : 'Payment failed. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,26 +138,31 @@ class PaymentScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 30),
                     Divider(color: Color(0xff282828)),
-                    Row(
-                      children: [
-                        Text(
-                          "Total:",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.white,
+                    InkWell(
+                      onTap: () {
+                        Get.offAll(() => HomeScreen());
+                      },
+                      child: Row(
+                        children: [
+                          Text(
+                            "Total:",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.white,
+                            ),
                           ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          "\$${amount.toStringAsFixed(2)}",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.white,
+                          Spacer(),
+                          Text(
+                            "\$${widget.amount.toStringAsFixed(2)}",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.white,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     Divider(color: Color(0xff282828)),
                     const SizedBox(height: 30),
@@ -117,50 +184,19 @@ class PaymentScreen extends StatelessWidget {
                       ),
                     ),
 
-                    // Loading indicator
-                    if (paymentController.isProcessing.value)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 20),
-                        child: Center(child: CircularProgressIndicator()),
-                      ),
-
-                    // Success message
-                    // if (paymentController.paymentIntentId.value.isNotEmpty)
-                    //   Padding(
-                    //     padding: const EdgeInsets.symmetric(vertical: 10),
-                    //     child: Text(
-                    //       'Payment Successful!\nTransaction ID: ${paymentController.paymentIntentId.value}',
-                    //       style: TextStyle(
-                    //         color: Colors.green,
-                    //         fontSize: 14,
-                    //         fontWeight: FontWeight.w500,
-                    //       ),
-                    //       textAlign: TextAlign.center,
-                    //     ),
-                    //   ),
-
-                    // Error message
-                    if (paymentController.errorMessage.value.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Text(
-                          'Error: ${paymentController.errorMessage.value}',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-
                     const SizedBox(height: 20),
 
+                    // Loading indicator
+                    if (paymentController.isProcessing.value)
+                      const Center(child: CircularProgressIndicator()),
+
+                    const Spacer(),
+
+                    // Manual retry button
                     Center(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Colors.green, // Changed to green for Stripe
+                          backgroundColor: Colors.green,
                           minimumSize: Size(200, 50),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(6),
@@ -168,34 +204,39 @@ class PaymentScreen extends StatelessWidget {
                         ),
                         onPressed: paymentController.isProcessing.value
                             ? null
-                            : () async {
-                                final ok = await paymentController
-                                    .processStripePayment(
-                                      amount: amount,
-                                      currency: 'USD',
-                                    );
-                                if (ok) {
-                                  Future.delayed(
-                                    const Duration(seconds: 2),
-                                    () {
-                                      Get.offAll(() => HomeScreen());
-                                    },
-                                  );
+                            : () {
+                                if (widget.transactionId != null &&
+                                    widget.transactionId!.isNotEmpty) {
+                                  _startStripeFlow();
                                 } else {
                                   Get.snackbar(
-                                    'Payment failed',
-                                    paymentController
-                                            .errorMessage
-                                            .value
-                                            .isNotEmpty
-                                        ? paymentController.errorMessage.value
-                                        : 'Payment was not completed',
+                                    'Error',
+                                    'Missing transaction ID',
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    backgroundColor: Colors.red,
+                                    colorText: Colors.white,
                                   );
                                 }
                               },
                         child: paymentController.isProcessing.value
-                            ? const CircularProgressIndicator()
-                            : const Text('Pay Now'),
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
+                            : Text(
+                                "Pay Now",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
                     ),
 

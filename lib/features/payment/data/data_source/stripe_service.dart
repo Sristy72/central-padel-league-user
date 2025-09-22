@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
 import 'package:karlfive/core/common/constants/stripe_key.dart';
-import 'package:karlfive/features/payment/data/model/create_pay_request.dart';
+import 'package:karlfive/features/payment/data/model/create_pay_request_stripe.dart';
 
 class StripeService {
   StripeService._internal() {
