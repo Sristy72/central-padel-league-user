@@ -4,7 +4,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 
 import 'package:karlfive/core/network/api_client.dart';
 import 'package:karlfive/core/network/network_result.dart';
-import '../../../../core/network/constants/api_constants.dart';
+import 'package:karlfive/core/network/constants/api_constants.dart';
 import '../../domain/payment_repo_stripe.dart';
 import '../model/create_pay_response_stripe.dart';
 
@@ -35,27 +35,33 @@ class PaymentRepositoryStripeImpl implements PaymentRepository {
     );
   }
 
-  // @override
-  // NetworkResult<bool> confirmPayment(String paymentIntentId) {
-  //   return _apiClient.post<bool>(
-  //     ApiConstants.payment.confirmPayment,
-  //     data: {'paymentIntentId': paymentIntentId},
-  //     fromJsonT: (json) {
-  //       try {
-  //         final map = json as Map<String, dynamic>;
-  //         if (map.containsKey('success')) {
-  //           return map['success'] == true;
-  //         }
-  //         if (map.containsKey('data') &&
-  //             map['data'] is Map &&
-  //             (map['data'] as Map).containsKey('transactionId')) {
-  //           return true;
-  //         }
-  //       } catch (_) {}
-  //       return json == true;
-  //     },
-  //   );
-  // }
+  @override
+  NetworkResult<bool> confirmPayment(String paymentIntentId) {
+    return _apiClient.post<bool>(
+      ApiConstants.payment.confirmPayment,
+      data: {'paymentIntentId': paymentIntentId},
+      fromJsonT: (json) {
+        try {
+          // Common server patterns
+          if (json is bool) return json;
+          if (json is Map<String, dynamic>) {
+            if (json.containsKey('success')) return json['success'] == true;
+            if (json.containsKey('data') &&
+                json['data'] is Map &&
+                (json['data'] as Map).containsKey('transactionId')) {
+              return true;
+            }
+            if (json.containsKey('message')) {
+              // Some backends return { message: "...", success: true/false }
+              if ((json['success'] ?? false) == true) return true;
+            }
+          }
+        } catch (_) {}
+        // fallback
+        return json == true;
+      },
+    );
+  }
 
   @override
   NetworkResult<PaymentIntent> processPayment({

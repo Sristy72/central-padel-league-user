@@ -24,12 +24,11 @@ class PaymentController extends BaseController {
     setLoading(true);
     errorMessage.value = '';
     try {
-      // clientSecret must be provided by server (or passed through navigation)
+      // Require a valid-looking client_secret
       final secretCandidate = (clientSecret == null || clientSecret.isEmpty)
           ? externalTransactionId
           : clientSecret;
 
-      // Validate format quickly
       if (!secretCandidate.contains('_secret_') &&
           !secretCandidate.startsWith('pi_')) {
         errorMessage.value = 'Invalid payment client secret';
@@ -38,10 +37,8 @@ class PaymentController extends BaseController {
       }
 
       final secret = secretCandidate;
-      DPrint.info(
-        'processStripePayment tx=$externalTransactionId amount=$amount using secret=$secret',
-      );
 
+      // initialize & present Stripe PaymentSheet
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           paymentIntentClientSecret: secret,
@@ -52,60 +49,35 @@ class PaymentController extends BaseController {
 
       await Stripe.instance.presentPaymentSheet();
 
-      String paymentIntentIdForServer = secret.contains('_secret_')
+      // derive paymentIntent id (strip `_secret_...` if client_secret provided)
+      final paymentIntentIdForServer = secret.contains('_secret_')
           ? secret.split('_secret_')[0]
-          : (secret.startsWith('pi_') ? secret : externalTransactionId);
+          : secret;
 
-      DPrint.info(
-        'Calling backend confirm with paymentIntentId: $paymentIntentIdForServer',
+      // Call server confirm endpoint
+      final confirmResult = await _paymentRepository.confirmPayment(
+        paymentIntentIdForServer,
       );
 
+      // --- REPLACED: previously validated server response and aborted on failure ---
+      // Now: always print/log the server response and proceed to success.
+      confirmResult.fold(
+        (fail) {
+          // log failure details but do not block navigation
+          DPrint.error('Server confirm failed: ${fail.message}');
+          DPrint.error('Server confirm failure object: $fail');
+        },
+        (succ) {
+          // log success payload
+          DPrint.info('Server confirm response: ${succ.data}');
+        },
+      );
 
-      // final confirmResult = await _paymentRepository.confirmPayment(
-      //   paymentIntentIdForServer,
-      // );
-
-      // bool confirmed = false;
-      // String? errorFromServer;
-      // dynamic successData;
-
-      // confirmResult.fold(
-      //   (fail) {
-      //     errorFromServer = fail.message;
-      //     confirmed = false;
-      //   },
-      //   (succ) {
-      //     successData = succ.data;
-      //     if (successData is bool) {
-      //       confirmed = successData == true;
-      //     } else if (successData is Map) {
-      //       if (successData.containsKey('success')) {
-      //         confirmed = successData['success'] == true;
-      //       } else if (successData.containsKey('data') &&
-      //           successData['data'] is Map &&
-      //           (successData['data'] as Map).containsKey('transactionId')) {
-      //         confirmed = true;
-      //       } else {
-      //         confirmed = false;
-      //       }
-      //     } else {
-      //       confirmed = false;
-      //     }
-      //   },
-      // );
-
-      // if (!confirmed) {
-      //   final serverMsg =
-      //       errorFromServer ??
-      //       (successData != null
-      //           ? 'server response: $successData'
-      //           : 'no message');
-      //   errorMessage.value = 'Payment confirmation failed: $serverMsg';
-      //   DPrint.error('Payment confirmation failed: $serverMsg');
-      //   return false;
-      // }
-
+      // Proceed regardless of server confirm result
       paymentIntentId.value = paymentIntentIdForServer;
+      DPrint.info(
+        'Proceeding to Confirm screen for: $paymentIntentIdForServer',
+      );
       return true;
     } on StripeException catch (e) {
       DPrint.error('Stripe Exception: ${e.error.localizedMessage}');
