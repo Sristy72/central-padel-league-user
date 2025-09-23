@@ -2,16 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/common/widgets/app_bottom_navbar.dart';
 import 'package:karlfive/core/common/widgets/app_scaffold.dart';
+import 'package:karlfive/core/theme/app_buttoms.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
-import 'package:karlfive/features/home/presentation/screens/home_screen.dart';
 import 'package:karlfive/features/payment/presentation/screens/confirm_payment_screen.dart';
 import '../controller/payement_controller_stripe.dart';
 
 class PaymentScreen extends StatefulWidget {
   final String? transactionId;
+  final String? clientSecret; // added
   final double amount;
 
-  const PaymentScreen({super.key, this.transactionId, this.amount = 359.00});
+  const PaymentScreen({
+    super.key,
+    this.transactionId,
+    this.clientSecret,
+    this.amount = 359.00,
+  });
 
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
@@ -23,27 +29,23 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   void initState() {
     super.initState();
-    paymentController = Get.put(PaymentController());
-    // Start stripe flow after first frame so UI exists
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.transactionId != null && widget.transactionId!.isNotEmpty) {
-        _startStripeFlow();
-      } else {
-        debugPrint('No transactionId provided to PaymentScreen');
-      }
-    });
+    // Reuse the controller registered in DI instead of creating a new one
+    paymentController = Get.find<PaymentController>();
   }
 
   Future<void> _startStripeFlow() async {
     final tx = widget.transactionId!;
-    debugPrint(
-      'PaymentScreen: starting Stripe with transactionId: $tx, amount: ${widget.amount}',
-    );
+    // If server didn't provide clientSecret, treat transaction id as clientSecret
+    final clientSecret =
+        (widget.clientSecret == null || widget.clientSecret!.isEmpty)
+        ? tx
+        : widget.clientSecret!;
 
     final success = await paymentController.processStripePayment(
       amount: widget.amount,
       currency: 'usd',
       externalTransactionId: tx,
+      clientSecret: clientSecret, // pass to controller
     );
 
     debugPrint(
@@ -59,7 +61,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         colorText: Colors.white,
       );
 
-      // Optionally navigate to home after successful payment
+      // Optionally navigate to confirm screen after a short delay
       Future.delayed(Duration(seconds: 2), () {
         Get.offAll(() => ConfirmPaymentScreen());
       });
@@ -101,16 +103,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
           ],
         ),
       ),
-      body: Obx(() {
-        return Column(
-          children: [
-            const SizedBox(height: 28),
-            Expanded(
-              child: Container(
+      body: Column(
+        children: [
+          Expanded(
+            child: Obx(() {
+              return Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Spacer(),
                     Text(
                       "Summary",
                       style: TextStyle(
@@ -141,7 +143,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     Divider(color: Color(0xff282828)),
                     InkWell(
                       onTap: () {
-                        Get.offAll(() => HomeScreen());
+                        Get.offAll(() => ConfirmPaymentScreen());
                       },
                       child: Row(
                         children: [
@@ -188,67 +190,76 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     const SizedBox(height: 20),
 
                     // Loading indicator
-                    if (paymentController.isProcessing.value)
+                    if (paymentController.isLoading.value)
                       const Center(child: CircularProgressIndicator()),
 
                     const Spacer(),
-
-                    // Manual retry button
-                    Center(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          minimumSize: Size(200, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                        ),
-                        onPressed: paymentController.isProcessing.value
-                            ? null
-                            : () {
-                                if (widget.transactionId != null &&
-                                    widget.transactionId!.isNotEmpty) {
-                                  _startStripeFlow();
-                                } else {
-                                  Get.snackbar(
-                                    'Error',
-                                    'Missing transaction ID',
-                                    snackPosition: SnackPosition.BOTTOM,
-                                    backgroundColor: Colors.red,
-                                    colorText: Colors.white,
-                                  );
-                                }
-                              },
-                        child: paymentController.isProcessing.value
-                            ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation(
-                                    Colors.white,
-                                  ),
-                                ),
-                              )
-                            : Text(
-                                "Pay Now",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
                   ],
                 ),
+              );
+            }),
+          ),
+
+          // Ensure a visible Pay Now button wired to start Stripe
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: SizedBox(
+              width: double.infinity,
+              child: PrimaryButton(
+                text: 'Pay Now',
+                onPressed: () async {
+                  // Validate
+                  if (widget.transactionId == null ||
+                      widget.transactionId!.isEmpty) {
+                    Get.snackbar(
+                      'Error',
+                      'Transaction id missing',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                    return;
+                  }
+                  if (widget.clientSecret == null ||
+                      widget.clientSecret!.isEmpty) {
+                    Get.snackbar(
+                      'Error',
+                      'Payment client secret missing',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                    return;
+                  }
+
+                  // Call controller to present real Stripe PaymentSheet
+                  final success = await paymentController.processStripePayment(
+                    amount: widget.amount,
+                    currency: 'usd',
+                    externalTransactionId: widget.transactionId!,
+                    clientSecret: widget.clientSecret,
+                  );
+
+                  if (success) {
+                    // navigate to confirmation
+                    Get.offAll(() => const ConfirmPaymentScreen());
+                  } else {
+                    Get.snackbar(
+                      'Payment Error',
+                      paymentController.errorMessage.value.isNotEmpty
+                          ? paymentController.errorMessage.value
+                          : 'Payment failed. Please try again.',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                  }
+                },
               ),
             ),
-          ],
-        );
-      }),
+          ),
+        ],
+      ),
       bottomNavigationBar: AppBottomNavBar(currentIndex: 0),
     );
   }

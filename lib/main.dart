@@ -13,9 +13,17 @@ import 'package:karlfive/features/payment/presentation/screens/payment_font_scre
 import 'package:karlfive/features/payment/presentation/screens/payment_screen.dart';
 import 'package:karlfive/features/team_members_profile/models/team_member_model.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_info_screen.dart';
+import 'package:karlfive/core/common/constants/stripe_key.dart';
 
 void main() async {
   await AppInitializer.initializeApp();
+
+ 
+  Stripe.publishableKey = StripeKey
+      .publishableKey; 
+  Stripe.merchantIdentifier =
+      'merchant.com.yourapp';
+  await Stripe.instance.applySettings();
 
   runApp(const MyApp());
 }

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/common/constants/app_images.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
+import 'dart:convert';
+import '../../data/model/create_pay_response_stripe.dart';
 import '../../data/model/create_payment_requesr.dart';
 import '../../domain/payment_repo.dart';
 import '../controller/payment_controller.dart'; // PaymentApiController
@@ -42,7 +44,6 @@ class _PaymentDialogState extends State<PaymentDialog> {
       team: '68cba254cf156326215b0d7a',
     );
 
-    // Call repository directly to inspect failure/success
     final result = await _repo.createPayment(req);
 
     result.fold(
@@ -51,13 +52,11 @@ class _PaymentDialogState extends State<PaymentDialog> {
           _isProcessing = false;
         });
 
-        // Print full failure to console for debugging
         if (kDebugMode) {
           debugPrint('CreatePayment failed: ${fail.message}');
           debugPrint('CreatePayment failure object: $fail');
         }
 
-        // Show server message if available
         Get.snackbar(
           'Payment Error',
           fail.message.isNotEmpty
@@ -69,27 +68,26 @@ class _PaymentDialogState extends State<PaymentDialog> {
       },
       (success) {
         final tx = success.data.transactionId;
-        if (kDebugMode) {
-          debugPrint('CreatePayment success raw: ${success.data}');
-          debugPrint('CreatePayment message: ${success.message}');
-          debugPrint('CreatePayment transactionId: $tx');
-        }
+        // createPayment response now includes clientSecret (nullable)
+        // If backend didn't return a clientSecret, use transaction id as fallback
+        final clientSecret =
+            (success.data.clientSecret == null ||
+                success.data.clientSecret!.isEmpty)
+            ? tx
+            : success.data.clientSecret;
 
         setState(() {
           _transactionId = tx;
           _isProcessing = false;
         });
 
-        Get.snackbar(
-          'Success',
-          'Server payment created. transactionId: $tx',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-        );
-
-        // Navigate to PaymentScreen with server transaction id
+        // Navigate to PaymentScreen with server transaction id and client secret
         Get.to(
-          () => PaymentScreen(transactionId: tx, amount: req.amount.toDouble()),
+          () => PaymentScreen(
+            transactionId: tx,
+            amount: req.amount.toDouble(),
+            clientSecret: clientSecret,
+          ),
           transition: Transition.rightToLeft,
         );
       },
@@ -121,6 +119,8 @@ class _PaymentDialogState extends State<PaymentDialog> {
               ],
             ),
             const SizedBox(height: 16),
+
+            // Simple method selector
             GestureDetector(
               onTap: () => setState(() => _selectedMethod = 'PayPal'),
               child: Container(
@@ -130,49 +130,46 @@ class _PaymentDialogState extends State<PaymentDialog> {
                 ),
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: _selectedMethod == "PayPal"
+                    color: _selectedMethod == 'PayPal'
                         ? Colors.blue
-                        : Colors.grey.shade300,
+                        : Colors.grey,
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   children: [
-                    Image.asset(AppImages.paypalImage, height: 30),
-                    const Spacer(),
-                    Radio<String>(
-                      value: "PayPal",
-                      groupValue: _selectedMethod,
-                      onChanged: (v) => setState(() => _selectedMethod = v!),
-                      activeColor: Colors.blue,
+                    Image.asset(
+                      "assets/images/paypal.png",
+                      width: 32,
+                      height: 20,
+                      errorBuilder: (_, __, ___) => const Icon(Icons.payment),
                     ),
+                    const SizedBox(width: 12),
+                    const Text(
+                      'PayPal',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const Spacer(),
+                    if (_selectedMethod == 'PayPal')
+                      const Icon(Icons.check, color: Colors.blue),
                   ],
                 ),
               ),
             ),
+
             const SizedBox(height: 24),
+
             if (_isProcessing) const CircularProgressIndicator(),
             if (!_isProcessing)
               SizedBox(
                 width: 129,
                 height: 50,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.paypalColor,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                  ),
                   onPressed: _onPayNow,
-                  child: const Text(
-                    "Pay Now",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: const Text('Pay Now'),
                 ),
               ),
             const SizedBox(height: 12),

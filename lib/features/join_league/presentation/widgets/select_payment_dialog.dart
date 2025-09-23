@@ -103,8 +103,9 @@ class SelectPaymentDialog extends StatelessWidget {
                 width: double.infinity,
                 child: PrimaryButton(
                   onPressed: () {
-                    // Close dialog then open PaymentDialog so server payment flow runs
+                    // Close this selection dialog then open the server payment dialog
                     Navigator.of(context).pop();
+                    // Show PaymentDialog which calls createPayment -> then navigates to PaymentScreen
                     showDialog(
                       context: context,
                       barrierDismissible: false,
