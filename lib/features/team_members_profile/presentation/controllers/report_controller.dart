@@ -1,8 +1,6 @@
 import 'dart:io';
-import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 import '../../../../core/network/services/multiple_form_data_manager.dart';
-import '../../data/models/report_post_model.dart';
 import '../../domain/repo/contact_us_repo.dart';
 
 

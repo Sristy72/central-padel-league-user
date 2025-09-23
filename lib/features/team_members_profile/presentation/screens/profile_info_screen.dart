@@ -50,7 +50,10 @@ class ProfileInfoScreen extends StatelessWidget {
                 imageUrl: member.imageUrl,
               );
 
-              Get.to(EditProfileInfoScreen(member: editModel));
+              // Navigate to edit screen and refresh profile when returning
+              Get.to(EditProfileInfoScreen(member: editModel))?.then((_) async {
+                await controller.fetchProfile();
+              });
             },
             icon: Image.asset(
               'assets/icons/profile_Edit.png',

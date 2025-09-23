@@ -1,66 +1,41 @@
 class EditProfileModel {
-  String firstName;
-  String lastName;
-  String email;
-  String phone;
-  String birthday;
-  String gender;
-  String imageUrl;
+  final String firstName;
+  final String lastName;
+  final String email;
+  final String phone;
+  final String birthday;
+  final String gender;
+  final String imageUrl;
 
   EditProfileModel({
-    required this.firstName,
-    required this.lastName,
-    required this.email,
-    required this.phone,
-    required this.birthday,
-    required this.gender,
-    required this.imageUrl,
+    this.firstName = '',
+    this.lastName = '',
+    this.email = '',
+    this.phone = '',
+    this.birthday = '',
+    this.gender = '',
+    this.imageUrl = 'assets/images/profile.png',
   });
 
-  // Optional: copyWith method for easy updates
-  EditProfileModel copyWith({
-    String? firstName,
-    String? lastName,
-    String? email,
-    String? phone,
-    String? birthday,
-    String? gender,
-    String? imageUrl,
-  }) {
+  factory EditProfileModel.fromJson(Map<String, dynamic> json) {
     return EditProfileModel(
-      firstName: firstName ?? this.firstName,
-      lastName: lastName ?? this.lastName,
-      email: email ?? this.email,
-      phone: phone ?? this.phone,
-      birthday: birthday ?? this.birthday,
-      gender: gender ?? this.gender,
-      imageUrl: imageUrl ?? this.imageUrl,
+      firstName: json['firstName'] ?? '',
+      lastName: json['lastName'] ?? '',
+      email: json['email'] ?? '',
+      phone: json['phoneNumber'] ?? json['phone'] ?? '',
+      birthday: json['birthday'] ?? '',
+      gender: json['gender'] ?? '',
+      imageUrl: json['profileImage'] ?? json['imageUrl'] ?? 'assets/images/profile.png',
     );
   }
 
-  // Optional: toMap & fromMap for JSON serialization
-  Map<String, dynamic> toMap() {
-    return {
-      'firstName': firstName,
-      'lastName': lastName,
-      'email': email,
-      'phone': phone,
-      'birthday': birthday,
-      'gender': gender,
-      'imageUrl': imageUrl,
-    };
-  }
-
-  factory EditProfileModel.fromMap(Map<String, dynamic> map) {
-    return EditProfileModel(
-      firstName: map['firstName'] ?? '',
-      lastName: map['lastName'] ?? '',
-      email: map['email'] ?? '',
-      phone: map['phone'] ?? '',
-      birthday: map['birthday'] ?? '',
-      gender: map['gender'] ?? '',
-      imageUrl: map['imageUrl'] ?? '',
-    );
-  }
+  Map<String, dynamic> toJson() => {
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': email,
+        'phone': phone,
+        'birthday': birthday,
+        'gender': gender,
+        'profileImage': imageUrl,
+      };
 }
-

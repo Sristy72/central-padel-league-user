@@ -10,11 +10,14 @@ import '../../features/team_members_profile/domain/repo/contact_us_repo.dart';
 import 'package:karlfive/features/team_members_profile/data/repo/user_profile_repo_impl.dart';
 import 'package:karlfive/features/team_members_profile/domain/repo/user_profile_repo.dart';
 import 'package:karlfive/features/team_members_profile/presentation/controllers/profile_controller.dart';
+import 'package:karlfive/features/team_members_profile/presentation/controllers/edit_profile_controller.dart';
 
 void setupRepository() {
   Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl(apiClient: Get.find()));
 
-  Get.lazyPut<UserInfoRepo>(() => UserInfoRepoImpl(apiClient: Get.find()));
+  Get.lazyPut<UserInfoRepo>(() => UserInfoRepoImpl(apiClient: Get.find()),
+     fenix: true,
+  );
 
   Get.lazyPut<JoinLeagueRepository>(
     () => JoinLeagueRepositoryImpl(apiClient: Get.find()),
@@ -33,6 +36,12 @@ void setupRepository() {
 
   Get.lazyPut<ProfileController>(
     () => ProfileController(repository: Get.find()),
+    fenix: true,
+  );
+
+  // Edit profile controller (uses existing UserInfoRepo)
+  Get.lazyPut(
+    () => EditProfileController(Get.find<UserInfoRepo>()),
     fenix: true,
   );
 }
