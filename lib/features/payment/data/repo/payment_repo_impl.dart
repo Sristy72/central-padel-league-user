@@ -35,21 +35,34 @@ class PaymentRepositoryStripeImpl implements PaymentRepository {
     );
   }
 
-  @override
-  NetworkResult<bool> confirmPayment(String paymentIntentId) {
-    return _apiClient.post<bool>(
-      '${ApiConstants.payment.createPayment}/confirm', 
-      data: {'paymentIntentId': paymentIntentId},
-      fromJsonT: (json) => json == true ? true : (json as bool),
-    );
-  }
+  // @override
+  // NetworkResult<bool> confirmPayment(String paymentIntentId) {
+  //   return _apiClient.post<bool>(
+  //     ApiConstants.payment.confirmPayment,
+  //     data: {'paymentIntentId': paymentIntentId},
+  //     fromJsonT: (json) {
+  //       try {
+  //         final map = json as Map<String, dynamic>;
+  //         if (map.containsKey('success')) {
+  //           return map['success'] == true;
+  //         }
+  //         if (map.containsKey('data') &&
+  //             map['data'] is Map &&
+  //             (map['data'] as Map).containsKey('transactionId')) {
+  //           return true;
+  //         }
+  //       } catch (_) {}
+  //       return json == true;
+  //     },
+  //   );
+  // }
 
   @override
   NetworkResult<PaymentIntent> processPayment({
     required String clientSecret,
   }) async {
     return _apiClient.post<PaymentIntent>(
-      '${ApiConstants.payment.createPayment}/process', 
+      '${ApiConstants.payment.createPayment}/process',
       data: {'clientSecret': clientSecret},
       fromJsonT: (json) =>
           throw UnsupportedError('processPayment: implement mapping'),

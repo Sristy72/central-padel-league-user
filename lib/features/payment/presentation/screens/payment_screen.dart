@@ -9,7 +9,7 @@ import '../controller/payement_controller_stripe.dart';
 
 class PaymentScreen extends StatefulWidget {
   final String? transactionId;
-  final String? clientSecret; // added
+  final String? clientSecret;
   final double amount;
 
   const PaymentScreen({
@@ -29,13 +29,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   void initState() {
     super.initState();
-    // Reuse the controller registered in DI instead of creating a new one
     paymentController = Get.find<PaymentController>();
   }
 
   Future<void> _startStripeFlow() async {
     final tx = widget.transactionId!;
-    // If server didn't provide clientSecret, treat transaction id as clientSecret
     final clientSecret =
         (widget.clientSecret == null || widget.clientSecret!.isEmpty)
         ? tx
@@ -45,7 +43,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       amount: widget.amount,
       currency: 'usd',
       externalTransactionId: tx,
-      clientSecret: clientSecret, // pass to controller
+      clientSecret: clientSecret,
     );
 
     debugPrint(
@@ -61,7 +59,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
         colorText: Colors.white,
       );
 
-      // Optionally navigate to confirm screen after a short delay
       Future.delayed(Duration(seconds: 2), () {
         Get.offAll(() => ConfirmPaymentScreen());
       });
@@ -112,7 +109,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Spacer(),
+                    const SizedBox(height: 28),
                     Text(
                       "Summary",
                       style: TextStyle(
@@ -199,14 +196,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
               );
             }),
           ),
-
-          // Ensure a visible Pay Now button wired to start Stripe
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: SizedBox(
               width: double.infinity,
               child: PrimaryButton(
                 text: 'Pay Now',
+                backgroundColor: AppColors.paypalColor,
                 onPressed: () async {
                   // Validate
                   if (widget.transactionId == null ||

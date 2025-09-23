@@ -11,7 +11,7 @@ abstract class PaymentRepository {
     required double amount,
   });
 
-  NetworkResult<bool> confirmPayment(String paymentIntentId);
+  // NetworkResult<bool> confirmPayment(String paymentIntentId);
 
   NetworkResult<PaymentIntent> processPayment({
     required String clientSecret,

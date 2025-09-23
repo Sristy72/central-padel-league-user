@@ -1,14 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:karlfive/core/common/constants/app_images.dart';
-import 'package:karlfive/core/theme/app_colors.dart';
-import 'dart:convert';
-import '../../data/model/create_pay_response_stripe.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../data/model/create_payment_requesr.dart';
 import '../../domain/payment_repo.dart';
-import '../controller/payment_controller.dart'; // PaymentApiController
-import '../controller/payement_controller_stripe.dart'; // Stripe PaymentController
 import 'payment_screen.dart';
 
 class PaymentDialog extends StatefulWidget {
@@ -68,8 +63,6 @@ class _PaymentDialogState extends State<PaymentDialog> {
       },
       (success) {
         final tx = success.data.transactionId;
-        // createPayment response now includes clientSecret (nullable)
-        // If backend didn't return a clientSecret, use transaction id as fallback
         final clientSecret =
             (success.data.clientSecret == null ||
                 success.data.clientSecret!.isEmpty)
@@ -81,7 +74,6 @@ class _PaymentDialogState extends State<PaymentDialog> {
           _isProcessing = false;
         });
 
-        // Navigate to PaymentScreen with server transaction id and client secret
         Get.to(
           () => PaymentScreen(
             transactionId: tx,
@@ -104,9 +96,8 @@ class _PaymentDialogState extends State<PaymentDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Title + Close
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
                   "Select Payment Method",
@@ -120,7 +111,6 @@ class _PaymentDialogState extends State<PaymentDialog> {
             ),
             const SizedBox(height: 16),
 
-            // Simple method selector
             GestureDetector(
               onTap: () => setState(() => _selectedMethod = 'PayPal'),
               child: Container(
@@ -140,18 +130,18 @@ class _PaymentDialogState extends State<PaymentDialog> {
                   children: [
                     Image.asset(
                       "assets/images/paypal.png",
-                      width: 32,
-                      height: 20,
+                      width: 60,
+                      height: 33,
                       errorBuilder: (_, __, ___) => const Icon(Icons.payment),
                     ),
-                    const SizedBox(width: 12),
-                    const Text(
-                      'PayPal',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    // const SizedBox(width: 12),
+                    // const Text(
+                    //   '',
+                    //   style: TextStyle(
+                    //     fontSize: 16,
+                    //     fontWeight: FontWeight.w500,
+                    //   ),
+                    // ),
                     const Spacer(),
                     if (_selectedMethod == 'PayPal')
                       const Icon(Icons.check, color: Colors.blue),
@@ -168,8 +158,22 @@ class _PaymentDialogState extends State<PaymentDialog> {
                 width: 129,
                 height: 50,
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.paypalColor,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
                   onPressed: _onPayNow,
-                  child: const Text('Pay Now'),
+                  child: const Text(
+                    "Pay Now",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             const SizedBox(height: 12),

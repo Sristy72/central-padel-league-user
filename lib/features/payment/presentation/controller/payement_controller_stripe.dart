@@ -15,27 +15,33 @@ class PaymentController extends BaseController {
   final RxString paymentIntentId = ''.obs;
   final RxString errorMessage = ''.obs;
 
-
   Future<bool> processStripePayment({
     required double amount,
     required String currency,
     required String externalTransactionId,
-    String? clientSecret, 
+    String? clientSecret,
   }) async {
     setLoading(true);
     errorMessage.value = '';
     try {
-      final secret = (clientSecret == null || clientSecret.isEmpty)
+      // clientSecret must be provided by server (or passed through navigation)
+      final secretCandidate = (clientSecret == null || clientSecret.isEmpty)
           ? externalTransactionId
           : clientSecret;
 
+      // Validate format quickly
+      if (!secretCandidate.contains('_secret_') &&
+          !secretCandidate.startsWith('pi_')) {
+        errorMessage.value = 'Invalid payment client secret';
+        DPrint.error('Invalid client_secret provided: $secretCandidate');
+        return false;
+      }
+
+      final secret = secretCandidate;
       DPrint.info(
         'processStripePayment tx=$externalTransactionId amount=$amount using secret=$secret',
       );
 
-      paymentIntentId.value = externalTransactionId;
-
-      // Initialize PaymentSheet with provided/fallback secret
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           paymentIntentClientSecret: secret,
@@ -46,6 +52,60 @@ class PaymentController extends BaseController {
 
       await Stripe.instance.presentPaymentSheet();
 
+      String paymentIntentIdForServer = secret.contains('_secret_')
+          ? secret.split('_secret_')[0]
+          : (secret.startsWith('pi_') ? secret : externalTransactionId);
+
+      DPrint.info(
+        'Calling backend confirm with paymentIntentId: $paymentIntentIdForServer',
+      );
+
+
+      // final confirmResult = await _paymentRepository.confirmPayment(
+      //   paymentIntentIdForServer,
+      // );
+
+      // bool confirmed = false;
+      // String? errorFromServer;
+      // dynamic successData;
+
+      // confirmResult.fold(
+      //   (fail) {
+      //     errorFromServer = fail.message;
+      //     confirmed = false;
+      //   },
+      //   (succ) {
+      //     successData = succ.data;
+      //     if (successData is bool) {
+      //       confirmed = successData == true;
+      //     } else if (successData is Map) {
+      //       if (successData.containsKey('success')) {
+      //         confirmed = successData['success'] == true;
+      //       } else if (successData.containsKey('data') &&
+      //           successData['data'] is Map &&
+      //           (successData['data'] as Map).containsKey('transactionId')) {
+      //         confirmed = true;
+      //       } else {
+      //         confirmed = false;
+      //       }
+      //     } else {
+      //       confirmed = false;
+      //     }
+      //   },
+      // );
+
+      // if (!confirmed) {
+      //   final serverMsg =
+      //       errorFromServer ??
+      //       (successData != null
+      //           ? 'server response: $successData'
+      //           : 'no message');
+      //   errorMessage.value = 'Payment confirmation failed: $serverMsg';
+      //   DPrint.error('Payment confirmation failed: $serverMsg');
+      //   return false;
+      // }
+
+      paymentIntentId.value = paymentIntentIdForServer;
       return true;
     } on StripeException catch (e) {
       DPrint.error('Stripe Exception: ${e.error.localizedMessage}');
@@ -102,15 +162,15 @@ class PaymentController extends BaseController {
     }
   }
 
-  NetworkResult<bool> confirmPayment(String paymentIntentId) async {
-    setLoading(true);
-    try {
-      final result = await _paymentRepository.confirmPayment(paymentIntentId);
+  // NetworkResult<bool> confirmPayment(String paymentIntentId) async {
+  //   setLoading(true);
+  //   try {
+  //     // final result = await _paymentRepository.confirmPayment(paymentIntentId);
 
-      DPrint.info("Confirm Payment result: $result");
-      return result;
-    } finally {
-      setLoading(false);
-    }
-  }
+  //     DPrint.info("Confirm Payment result: $result");
+  //     return result;
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
 }
