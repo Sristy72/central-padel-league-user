@@ -3,9 +3,10 @@ import 'package:get/get.dart';
 import 'package:karlfive/features/home/presentation/screens/home_screen.dart';
 import 'package:karlfive/features/league/presentation/screens/leagues_screen.dart';
 import 'package:karlfive/features/notification/presentation/screen/notification_dummy_screen.dart';
-import 'package:karlfive/features/team_members_profile/models/team_member_model.dart';
+
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_info_screen.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../features/team_members_profile/data/models/team_member_model.dart';
 
 // Create a GetX controller for navigation
 class BottomNavController extends GetxController {
@@ -27,7 +28,7 @@ class AppBottomNavBar extends StatelessWidget {
     final BottomNavController controller = Get.put(BottomNavController());
     controller.currentIndex.value = currentIndex;
 
-    Widget _buildNavItem({
+    Widget buildNavItem({
       required int index,
       required String icon,
       required String activeIcon,
@@ -120,7 +121,7 @@ class AppBottomNavBar extends StatelessWidget {
 
           items: [
             BottomNavigationBarItem(
-              icon: _buildNavItem(
+              icon: buildNavItem(
                 index: 0,
                 icon: "assets/images/nav_home_off.png",
                 activeIcon: "assets/images/nav_home_on.png",
@@ -129,7 +130,7 @@ class AppBottomNavBar extends StatelessWidget {
               label: '',
             ),
             BottomNavigationBarItem(
-              icon: _buildNavItem(
+              icon: buildNavItem(
                 index: 1,
                 icon: "assets/images/nav_match_off.png",
                 activeIcon: "assets/images/nav_match_on.png",
@@ -138,7 +139,7 @@ class AppBottomNavBar extends StatelessWidget {
               label: '',
             ),
             BottomNavigationBarItem(
-              icon: _buildNavItem(
+              icon: buildNavItem(
                 index: 2,
                 icon: "assets/images/nav_noti_off.png",
                 activeIcon: "assets/images/nav_noti_on.png",
@@ -147,7 +148,7 @@ class AppBottomNavBar extends StatelessWidget {
               label: '',
             ),
             BottomNavigationBarItem(
-              icon: _buildNavItem(
+              icon: buildNavItem(
                 index: 3,
                 icon: "assets/images/nav_prof_off.png",
                 activeIcon: "assets/images/nav_prof_on.png",

@@ -4,8 +4,18 @@ import 'package:karlfive/features/EntireScreen/domain/repo/user_info_repo.dart';
 import 'package:karlfive/features/auth/data/repo/auth_repo_impl.dart';
 import 'package:karlfive/features/auth/domain/repo/auth_repo.dart';
 import 'package:karlfive/features/join_league/data/repositories/join_league/join_league.dart';
-
 import 'package:karlfive/features/join_league/domain/repo/team_repo.dart';
+
+import 'package:karlfive/features/team_members_profile/data/repo/contact_us_repo_impl.dart';
+import '../../features/team_members_profile/domain/repo/contact_us_repo.dart';
+import 'package:karlfive/features/team_members_profile/data/repo/user_profile_repo_impl.dart';
+import 'package:karlfive/features/team_members_profile/domain/repo/user_profile_repo.dart';
+import 'package:karlfive/features/team_members_profile/presentation/controllers/profile_controller.dart';
+import 'package:karlfive/features/team_members_profile/presentation/controllers/edit_profile_controller.dart';
+import 'package:karlfive/features/team_details/data/repo/team_repo_impl.dart';
+import 'package:karlfive/features/team_details/domain/repo/team_repo.dart';
+import 'package:karlfive/features/team_details/presentation/controllers/team_controller.dart';
+
 import 'package:karlfive/features/payment/data/repo/payment_repo_impl.dart';
 import 'package:karlfive/features/payment/domain/payment_repo_stripe.dart';
 import 'package:karlfive/features/payment/domain/payment_repo.dart';
@@ -16,10 +26,46 @@ import 'package:karlfive/features/payment/data/repo/payment_repo_impl.dart'
 void setupRepository() {
   Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl(apiClient: Get.find()));
 
-  Get.lazyPut<UserInfoRepo>(() => UserInfoRepoImpl(apiClient: Get.find()));
+  Get.lazyPut<UserInfoRepo>(() => UserInfoRepoImpl(apiClient: Get.find()),
+
+  );
 
   Get.lazyPut<JoinLeagueRepository>(
     () => JoinLeagueRepositoryImpl(apiClient: Get.find()),
+    fenix: true
+  );
+
+  Get.lazyPut<ContactUsRepo>(
+        () => ContactUsRepoImpl(apiClient: Get.find()),
+    fenix: true
+  );
+
+  // User profile repo & controller
+  Get.lazyPut<UserProfileRepo>(
+    () => UserProfileRepoImpl(apiClient: Get.find()),
+    fenix: true,
+  );
+
+  Get.lazyPut<ProfileController>(
+    () => ProfileController(repository: Get.find()),
+    fenix: true,
+  );
+
+  // Edit profile controller (uses existing UserInfoRepo)
+  Get.lazyPut(
+    () => EditProfileController(Get.find<UserInfoRepo>()),
+    fenix: true,
+  );
+
+  // Team details
+  Get.lazyPut<TeamRepo>(
+    () => TeamRepoImpl(apiClient: Get.find()),
+    fenix: true,
+  );
+
+  Get.lazyPut<TeamController>(
+    () => TeamController(repo: Get.find()),
+    fenix: true,
   );
 
   // Register server-side payment API repository (used by CreatePayment API flow)

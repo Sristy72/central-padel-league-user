@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:karlfive/features/auth/data/models/auth_response_model.dart';
 import 'package:karlfive/features/auth/data/models/login_request_model.dart';
