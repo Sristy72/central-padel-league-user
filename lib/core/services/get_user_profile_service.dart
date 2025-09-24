@@ -18,8 +18,8 @@ class GetUserProfileService extends BaseController {
 
     result.fold((fail) {
 
-    }, (succees) {
-      _userInfo.value = succees.data;
+    }, (success) {
+      _userInfo.value = success.data;
     });
   }
 }

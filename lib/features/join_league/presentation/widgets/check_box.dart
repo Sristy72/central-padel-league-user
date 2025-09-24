@@ -8,7 +8,7 @@ class CheckRow extends StatelessWidget {
   final String label;
   final ValueChanged<bool?> onChanged;
 
-  const CheckRow({
+  const CheckRow({super.key, 
     required this.valueListenable,
     required this.label,
     required this.onChanged,

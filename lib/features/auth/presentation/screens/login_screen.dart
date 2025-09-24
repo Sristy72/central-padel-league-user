@@ -209,11 +209,11 @@ class _LoginScreenState extends State<LoginScreen>
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(2),
                                     ),
-                                    side: MaterialStateBorderSide.resolveWith((
+                                    side: WidgetStateBorderSide.resolveWith((
                                       states,
                                     ) {
                                       if (states.contains(
-                                        MaterialState.selected,
+                                        WidgetState.selected,
                                       )) {
                                         //  Border when checked
                                         return BorderSide(
