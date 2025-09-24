@@ -13,7 +13,6 @@ import 'package:karlfive/core/common/constants/stripe_key.dart';
 
 void main() async {
   await AppInitializer.initializeApp();
-
  
   Stripe.publishableKey = StripeKey
       .publishableKey; 
