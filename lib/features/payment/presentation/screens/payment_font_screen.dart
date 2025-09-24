@@ -7,7 +7,10 @@ import '../../domain/payment_repo.dart';
 import 'payment_screen.dart';
 
 class PaymentDialog extends StatefulWidget {
-  const PaymentDialog({super.key});
+  final String userID;
+  final String leagueID;
+  final String teamID;
+  const PaymentDialog({super.key, required this.userID, required this.leagueID, required this.teamID});
 
   @override
   State<PaymentDialog> createState() => _PaymentDialogState();
@@ -33,10 +36,10 @@ class _PaymentDialogState extends State<PaymentDialog> {
     });
 
     final req = CreatePaymentRequest(
-      userId: '68a9310b60a8cc4db5a8b6cf',
-      league: '68a93e86620256fd9d6fe200',
+      userId: widget.userID,
+      league: widget.leagueID,
       amount: 25,
-      team: '68cba254cf156326215b0d7a',
+      team: widget.teamID,
     );
 
     final result = await _repo.createPayment(req);

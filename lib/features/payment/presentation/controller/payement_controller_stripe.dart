@@ -48,8 +48,6 @@ class PaymentController extends BaseController {
       );
 
       await Stripe.instance.presentPaymentSheet();
-
-      // derive paymentIntent id (strip `_secret_...` if client_secret provided)
       final paymentIntentIdForServer = secret.contains('_secret_')
           ? secret.split('_secret_')[0]
           : secret;
@@ -58,9 +56,6 @@ class PaymentController extends BaseController {
       final confirmResult = await _paymentRepository.confirmPayment(
         paymentIntentIdForServer,
       );
-
-      // --- REPLACED: previously validated server response and aborted on failure ---
-      // Now: always print/log the server response and proceed to success.
       confirmResult.fold(
         (fail) {
           // log failure details but do not block navigation
@@ -133,16 +128,4 @@ class PaymentController extends BaseController {
       setLoading(false);
     }
   }
-
-  // NetworkResult<bool> confirmPayment(String paymentIntentId) async {
-  //   setLoading(true);
-  //   try {
-  //     // final result = await _paymentRepository.confirmPayment(paymentIntentId);
-
-  //     DPrint.info("Confirm Payment result: $result");
-  //     return result;
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }
 }
