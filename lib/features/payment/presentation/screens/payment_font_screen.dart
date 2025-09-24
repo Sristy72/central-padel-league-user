@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,7 +12,14 @@ class PaymentDialog extends StatefulWidget {
   final String userID;
   final String leagueID;
   final String teamID;
-  const PaymentDialog({super.key, required this.userID, required this.leagueID, required this.teamID});
+  final String amount;
+  const PaymentDialog({
+    super.key,
+    required this.userID,
+    required this.leagueID,
+    required this.teamID,
+    required this.amount,
+  });
 
   @override
   State<PaymentDialog> createState() => _PaymentDialogState();
@@ -38,7 +47,8 @@ class _PaymentDialogState extends State<PaymentDialog> {
     final req = CreatePaymentRequest(
       userId: widget.userID,
       league: widget.leagueID,
-      amount: 25,
+      // amount:6;
+      amount: double.tryParse(widget.amount) ?? 0.0,
       team: widget.teamID,
     );
 

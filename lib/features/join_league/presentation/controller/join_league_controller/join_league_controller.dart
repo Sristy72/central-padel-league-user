@@ -3,7 +3,6 @@ import 'package:flutx_core/flutx_core.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:karlfive/features/join_league/presentation/screens/otp_screen/otp_verification_screen.dart';
 import '../../../../../core/base/base_controller.dart';
 import '../../../../../core/network/services/multiple_form_data_manager.dart';
 import '../../../../payment/presentation/screens/payment_font_screen.dart';
@@ -153,11 +152,16 @@ class JoinLeagueController extends BaseController {
         },
         (success) {
           DPrint.log("Application submitted: ${success.message}");
+          final selectedLeagueModel = leagues.firstWhere(
+            (league) => league.id == selectedLeague.value,
+          );
+          final amount = double.tryParse(selectedLeagueModel.price ?? '0.0') ?? 0.0;
           Get.to(
             () => PaymentDialog(
               userID: success.data.user,
               leagueID: success.data.league,
               teamID: success.data.id,
+              amount: amount.toString(),
             ),
             transition: Transition.rightToLeft,
           );
