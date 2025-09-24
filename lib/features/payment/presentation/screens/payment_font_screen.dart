@@ -137,14 +137,6 @@ class _PaymentDialogState extends State<PaymentDialog> {
                       height: 33,
                       errorBuilder: (_, __, ___) => const Icon(Icons.payment),
                     ),
-                    // const SizedBox(width: 12),
-                    // const Text(
-                    //   '',
-                    //   style: TextStyle(
-                    //     fontSize: 16,
-                    //     fontWeight: FontWeight.w500,
-                    //   ),
-                    // ),
                     const Spacer(),
                     if (_selectedMethod == 'PayPal')
                       const Icon(Icons.check, color: Colors.blue),
