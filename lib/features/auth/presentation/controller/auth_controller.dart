@@ -19,6 +19,7 @@ import 'package:karlfive/features/auth/presentation/screens/set_new_password_scr
 import 'package:karlfive/features/join_league/presentation/screens/form_screen/join_league_screen.dart';
 
 import '../../../../core/network/services/auth_storage_service.dart';
+import '../../../home/presentation/screens/home_screen.dart';
 
 class AuthController extends BaseController {
   final AuthRepository _authRepository;

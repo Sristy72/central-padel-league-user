@@ -1,7 +1,6 @@
 // features/league/presentation/widgets/league_card.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/utils.dart';
 import 'package:karlfive/features/league/presentation/screens/league_details_screen.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../models/league_model.dart'; // or your model path

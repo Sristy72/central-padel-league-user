@@ -7,9 +7,11 @@ import '../../data/models/standing_row_data.dart';
 import '../widgets/match_card_widget.dart';
 import '../widgets/member_widget.dart';
 import '../widgets/standing_table_widget.dart';
+import '../controllers/team_controller.dart';
 
 class TeamDetailsScreen extends StatefulWidget {
-  const TeamDetailsScreen({super.key});
+  final String? teamId;
+  const TeamDetailsScreen({super.key, this.teamId});
 
   @override
   State<TeamDetailsScreen> createState() => _TeamDetailsScreenState();
@@ -54,15 +56,39 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
   ];
 
   List<MatchData> julyMatches = [
-    MatchData(date: "12th July", team1: "Baseline Smashers", team2: "Topspin Titans"),
-    MatchData(date: "16th July", team1: "Baseline Smashers", team2: "Topspin Titans"),
-    MatchData(date: "22nd July", team1: "Baseline Smashers", team2: "Topspin Titans"),
+    MatchData(
+      date: "12th July",
+      team1: "Baseline Smashers",
+      team2: "Topspin Titans",
+    ),
+    MatchData(
+      date: "16th July",
+      team1: "Baseline Smashers",
+      team2: "Topspin Titans",
+    ),
+    MatchData(
+      date: "22nd July",
+      team1: "Baseline Smashers",
+      team2: "Topspin Titans",
+    ),
   ];
 
   List<MatchData> augustMatches = [
-    MatchData(date: "12th Aug", team1: "Baseline Smashers", team2: "Topspin Titans"),
-    MatchData(date: "16th Aug", team1: "Baseline Smashers", team2: "Topspin Titans"),
-    MatchData(date: "22nd Aug", team1: "Baseline Smashers", team2: "Topspin Titans"),
+    MatchData(
+      date: "12th Aug",
+      team1: "Baseline Smashers",
+      team2: "Topspin Titans",
+    ),
+    MatchData(
+      date: "16th Aug",
+      team1: "Baseline Smashers",
+      team2: "Topspin Titans",
+    ),
+    MatchData(
+      date: "22nd Aug",
+      team1: "Baseline Smashers",
+      team2: "Topspin Titans",
+    ),
   ];
 
   void _loadMoreRows() {
@@ -96,6 +122,15 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final teamCtrl = Get.find<TeamController>();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final id = widget.teamId;
+      if (id != null && id.isNotEmpty && teamCtrl.team.value == null && !teamCtrl.isLoading.value) {
+        teamCtrl.fetchTeam(id);
+      }
+    });
+
     return Scaffold(
       backgroundColor: const Color(0xFF141414),
       appBar: AppBar(
@@ -108,9 +143,7 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
           icon: Container(
             height: 20,
             width: 20,
-            decoration: BoxDecoration(
-              color: Colors.white12,
-            ),
+            decoration: BoxDecoration(color: Colors.white12),
             child: Center(
               child: Image.asset(
                 'assets/icons/X.png',
@@ -131,12 +164,11 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
-              image: AssetImage("assets/images/teamDetails_appbar_background.jpg"),
-              fit: BoxFit.cover,
-              colorFilter: ColorFilter.mode(
-                Colors.black54,
-                BlendMode.darken,
+              image: AssetImage(
+                "assets/images/teamDetails_appbar_background.jpg",
               ),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
             ),
           ),
         ),
@@ -175,15 +207,15 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
               // const Divider(color: Colors.white, thickness: 0, height: 1),
 
               // Team Members
-              const Divider(
-                color: Colors.white24,
-                thickness: 1,
-                height: 5,
-              ),
-              const SizedBox(height: 10,),
+              const Divider(color: Colors.white24, thickness: 1, height: 5),
+              const SizedBox(height: 10),
               const Text(
                 "Team Members",
-                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               const SizedBox(height: 16),
               Row(
@@ -245,7 +277,7 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -256,7 +288,11 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
   Widget _buildMonthSection(String month) {
     return Text(
       month,
-      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 16,
+        fontWeight: FontWeight.w700,
+      ),
     );
   }
 }

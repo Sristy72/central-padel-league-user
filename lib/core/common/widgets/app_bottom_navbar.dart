@@ -28,7 +28,7 @@ class AppBottomNavBar extends StatelessWidget {
     final BottomNavController controller = Get.put(BottomNavController());
     controller.currentIndex.value = currentIndex;
 
-    Widget _buildNavItem({
+    Widget buildNavItem({
       required int index,
       required String icon,
       required String activeIcon,
@@ -121,7 +121,7 @@ class AppBottomNavBar extends StatelessWidget {
 
           items: [
             BottomNavigationBarItem(
-              icon: _buildNavItem(
+              icon: buildNavItem(
                 index: 0,
                 icon: "assets/images/nav_home_off.png",
                 activeIcon: "assets/images/nav_home_on.png",
@@ -130,7 +130,7 @@ class AppBottomNavBar extends StatelessWidget {
               label: '',
             ),
             BottomNavigationBarItem(
-              icon: _buildNavItem(
+              icon: buildNavItem(
                 index: 1,
                 icon: "assets/images/nav_match_off.png",
                 activeIcon: "assets/images/nav_match_on.png",
@@ -139,7 +139,7 @@ class AppBottomNavBar extends StatelessWidget {
               label: '',
             ),
             BottomNavigationBarItem(
-              icon: _buildNavItem(
+              icon: buildNavItem(
                 index: 2,
                 icon: "assets/images/nav_noti_off.png",
                 activeIcon: "assets/images/nav_noti_on.png",
@@ -148,7 +148,7 @@ class AppBottomNavBar extends StatelessWidget {
               label: '',
             ),
             BottomNavigationBarItem(
-              icon: _buildNavItem(
+              icon: buildNavItem(
                 index: 3,
                 icon: "assets/images/nav_prof_off.png",
                 activeIcon: "assets/images/nav_prof_on.png",

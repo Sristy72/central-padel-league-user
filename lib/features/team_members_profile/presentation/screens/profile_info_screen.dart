@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_contactus_screen.dart';
 import 'package:karlfive/features/team_members_profile/presentation/controllers/profile_controller.dart';
+import 'package:karlfive/features/team_details/presentation/controllers/team_controller.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_report_screen.dart';
 import '../../../../core/common/widgets/app_bottom_navbar.dart';
 import '../../../privacy_policy/presentation/screens/privacy_pilicy_screen.dart';
@@ -20,6 +21,15 @@ class ProfileInfoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<ProfileController>();
+    final teamCtrl = Get.find<TeamController>();
+
+    // If profile has a linked team id, fetch team data so TeamDetailsScreen is ready.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final teamId = controller.profile.value?.clubAffiliation;
+      if (teamId != null && teamId.isNotEmpty && teamCtrl.team.value == null && !teamCtrl.isLoading.value) {
+        teamCtrl.fetchTeam(teamId);
+      }
+    });
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -106,7 +116,12 @@ class ProfileInfoScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  Get.to(TeamDetailsScreen());
+                  final teamId = controller.profile.value?.clubAffiliation;
+                  if (teamId != null && teamId.isNotEmpty) {
+                    Get.to(() => TeamDetailsScreen(teamId: teamId));
+                  } else {
+                    Get.snackbar('No team', 'No team associated with this account');
+                  }
                 },
                 child: const Text(
                   style: TextStyle(

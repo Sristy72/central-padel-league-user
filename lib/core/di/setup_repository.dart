@@ -11,16 +11,20 @@ import 'package:karlfive/features/team_members_profile/data/repo/user_profile_re
 import 'package:karlfive/features/team_members_profile/domain/repo/user_profile_repo.dart';
 import 'package:karlfive/features/team_members_profile/presentation/controllers/profile_controller.dart';
 import 'package:karlfive/features/team_members_profile/presentation/controllers/edit_profile_controller.dart';
+import 'package:karlfive/features/team_details/data/repo/team_repo_impl.dart';
+import 'package:karlfive/features/team_details/domain/repo/team_repo.dart';
+import 'package:karlfive/features/team_details/presentation/controllers/team_controller.dart';
 
 void setupRepository() {
   Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl(apiClient: Get.find()));
 
   Get.lazyPut<UserInfoRepo>(() => UserInfoRepoImpl(apiClient: Get.find()),
-     fenix: true,
+
   );
 
   Get.lazyPut<JoinLeagueRepository>(
     () => JoinLeagueRepositoryImpl(apiClient: Get.find()),
+    fenix: true
   );
 
   Get.lazyPut<ContactUsRepo>(
@@ -42,6 +46,17 @@ void setupRepository() {
   // Edit profile controller (uses existing UserInfoRepo)
   Get.lazyPut(
     () => EditProfileController(Get.find<UserInfoRepo>()),
+    fenix: true,
+  );
+
+  // Team details
+  Get.lazyPut<TeamRepo>(
+    () => TeamRepoImpl(apiClient: Get.find()),
+    fenix: true,
+  );
+
+  Get.lazyPut<TeamController>(
+    () => TeamController(repo: Get.find()),
     fenix: true,
   );
 }
