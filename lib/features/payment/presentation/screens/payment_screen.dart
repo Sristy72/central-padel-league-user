@@ -103,98 +103,101 @@ class _PaymentScreenState extends State<PaymentScreen> {
       body: Column(
         children: [
           Expanded(
-            child: Obx(() {
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 28),
-                    Text(
-                      "Summary",
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.white,
+            child: SingleChildScrollView(
+              child: Obx(() {
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 20,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 8),
+                      Text(
+                        "Summary",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.white,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      "Recurring Payment Terms:",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.white,
+                      const SizedBox(height: 12),
+                      Text(
+                        "Recurring Payment Terms:",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.white,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 7.5),
-                    Text(
-                      "  •  Charges includes Applicable VAT/GST and/or Sale Taxes ",
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xffACACAC),
+                      const SizedBox(height: 7.5),
+                      Text(
+                        "  •  Charges includes Applicable VAT/GST and/or Sale Taxes ",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xffACACAC),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 30),
-                    Divider(color: Color(0xff282828)),
-                    InkWell(
-                      onTap: () {
-                        Get.offAll(() => ConfirmPaymentScreen());
-                      },
-                      child: Row(
-                        children: [
-                          Text(
-                            "Total:",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.white,
+                      const SizedBox(height: 20),
+                      Divider(color: Color(0xff282828)),
+                      InkWell(
+                        onTap: () {
+                          Get.offAll(() => ConfirmPaymentScreen());
+                        },
+                        child: Row(
+                          children: [
+                            Text(
+                              "Total:",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.white,
+                              ),
                             ),
-                          ),
-                          Spacer(),
-                          Text(
-                            "\$${widget.amount.toStringAsFixed(2)}",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.white,
+                            const Spacer(),
+                            Text(
+                              "\$${widget.amount.toStringAsFixed(2)}",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.white,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    Divider(color: Color(0xff282828)),
-                    const SizedBox(height: 30),
-                    Text(
-                      "Safe & secure payment :",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.white,
+                      Divider(color: Color(0xff282828)),
+                      const SizedBox(height: 20),
+                      Text(
+                        "Safe & secure payment :",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.white,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "By clicking the Pay button, you are agreeing to our Terms of Service and Privacy Statement. You are also authorizing us to charge your credit/debit card at the price above now and before each new subscription term. For any questions please contact support@tipnenka.com",
-                      style: TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xffACACAC),
+                      const SizedBox(height: 8),
+                      Text(
+                        "By clicking the Pay button, you are agreeing to our Terms of Service and Privacy Statement. You are also authorizing us to charge your credit/debit card at the price above now and before each new subscription term. For any questions please contact support@tipnenka.com",
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xffACACAC),
+                        ),
                       ),
-                    ),
 
-                    const SizedBox(height: 20),
+                      const SizedBox(height: 20),
+                      if (paymentController.isLoading.value)
+                        const Center(child: CircularProgressIndicator()),
 
-                    // Loading indicator
-                    if (paymentController.isLoading.value)
-                      const Center(child: CircularProgressIndicator()),
-
-                    const Spacer(),
-                  ],
-                ),
-              );
-            }),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                );
+              }),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
