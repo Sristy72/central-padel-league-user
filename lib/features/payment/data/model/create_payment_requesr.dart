@@ -1,7 +1,7 @@
 class CreatePaymentRequest {
   final String userId;
   final String league;
-  final int amount;
+  final double amount;
   final String team;
 
   CreatePaymentRequest({
