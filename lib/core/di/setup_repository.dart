@@ -69,16 +69,29 @@ void setupRepository() {
   );
 
   // Register server-side payment API repository (used by CreatePayment API flow)
-  Get.lazyPut<PaymentApiRepository>(() => PaymentApiRepositoryImpl(Get.find()));
+  Get.lazyPut<PaymentApiRepository>(
+    () => PaymentApiRepositoryImpl(Get.find()),
+    fenix: true,
+  );
 
   // Register Stripe payment repository implementation
-  Get.lazyPut<PaymentRepository>(() => PaymentRepositoryStripeImpl(Get.find()));
+  Get.lazyPut<PaymentRepository>(
+    () => PaymentRepositoryStripeImpl(Get.find()),
+    fenix: true,
+  );
 
-  Get.lazyPut<HomeRepository>(() => HomeRepositoryImpl(apiClient: Get.find()));
+  Get.lazyPut<HomeRepository>(
+    () => HomeRepositoryImpl(apiClient: Get.find()),
+    fenix: true,
+  );
 
   Get.lazyPut<LeagueRepository>(
     () => LeagueRepositoryImpl(apiClient: Get.find()),
+    fenix: true,
   );
 
-  Get.lazyPut<UserInfoRepo>(() => UserInfoRepoImpl(apiClient: Get.find()));
+  Get.lazyPut<UserInfoRepo>(
+    () => UserInfoRepoImpl(apiClient: Get.find()),
+    fenix: true,
+  );
 }
