@@ -17,7 +17,9 @@ class TeamDetailsScreen extends StatefulWidget {
 class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
   // All UI content below is driven by TeamController (API). No local dummy data.
   final _api = ApiClient();
-  late final LeagueRepositoryImpl _leagueRepo = LeagueRepositoryImpl(apiClient: _api);
+  late final LeagueRepositoryImpl _leagueRepo = LeagueRepositoryImpl(
+    apiClient: _api,
+  );
 
   final RxList<StandingRowData> _standingRows = <StandingRowData>[].obs;
   final RxBool _isLoadingStandings = false.obs;
@@ -411,14 +413,17 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
       _standingRows.clear();
 
       final result = await _leagueRepo.getStandingsAll();
-      result.fold((failure) {
-        _standingsError.value = failure.message;
-      }, (success) {
-        final data = success.data;
-        // Filter by the league and map into table rows
-        final rows = data
-            .where((s) => s.leagueId == leagueId)
-            .map((s) => StandingRowData(
+      result.fold(
+        (failure) {
+          _standingsError.value = failure.message;
+        },
+        (success) {
+          final data = success.data;
+          // Filter by the league and map into table rows
+          final rows = data
+              .where((s) => s.leagueId == leagueId)
+              .map(
+                (s) => StandingRowData(
                   pos: s.position.toString(),
                   team: s.teamName,
                   p: s.played.toString(),
@@ -428,11 +433,14 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
                   gd: s.goalDifference.toString(),
                   pts: s.points.toString(),
                   teamIcon: s.teamLogoUrl,
-                  highlight: s.teamId == Get.find<TeamController>().team.value?.id,
-                ))
-            .toList();
-        _standingRows.assignAll(rows);
-      });
+                  highlight:
+                      s.teamId == Get.find<TeamController>().team.value?.id,
+                ),
+              )
+              .toList();
+          _standingRows.assignAll(rows);
+        },
+      );
     } catch (e) {
       _standingsError.value = e.toString();
     } finally {

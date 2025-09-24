@@ -29,9 +29,15 @@ import 'package:karlfive/features/payment/data/repo/payment_repo_impl.dart'
     as stripe_repo;
 
 void setupRepository() {
-  Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl(apiClient: Get.find()));
+  Get.lazyPut<AuthRepository>(
+    () => AuthRepositoryImpl(apiClient: Get.find()),
+    fenix: true,
+  );
 
-  Get.lazyPut<UserInfoRepo>(() => UserInfoRepoImpl(apiClient: Get.find()));
+  Get.lazyPut<UserInfoRepo>(
+    () => UserInfoRepoImpl(apiClient: Get.find()),
+    fenix: true,
+  );
 
   Get.lazyPut<JoinLeagueRepository>(
     () => JoinLeagueRepositoryImpl(apiClient: Get.find()),

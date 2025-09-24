@@ -4,8 +4,17 @@ import '../../data/models/standing_row_data.dart';
 Widget buildStandingTable(List<StandingRowData> rows) {
   return Column(
     children: [
-      buildStandingRow("Pos", "Team", "P", "W", "D", "L", "+/-", "PTS",
-          header: true),
+      buildStandingRow(
+        "Pos",
+        "Team",
+        "P",
+        "W",
+        "D",
+        "L",
+        "+/-",
+        "PTS",
+        header: true,
+      ),
       const SizedBox(height: 6),
       for (var row in rows) ...[
         buildStandingRow(
@@ -21,25 +30,25 @@ Widget buildStandingTable(List<StandingRowData> rows) {
           highlight: row.highlight,
         ),
         const SizedBox(height: 6),
-      ]
+      ],
     ],
   );
 }
 
 Widget buildStandingRow(
-    String pos,
-    String team,
-    String p,
-    String w,
-    String d,
-    String l,
-    String gd,
-    String pts, {
-      bool header = false,
-      String? teamIcon,
-      bool highlight = false,
-      bool isEven = false,
-    }) {
+  String pos,
+  String team,
+  String p,
+  String w,
+  String d,
+  String l,
+  String gd,
+  String pts, {
+  bool header = false,
+  String? teamIcon,
+  bool highlight = false,
+  bool isEven = false,
+}) {
   Color textColor;
   if (header) {
     textColor = Colors.white;
@@ -60,10 +69,7 @@ Widget buildStandingRow(
           ? const Color(0xFFB1B1B1)
           : const Color(0xFFB1B1B1),
       border: Border(
-        bottom: BorderSide(
-          color: Colors.white24,
-          width: header ? 1 : 0.5,
-        ),
+        bottom: BorderSide(color: Colors.white24, width: header ? 1 : 0.5),
       ),
     ),
     child: Row(
@@ -92,11 +98,12 @@ Widget buildStandingRow(
                           teamIcon,
                           width: 16,
                           height: 16,
-                          errorBuilder: (context, error, stackTrace) => const Icon(
-                            Icons.image_not_supported,
-                            size: 14,
-                            color: Colors.white70,
-                          ),
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(
+                                Icons.image_not_supported,
+                                size: 14,
+                                color: Colors.white70,
+                              ),
                         )
                       : Image.asset(teamIcon, width: 16, height: 16);
                 })(),
