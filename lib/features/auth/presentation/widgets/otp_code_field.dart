@@ -32,7 +32,7 @@ class PinCode extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         fieldHeight: 56,
         fieldWidth: 54,
-        // 🔽 reduce the spacing here
+        //  reduce the spacing here
          // default ~16, reduce to make boxes closer
 
         inactiveColor: Colors.transparent,
