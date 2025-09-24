@@ -31,10 +31,13 @@ class ApiConstants {
 
   static TeamEndpointcs get team => TeamEndpointcs();
   static LeagueEndpoints get league => LeagueEndpoints();
+
   static ContactEndpoints get contact => ContactEndpoints();
 
-}
 
+  static PaymentEndpoints get payment => PaymentEndpoints();
+
+}
 
 /// [Authentication Endpoints]
 class AuthEndpoints {
@@ -75,7 +78,17 @@ class LeagueEndpoints {
   final String getAllLeagues = '$_base/all-league';
 }
 
+
 class ContactEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/contact';
   final String createContact = '$_base/create';
+
+// New payment endpoints
+class PaymentEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/payment';
+
+  final String createPayment = '$_base/create-payment';
+
+  final String confirmPayment = '$_base/confirm-payment';
+
 }

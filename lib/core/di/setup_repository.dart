@@ -5,6 +5,7 @@ import 'package:karlfive/features/auth/data/repo/auth_repo_impl.dart';
 import 'package:karlfive/features/auth/domain/repo/auth_repo.dart';
 import 'package:karlfive/features/join_league/data/repositories/join_league/join_league.dart';
 import 'package:karlfive/features/join_league/domain/repo/team_repo.dart';
+
 import 'package:karlfive/features/team_members_profile/data/repo/contact_us_repo_impl.dart';
 import '../../features/team_members_profile/domain/repo/contact_us_repo.dart';
 import 'package:karlfive/features/team_members_profile/data/repo/user_profile_repo_impl.dart';
@@ -14,6 +15,13 @@ import 'package:karlfive/features/team_members_profile/presentation/controllers/
 import 'package:karlfive/features/team_details/data/repo/team_repo_impl.dart';
 import 'package:karlfive/features/team_details/domain/repo/team_repo.dart';
 import 'package:karlfive/features/team_details/presentation/controllers/team_controller.dart';
+
+import 'package:karlfive/features/payment/data/repo/payment_repo_impl.dart';
+import 'package:karlfive/features/payment/domain/payment_repo_stripe.dart';
+import 'package:karlfive/features/payment/domain/payment_repo.dart';
+import 'package:karlfive/features/payment/data/model/create_pay_response_stripe.dart';
+import 'package:karlfive/features/payment/data/repo/payment_repo_impl.dart'
+    as stripe_repo;
 
 void setupRepository() {
   Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl(apiClient: Get.find()));
@@ -59,4 +67,10 @@ void setupRepository() {
     () => TeamController(repo: Get.find()),
     fenix: true,
   );
+
+  // Register server-side payment API repository (used by CreatePayment API flow)
+  Get.lazyPut<PaymentApiRepository>(() => PaymentApiRepositoryImpl(Get.find()));
+
+  // Register Stripe payment repository implementation
+  Get.lazyPut<PaymentRepository>(() => PaymentRepositoryStripeImpl(Get.find()));
 }

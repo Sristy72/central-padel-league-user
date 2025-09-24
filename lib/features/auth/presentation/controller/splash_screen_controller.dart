@@ -8,10 +8,13 @@ import '../../../home/presentation/screens/home_screen.dart';
 
 // import '../screens/home_screen.dart';
 
+import '../../../home/presentation/screens/home_screen.dart';
+import '../screens/login_screen.dart';
+import 'auth_controller.dart';
+
 
 class SplashController extends GetxController {
   final _authController = Get.find<AuthController>();
-
 
   @override
   void onInit() {
