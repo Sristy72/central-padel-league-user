@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../models/standing_model.dart';
 
 class StandingTab extends StatelessWidget {
@@ -10,16 +11,22 @@ class StandingTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
+        color: AppColors.leagueBackgroundGrey,
         padding: const EdgeInsets.only(top: 12),
         child: SizedBox(
           width: double.infinity,
           child: DataTable(
             columnSpacing: 12.0,
             horizontalMargin: 12,
-            headingRowColor: MaterialStateProperty.all(Colors.black),
-            dataRowColor: MaterialStateProperty.all(const Color(0xFFE2E2E2)),
+            headingRowColor: WidgetStateProperty.all(
+              AppColors.leagueBackgroundGrey,
+            ),
+            dataRowColor: WidgetStateProperty.all(const Color(0xFFE2E2E2)),
             border: const TableBorder(
-              horizontalInside: BorderSide(color: Colors.black, width: 10),
+              horizontalInside: BorderSide(
+                color: AppColors.leagueBackgroundGrey,
+                width: 10,
+              ),
             ),
             columns: const [
               DataColumn(

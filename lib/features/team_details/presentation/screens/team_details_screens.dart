@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/network/api_client.dart';
 import 'package:karlfive/features/league/data/league_repository_impl.dart';
+import 'package:karlfive/features/league/models/match_model.dart';
 import '../../data/models/standing_row_data.dart';
 import '../widgets/standing_table_widget.dart';
+import '../widgets/team_fixtures_widget.dart';
 import '../controllers/team_controller.dart';
 
 class TeamDetailsScreen extends StatefulWidget {
@@ -15,7 +17,6 @@ class TeamDetailsScreen extends StatefulWidget {
 }
 
 class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
-  // All UI content below is driven by TeamController (API). No local dummy data.
   final _api = ApiClient();
   late final LeagueRepositoryImpl _leagueRepo = LeagueRepositoryImpl(
     apiClient: _api,
@@ -24,6 +25,10 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
   final RxList<StandingRowData> _standingRows = <StandingRowData>[].obs;
   final RxBool _isLoadingStandings = false.obs;
   final RxString _standingsError = ''.obs;
+  // Fixtures for this team (matches in the same league involving this team)
+  final RxList<Match> _fixtures = <Match>[].obs;
+  final RxBool _isLoadingFixtures = false.obs;
+  final RxString _fixturesError = ''.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +49,8 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
         // fire and forget; UI reacts via Obx
         // ignore: unawaited_futures
         _fetchStandingsForLeague(leagueId);
+        // also load fixtures for this league and filter by this team
+        _fetchFixturesForLeague(leagueId);
       }
     });
 
@@ -128,6 +135,7 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
           ),
         ),
       ),
+
       body: SafeArea(
         child: Obx(() {
           final teamController = Get.find<TeamController>();
@@ -143,14 +151,15 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Error: ${teamController.error.value}',
+                    'No Data Found!',
                     style: const TextStyle(color: Colors.red),
                   ),
                   const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () {
-                      if (widget.teamId != null)
+                      if (widget.teamId != null) {
                         teamController.fetchTeam(widget.teamId!);
+                      }
                     },
                     child: const Text('Retry'),
                   ),
@@ -170,99 +179,10 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
           }
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Team Info Card
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2A2A2A),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    children: [
-                      // Team Logo and Basic Info
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 30,
-                            backgroundColor: Colors.grey[600],
-                            backgroundImage: team.logoPhotoUrl.isNotEmpty
-                                ? NetworkImage(team.logoPhotoUrl)
-                                : null,
-                            child: team.logoPhotoUrl.isEmpty
-                                ? const Icon(
-                                    Icons.groups,
-                                    color: Colors.white,
-                                    size: 30,
-                                  )
-                                : null,
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  team.teamName,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  team.league?.leagueName ?? 'No League',
-                                  style: TextStyle(
-                                    color: Colors.grey[400],
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: _getStatusColor(
-                                      team.applicationStatus,
-                                    ),
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    team.applicationStatus.toUpperCase(),
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      // Team Details
-                      _buildDetailRow('Player Level', team.playerLevels),
-                      _buildDetailRow('Email', team.email),
-                      _buildDetailRow('Contact', team.contactNumber),
-                      _buildDetailRow(
-                        'Location',
-                        team.league?.location ?? 'N/A',
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                // Team Members
                 const Divider(color: Colors.white24, thickness: 1, height: 5),
                 const SizedBox(height: 10),
                 const Text(
@@ -289,6 +209,19 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
                       team.logoPhotoUrl,
                     ),
                   ],
+                ),
+                const SizedBox(height: 20),
+
+                // Replaced by TeamFixturesWidget
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  child: TeamFixturesWidget(
+                    matches: _fixtures.toList(),
+                    currentTeamId: team.id,
+                  ),
                 ),
                 const SizedBox(height: 20),
 
@@ -368,43 +301,7 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 120,
-            child: Text(
-              label,
-              style: TextStyle(color: Colors.grey[400], fontSize: 14),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(color: Colors.white, fontSize: 14),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'approved':
-        return Colors.green;
-      case 'pending':
-        return Colors.orange;
-      case 'rejected':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
+  // Team info helpers removed because the info card was removed per user request.
 
   Future<void> _fetchStandingsForLeague(String leagueId) async {
     try {
@@ -445,6 +342,31 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
       _standingsError.value = e.toString();
     } finally {
       _isLoadingStandings.value = false;
+    }
+  }
+
+  Future<void> _fetchFixturesForLeague(String leagueId) async {
+    try {
+      _isLoadingFixtures.value = true;
+      _fixturesError.value = '';
+      _fixtures.clear();
+
+      final result = await _leagueRepo.getMatchesByLeague(leagueId);
+      result.fold(
+        (failure) {
+          _fixturesError.value = failure.message;
+        },
+        (success) {
+          final data = success.data;
+          // filter to matches in this league and optionally later filter to team involvement
+          final filtered = data.where((m) => m.leagueId == leagueId).toList();
+          _fixtures.assignAll(filtered);
+        },
+      );
+    } catch (e) {
+      _fixturesError.value = e.toString();
+    } finally {
+      _isLoadingFixtures.value = false;
     }
   }
 }

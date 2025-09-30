@@ -34,5 +34,9 @@ class AppColors {
   ///close Marjana
   //! <--- Iftikhar --->
   static const Color leagueFieldBackground = Color(0xFFE2E2E2);
-  static const Color leagueFixtureBackground = Color(0xFF353535);
+  static const Color leagueBackground = Color(0xFF353535);
+  static const Color leagueFixtureText = Color(0xFFB1B1B1);
+  static const Color leagueBackgroundGrey = Color(0xFF141414);
+  static const Color teamDetailsCardBackground = Color(0xFF202020);
+  //! <--- Iftikhar Close --->
 }

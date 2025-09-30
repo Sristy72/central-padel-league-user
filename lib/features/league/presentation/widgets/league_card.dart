@@ -28,12 +28,9 @@ class LeagueCard extends StatelessWidget {
                 Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(
-                        // Safe null check: bannerImage may be null
-                        (league.bannerImage?.isNotEmpty ?? false)
-                            ? league.bannerImage!
-                            : 'https://via.placeholder.com/400x200', // fallback
-                      ),
+                      image: (league.bannerImage?.isNotEmpty ?? false)
+                          ? NetworkImage(league.bannerImage!)
+                          : const AssetImage("assets/images/example_bg.jpg"),
                       fit: BoxFit.cover,
                       colorFilter: ColorFilter.mode(
                         Colors.black.withValues(alpha: 0.5),

@@ -187,7 +187,7 @@ class NextMatchWidget extends StatelessWidget {
                         //! Navigate or show details
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.leagueFixtureBackground,
+                        backgroundColor: AppColors.leagueBackground,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
