@@ -35,7 +35,7 @@ class LeagueUpdateWidget extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              "Season Dates: ${controller.seasonDates.value}",
+              "Season Dates: ${_formatSeasonDates(controller.seasonDates.value)}",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: MediaQuery.of(context).size.width < 350 ? 12 : 14,
@@ -53,5 +53,36 @@ class LeagueUpdateWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatSeasonDates(String raw) {
+    if (raw.isEmpty) return 'N/A';
+    final parts = raw.split('-');
+
+    if (parts.length >= 6) {
+      try {
+        final regex = RegExp(r"\d{4}-\d{2}-\d{2}");
+        final matches = regex
+            .allMatches(raw)
+            .map((m) => m.group(0))
+            .whereType<String>()
+            .toList();
+        if (matches.length >= 2) {
+          return '${matches[0]} - ${matches[1]}';
+        }
+      } catch (_) {
+        return raw;
+      }
+    }
+
+    final regex = RegExp(r"\d{4}-\d{2}-\d{2}");
+    final matches = regex
+        .allMatches(raw)
+        .map((m) => m.group(0))
+        .whereType<String>()
+        .toList();
+    if (matches.isEmpty) return raw;
+    if (matches.length == 1) return matches[0];
+    return '${matches[0]} - ${matches[1]}';
   }
 }

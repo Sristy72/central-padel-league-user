@@ -34,7 +34,7 @@ class GameReminderWidget extends StatelessWidget {
                   width: screenWidth / 4,
                   decoration: const BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(4)),
-                    color: AppColors.primaryBackground,
+                    color: AppColors.leagueBackgroundGrey,
                   ),
                   child: Center(
                     child: Column(
