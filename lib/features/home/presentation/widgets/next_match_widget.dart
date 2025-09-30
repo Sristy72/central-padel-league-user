@@ -12,7 +12,9 @@ class NextMatchWidget extends StatelessWidget {
 
     return Obx(
       () => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width < 350 ? 12.0 : 24.0,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -31,9 +33,9 @@ class NextMatchWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Padding(
-                padding: EdgeInsetsGeometry.symmetric(
-                  horizontal: 21,
-                  vertical: 16,
+                padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width < 350 ? 12 : 21,
+                  vertical: MediaQuery.of(context).size.width < 350 ? 12 : 16,
                 ),
                 child: Column(
                   children: [
@@ -62,7 +64,11 @@ class NextMatchWidget extends StatelessWidget {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       CircleAvatar(
-                                        radius: 20,
+                                        radius:
+                                            MediaQuery.of(context).size.width <
+                                                350
+                                            ? 16
+                                            : 20,
                                         backgroundImage: NetworkImage(
                                           player.imageUrl,
                                         ),
@@ -70,7 +76,15 @@ class NextMatchWidget extends StatelessWidget {
                                       const SizedBox(height: 4),
                                       Text(
                                         player.name,
-                                        style: const TextStyle(fontSize: 12),
+                                        style: TextStyle(
+                                          fontSize:
+                                              MediaQuery.of(
+                                                    context,
+                                                  ).size.width <
+                                                  350
+                                              ? 10
+                                              : 12,
+                                        ),
                                       ),
                                     ],
                                   );
@@ -141,7 +155,11 @@ class NextMatchWidget extends StatelessWidget {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       CircleAvatar(
-                                        radius: 20,
+                                        radius:
+                                            MediaQuery.of(context).size.width <
+                                                350
+                                            ? 16
+                                            : 20,
                                         backgroundImage: NetworkImage(
                                           player.imageUrl,
                                         ),

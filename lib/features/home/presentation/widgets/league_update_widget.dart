@@ -11,32 +11,43 @@ class LeagueUpdateWidget extends StatelessWidget {
 
     return Obx(
       () => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width < 400 ? 12 : 24,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               "League Update",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 18,
+                fontSize: MediaQuery.of(context).size.width < 350 ? 16 : 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 12),
+            SizedBox(height: MediaQuery.of(context).size.width < 350 ? 8 : 12),
             Text(
               "League Name: ${controller.leagueName.value}",
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: MediaQuery.of(context).size.width < 350 ? 12 : 14,
+              ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               "Season Dates: ${controller.seasonDates.value}",
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: MediaQuery.of(context).size.width < 350 ? 12 : 14,
+              ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               "Status: ${controller.status.value}",
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: MediaQuery.of(context).size.width < 350 ? 12 : 14,
+              ),
             ),
           ],
         ),

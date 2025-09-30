@@ -13,7 +13,10 @@ class GameReminderWidget extends StatelessWidget {
     final controller = Get.find<HomeController>();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width < 400 ? 12.0 : 24.0,
+        vertical: 8.0,
+      ),
       child: Obx(
         () => Container(
           height: 90,
@@ -36,18 +39,22 @@ class GameReminderWidget extends StatelessWidget {
                   //* <--- Day abbreviation --->
                   Text(
                     _weekdayAbbrev(controller.nextMatchDate.value),
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.white,
-                      fontSize: 12,
+                      fontSize: MediaQuery.of(context).size.width < 350
+                          ? 10
+                          : 12,
                     ),
                   ),
                   Text(
                     controller.nextMatchTime.value.isNotEmpty
                         ? controller.nextMatchTime.value
                         : 'TBA',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.white,
-                      fontSize: 12,
+                      fontSize: MediaQuery.of(context).size.width < 350
+                          ? 10
+                          : 12,
                     ),
                   ),
                 ],
