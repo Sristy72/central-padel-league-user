@@ -13,9 +13,18 @@ import '../../features/team_members_profile/presentation/controllers/contact_us_
 
 void setupController() {
   // Auth Controller
-  Get.lazyPut<AuthController>(() => AuthController(Get.find(), Get.find()));
-  Get.lazyPut<UserInfoController>(() => UserInfoController(Get.find()));
-  Get.lazyPut<JoinLeagueController>(() => JoinLeagueController(Get.find()));
+  Get.lazyPut<AuthController>(
+    fenix: true,
+    () => AuthController(Get.find(), Get.find()),
+  );
+  Get.lazyPut<UserInfoController>(
+    fenix: true,
+    () => UserInfoController(Get.find()),
+  );
+  Get.lazyPut<JoinLeagueController>(
+    fenix: true,
+    () => JoinLeagueController(Get.find()),
+  );
   Get.lazyPut<ContactUsController>(
     fenix: true,
     () => ContactUsController(Get.find()),
@@ -26,7 +35,13 @@ void setupController() {
   );
 
   // Ensure repository is registered first (setup_repository must run before this)
-  Get.lazyPut<PaymentController>(() => PaymentController(Get.find()));
-  Get.lazyPut<HomeController>(() => HomeController());
-  Get.lazyPut<LeagueController>(() => LeagueController(repository: Get.find()));
+  Get.lazyPut<PaymentController>(
+    fenix: true,
+    () => PaymentController(Get.find()),
+  );
+  Get.lazyPut<HomeController>(fenix: true, () => HomeController());
+  Get.lazyPut<LeagueController>(
+    fenix: true,
+    () => LeagueController(repository: Get.find()),
+  );
 }

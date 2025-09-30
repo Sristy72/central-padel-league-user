@@ -19,7 +19,7 @@ class NotificationScreen extends StatelessWidget {
           children: [
             // Header
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.only(top: 38),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -39,19 +39,22 @@ class NotificationScreen extends StatelessWidget {
                             .where((n) => n.isUnread)
                             .length;
                         return Container(
+                          // height: 14,
+                          // width: 14,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.notificationColor,
-                            borderRadius: BorderRadius.circular(12),
+                            color: Color(0xff2B7FD0),
+                            borderRadius: BorderRadius.circular(2),
                           ),
                           child: Text(
                             unreadCount.toString(),
                             style: const TextStyle(
                               color: AppColors.primaryText,
                               fontSize: 12,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         );
@@ -68,20 +71,20 @@ class NotificationScreen extends StatelessWidget {
                 ],
               ),
             ),
-
+            const SizedBox(height: 8),
             // Notification List
             Expanded(
               child: Obx(() {
-                return ListView.builder(
+                return ListView.separated(
                   padding: const EdgeInsets.only(bottom: 8),
                   itemCount: controller.notifications.length,
                   itemBuilder: (context, index) {
                     final notification = controller.notifications[index];
                     return Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
-                      ),
+                      // margin: const EdgeInsets.symmetric(
+                      //   horizontal: 12,
+                      //   vertical: 4,
+                      // ),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 8,
@@ -140,6 +143,9 @@ class NotificationScreen extends StatelessWidget {
                         ],
                       ),
                     );
+                  },
+                  separatorBuilder: (BuildContext context, int index) {
+                    return const SizedBox(height: 8);
                   },
                 );
               }),

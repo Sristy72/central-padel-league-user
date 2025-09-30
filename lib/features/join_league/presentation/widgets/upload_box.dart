@@ -36,7 +36,13 @@ class UploadBox extends StatelessWidget {
                 : Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.image_outlined, color: AppColors.gray),
+                      // const Icon(Icons.image_outlined, color: AppColors.gray),
+                      Image.asset(
+                        "assets/icons/Icon.png",
+                        color: AppColors.white,
+                        width: 21,
+                        height: 21,
+                      ),
                       const SizedBox(height: 8),
                       'Drop your files here'.text14w400(color: AppColors.gray),
                       const SizedBox(height: 8),
