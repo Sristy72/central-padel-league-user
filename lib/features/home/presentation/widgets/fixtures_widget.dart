@@ -16,7 +16,7 @@ class FixturesWidget extends StatelessWidget {
       if (controller.groupedFixtures.isEmpty) {
         return const Center(
           child: Text(
-            "No fixtures available",
+            "No fixtures available",  
             style: TextStyle(color: Colors.white70),
           ),
         );

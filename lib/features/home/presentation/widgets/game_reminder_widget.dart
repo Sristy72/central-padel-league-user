@@ -24,51 +24,67 @@ class GameReminderWidget extends StatelessWidget {
             color: AppColors.white,
             borderRadius: BorderRadius.circular(4.0),
           ),
-          child: ListTile(
-            leading: Container(
-              width: screenWidth / 4,
-
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4.0),
-                color: AppColors.primaryBackground,
-              ),
-
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  //* <--- Day abbreviation --->
-                  Text(
-                    _weekdayAbbrev(controller.nextMatchDate.value),
-                    style: TextStyle(
-                      color: AppColors.white,
-                      fontSize: MediaQuery.of(context).size.width < 350
-                          ? 10
-                          : 12,
+          child: Row(
+            children: [
+              // Left colored panel that stretches full height of the parent container
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Container(
+                  height: double.infinity,
+                  width: screenWidth / 4,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    color: AppColors.primaryBackground,
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _weekdayAbbrev(controller.nextMatchDate.value),
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontSize: MediaQuery.of(context).size.width < 350
+                                ? 10
+                                : 12,
+                          ),
+                        ),
+                        Text(
+                          controller.nextMatchTime.value.isNotEmpty
+                              ? controller.nextMatchTime.value
+                              : 'TBA',
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontSize: MediaQuery.of(context).size.width < 350
+                                ? 10
+                                : 12,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Text(
-                    controller.nextMatchTime.value.isNotEmpty
-                        ? controller.nextMatchTime.value
-                        : 'TBA',
-                    style: TextStyle(
-                      color: AppColors.white,
-                      fontSize: MediaQuery.of(context).size.width < 350
-                          ? 10
-                          : 12,
+                ),
+              ),
+
+              // Small gap between left panel and content
+              const SizedBox(width: 8),
+
+              // Title area
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    controller.gameReminder.value.isNotEmpty
+                        ? controller.gameReminder.value
+                        : '${controller.leagueName.value} - ${controller.status.value}',
+                    style: const TextStyle(
+                      color: AppColors.buttonText,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-            title: Text(
-              controller.gameReminder.value.isNotEmpty
-                  ? controller.gameReminder.value
-                  : '${controller.leagueName.value} - ${controller.status.value}',
-              style: const TextStyle(
-                color: AppColors.buttonText,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
+            ],
           ),
         ),
       ),
