@@ -29,7 +29,7 @@ class _MatchCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppColors.primaryBackground,
+      color: AppColors.leagueBackgroundGrey,
       margin: const EdgeInsets.only(bottom: 20),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
       child: Padding(
@@ -117,7 +117,16 @@ class _MatchCard extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(25),
           decoration: BoxDecoration(
-            color: AppColors.leagueFieldBackground,
+            // radial fade so the box dissolves to transparent on all sides
+            gradient: RadialGradient(
+              center: const Alignment(0, 0),
+              radius: 1.2,
+              colors: [
+                AppColors.leagueFieldBackground.withValues(alpha: 1.0),
+                AppColors.leagueBackgroundGrey.withValues(alpha: 0.0),
+              ],
+              stops: const [0.5, 1.0],
+            ),
             borderRadius: BorderRadius.circular(4),
           ),
           child: (logoPath.startsWith('http') || logoPath.startsWith('https'))

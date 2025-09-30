@@ -4,6 +4,7 @@ import 'package:karlfive/features/league/presentation/widgets/fixtures_tab.dart'
 import 'package:karlfive/features/league/presentation/widgets/matches_tab.dart';
 import 'package:karlfive/features/league/presentation/widgets/standing_tab.dart';
 import 'package:get/get.dart';
+import 'package:karlfive/core/theme/app_colors.dart';
 import '../controllers/league_details_controller.dart';
 
 import '../../models/league_model.dart';
@@ -46,6 +47,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.leagueBackgroundGrey,
       appBar: CustomLeagueAppbar(
         leagueName: widget.league.leagueName,
         leagueLogoPath: widget.league.leagueLogo.isNotEmpty

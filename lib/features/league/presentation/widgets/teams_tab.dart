@@ -14,6 +14,15 @@ class TeamsTab extends StatelessWidget {
     return Column(
       children: [
         Padding(
+          padding: const EdgeInsets.only(
+            left: 24.0,
+            right: 24.0,
+            top: 17,
+            bottom: 3,
+          ),
+          child: Divider(color: AppColors.gray, height: 2, thickness: 2),
+        ),
+        Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Text(
             "Teams",

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:karlfive/core/network/api_client.dart';
 import 'package:karlfive/features/league/data/league_repository_impl.dart';
 import 'package:karlfive/features/league/models/match_model.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../data/models/standing_row_data.dart';
 import '../widgets/standing_table_widget.dart';
 import '../widgets/team_fixtures_widget.dart';
@@ -183,7 +184,17 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Divider(color: Colors.white24, thickness: 1, height: 5),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 8.0,
+                  ),
+                  child: const Divider(
+                    color: AppColors.gray,
+                    thickness: 1,
+                    height: 5,
+                  ),
+                ),
                 const SizedBox(height: 10),
                 const Text(
                   "Team Members",
@@ -225,11 +236,8 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Team Standing (API)
-                const Divider(color: Colors.white24, thickness: 1, height: 5),
-                const SizedBox(height: 10),
                 const Align(
-                  alignment: Alignment.centerLeft,
+                  alignment: Alignment.center,
                   child: Text(
                     'Team Standing',
                     style: TextStyle(
@@ -300,8 +308,6 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
       ],
     );
   }
-
-  // Team info helpers removed because the info card was removed per user request.
 
   Future<void> _fetchStandingsForLeague(String leagueId) async {
     try {
