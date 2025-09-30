@@ -154,7 +154,7 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                   alignment: Alignment.bottomRight,
                   children: [
                     CircleAvatar(
-                      radius: 50,
+                      radius: 55,
                       backgroundImage: _pickedImage != null
                           ? FileImage(_pickedImage!)
                           : AssetImage(widget.member.imageUrl) as ImageProvider,
