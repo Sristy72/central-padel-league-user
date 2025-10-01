@@ -98,10 +98,7 @@ class QuickStatsWidget extends StatelessWidget {
               final imageUrl = (stat["imageUrl"] ?? '').toString();
 
               return Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 12,
-                ),
+                padding: EdgeInsets.symmetric(vertical: 8),
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(color: Colors.grey.shade800, width: 0.5),
@@ -111,7 +108,8 @@ class QuickStatsWidget extends StatelessWidget {
                   children: [
                     //* <--- Rank + Team Members + Avatar --->
                     Expanded(
-                      flex: 3,
+                      // reduce flex so other columns get slightly more room on narrow screens
+                      flex: MediaQuery.of(context).size.width < 350 ? 2 : 3,
                       child: Row(
                         children: [
                           Text(
@@ -119,6 +117,7 @@ class QuickStatsWidget extends StatelessWidget {
                             style: const TextStyle(
                               color: Colors.white70,
                               fontWeight: FontWeight.bold,
+                              fontSize: 10,
                             ),
                           ),
 
@@ -178,7 +177,13 @@ class QuickStatsWidget extends StatelessWidget {
                                     return Row(
                                       children: [
                                         CircleAvatar(
-                                          radius: 12,
+                                          radius:
+                                              MediaQuery.of(
+                                                    context,
+                                                  ).size.width <
+                                                  350
+                                              ? 10
+                                              : 12,
                                           backgroundColor: Colors.grey[800],
                                           backgroundImage:
                                               playerImage.isNotEmpty
@@ -199,7 +204,7 @@ class QuickStatsWidget extends StatelessWidget {
                                                     context,
                                                   ).size.width <
                                                   350
-                                              ? 60
+                                              ? 50
                                               : 80,
                                           child: Text(
                                             playerName,
@@ -226,7 +231,10 @@ class QuickStatsWidget extends StatelessWidget {
                               return Row(
                                 children: [
                                   CircleAvatar(
-                                    radius: 14,
+                                    radius:
+                                        MediaQuery.of(context).size.width < 350
+                                        ? 12
+                                        : 14,
                                     backgroundImage: imageUrl.isNotEmpty
                                         ? NetworkImage(imageUrl)
                                         : null,
@@ -240,7 +248,10 @@ class QuickStatsWidget extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 4),
                                   SizedBox(
-                                    width: 110,
+                                    width:
+                                        MediaQuery.of(context).size.width < 350
+                                        ? 70
+                                        : 110,
                                     child: Text(
                                       stat["name"] ?? "",
                                       style: const TextStyle(
@@ -257,34 +268,50 @@ class QuickStatsWidget extends StatelessWidget {
                         ],
                       ),
                     ),
+                    // numeric columns: wrap text in FittedBox to avoid overflow and scale down if needed
                     Expanded(
-                      child: Text(
-                        "${stat["GP"]}",
-                        style: const TextStyle(color: Colors.white),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          "${stat["GP"]}",
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                     Expanded(
-                      child: Text(
-                        "${stat["W"]}",
-                        style: const TextStyle(color: Colors.white),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          "${stat["W"]}",
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                     Expanded(
-                      child: Text(
-                        "${stat["L"]}",
-                        style: const TextStyle(color: Colors.white),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          "${stat["L"]}",
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                     Expanded(
-                      child: Text(
-                        "${stat["Pts"]}",
-                        style: const TextStyle(color: Colors.white),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          "${stat["Pts"]}",
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                     Expanded(
-                      child: Text(
-                        "${stat["+/-"]}",
-                        style: const TextStyle(color: Colors.white),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          "${stat["+/-"]}",
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                   ],
