@@ -119,7 +119,7 @@ class ProfileContactUsScreen extends StatelessWidget {
                           width: 35,
                           height: 35,
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 51),
                         const Text(
                           'example@gmail.com',
                           style: TextStyle(
@@ -140,7 +140,7 @@ class ProfileContactUsScreen extends StatelessWidget {
                           width: 35,
                           height: 35,
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 51),
                         const Text(
                           '+880 1234 567890',
                           style: TextStyle(
@@ -161,7 +161,7 @@ class ProfileContactUsScreen extends StatelessWidget {
                           width: 35,
                           height: 35,
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 51),
                         const Text(
                           '123, Main Street, Dhaka',
                           style: TextStyle(
@@ -182,7 +182,7 @@ class ProfileContactUsScreen extends StatelessWidget {
                           width: 35,
                           height: 35,
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 51),
                         const Text(
                           'www.example.com',
                           style: TextStyle(
@@ -235,8 +235,10 @@ class ProfileContactUsScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                )),
+                ),
+                ),
               ),
+              const SizedBox(height: 170),
             ],
           ),
         ),
