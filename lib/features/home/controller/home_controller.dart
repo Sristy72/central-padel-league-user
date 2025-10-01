@@ -19,6 +19,11 @@ class HomeController extends GetxController {
 
   var userName = ''.obs;
 
+  // Search functionality
+  var searchQuery = ''.obs;
+  var searchResults = <Map<String, dynamic>>[].obs;
+  var isSearching = false.obs;
+
   var gameReminder = ''.obs;
   var leagueName = ''.obs;
   var seasonDates = ''.obs;
@@ -188,6 +193,168 @@ class HomeController extends GetxController {
     team2Players.assignAll([
       Player(name: m.teamTwo.teamName, imageUrl: m.teamTwo.logoPhotoUrl),
     ]);
+  }
+
+  //* <--- Search functionality --->
+  void updateSearchQuery(String query) {
+    searchQuery.value = query;
+    _performSearch();
+  }
+
+  void _performSearch() {
+    if (searchQuery.value.isEmpty) {
+      searchResults.clear();
+      isSearching.value = false;
+      return;
+    }
+
+    isSearching.value = true;
+    final query = searchQuery.value.toLowerCase();
+    final results = <Map<String, dynamic>>[];
+
+    // Search teams
+    for (final match in leagueMatches) {
+      // Team 1
+      if (match.teamOne.teamName.toLowerCase().contains(query)) {
+        results.add({
+          'type': 'Team',
+          'name': match.teamOne.teamName,
+          'imageUrl': match.teamOne.logoPhotoUrl,
+          'subtitle': 'Team',
+          'teamId': match.teamOne.id,
+          'leagueId': match.leagueId,
+        });
+      }
+      // Team 2
+      if (match.teamTwo.teamName.toLowerCase().contains(query)) {
+        results.add({
+          'type': 'Team',
+          'name': match.teamTwo.teamName,
+          'imageUrl': match.teamTwo.logoPhotoUrl,
+          'subtitle': 'Team',
+          'teamId': match.teamTwo.id,
+          'leagueId': match.leagueId,
+        });
+      }
+    }
+
+    // Search leagues
+    // Check actual league name
+    if (leagueName.value.isNotEmpty &&
+        leagueName.value != "N/A" &&
+        leagueName.value.toLowerCase().contains(query)) {
+      results.add({
+        'type': 'League',
+        'name': leagueName.value,
+        'imageUrl': '',
+        'subtitle': 'League • ${status.value}',
+        'leagueId': '', // Will need to be populated from actual data
+      });
+    }
+
+    // Also search in any available league data from matches
+    final leagueData = <String, String>{}; // name -> id mapping
+    for (final match in leagueMatches) {
+      if (match.leagueName.isNotEmpty) {
+        leagueData[match.leagueName] = match.leagueId;
+      }
+    }
+
+    for (final entry in leagueData.entries) {
+      if (entry.key.toLowerCase().contains(query)) {
+        results.add({
+          'type': 'League',
+          'name': entry.key,
+          'imageUrl': '',
+          'subtitle': 'League',
+          'leagueId': entry.value,
+        });
+      }
+    }
+
+    // Fallback: add some sample leagues if no real data
+    if (leagueMatches.isEmpty || leagueName.value == "N/A") {
+      final sampleLeagues = [
+        'Premier League',
+        'Champions Cup',
+        'Summer Tournament',
+      ];
+      for (final league in sampleLeagues) {
+        if (league.toLowerCase().contains(query)) {
+          results.add({
+            'type': 'League',
+            'name': league,
+            'imageUrl': '',
+            'subtitle': 'League • Sample',
+          });
+        }
+      }
+    }
+
+    // Search players
+    for (final match in leagueMatches) {
+      // Team 1 players
+      if (match.teamOne.captainName.toLowerCase().contains(query)) {
+        results.add({
+          'type': 'Player',
+          'name': match.teamOne.captainName,
+          'imageUrl': match.teamOne.logoPhotoUrl,
+          'subtitle': 'Player • ${match.teamOne.teamName}',
+          'teamId': match.teamOne.id,
+          'teamName': match.teamOne.teamName,
+        });
+      }
+      if (match.teamOne.partnerName.toLowerCase().contains(query)) {
+        results.add({
+          'type': 'Player',
+          'name': match.teamOne.partnerName,
+          'imageUrl': match.teamOne.logoPhotoUrl,
+          'subtitle': 'Player • ${match.teamOne.teamName}',
+          'teamId': match.teamOne.id,
+          'teamName': match.teamOne.teamName,
+        });
+      }
+      // Team 2 players
+      if (match.teamTwo.captainName.toLowerCase().contains(query)) {
+        results.add({
+          'type': 'Player',
+          'name': match.teamTwo.captainName,
+          'imageUrl': match.teamTwo.logoPhotoUrl,
+          'subtitle': 'Player • ${match.teamTwo.teamName}',
+          'teamId': match.teamTwo.id,
+          'teamName': match.teamTwo.teamName,
+        });
+      }
+      if (match.teamTwo.partnerName.toLowerCase().contains(query)) {
+        results.add({
+          'type': 'Player',
+          'name': match.teamTwo.partnerName,
+          'imageUrl': match.teamTwo.logoPhotoUrl,
+          'subtitle': 'Player • ${match.teamTwo.teamName}',
+          'teamId': match.teamTwo.id,
+          'teamName': match.teamTwo.teamName,
+        });
+      }
+    }
+
+    // Remove duplicates
+    final uniqueResults = <Map<String, dynamic>>[];
+    final seen = <String>{};
+    for (final result in results) {
+      final key = '${result['type']}_${result['name']}';
+      if (!seen.contains(key)) {
+        seen.add(key);
+        uniqueResults.add(result);
+      }
+    }
+
+    searchResults.assignAll(uniqueResults);
+  }
+
+  void clearSearch() {
+    searchQuery.value = '';
+    searchResults.clear();
+    isSearching.value = false;
   }
 
   //! <-- Dummy data population function --->

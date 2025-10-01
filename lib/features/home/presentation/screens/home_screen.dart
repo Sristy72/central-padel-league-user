@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/common/widgets/app_bottom_navbar.dart';
 import 'package:karlfive/features/home/presentation/widgets/custom_search_bar.dart';
+import 'package:karlfive/features/home/presentation/widgets/search_results_widget.dart';
 import 'package:karlfive/features/join_league/presentation/screens/form_screen/join_league_screen.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -17,6 +18,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     final controller = Get.put(HomeController()); //! Do not comment this line
 
     return Scaffold(
@@ -70,37 +72,48 @@ class HomeScreen extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                SizedBox(height: 20),
-                CustomSearchBar(),
+              children: [
+                const SizedBox(height: 20),
+                const CustomSearchBar(),
+                const SizedBox(height: 15),
 
-                SizedBox(height: 15),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Text(
-                    "Game Reminder",
-                    style: TextStyle(
-                      color: AppColors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
+                // Show search results when searching, otherwise show regular content
+                Obx(() {
+                  final controller = Get.find<HomeController>();
 
-                SizedBox(height: 12),
-                GameReminderWidget(),
+                  if (controller.isSearching.value) {
+                    return const SearchResultsWidget();
+                  }
 
-                SizedBox(height: 20),
-                LeagueUpdateWidget(),
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24.0),
+                        child: Text(
+                          "Game Reminder",
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 12),
+                      GameReminderWidget(),
+                      SizedBox(height: 20),
+                      LeagueUpdateWidget(),
+                      SizedBox(height: 20),
+                      NextMatchWidget(),
+                      SizedBox(height: 20),
+                      QuickStatsWidget(),
+                      SizedBox(height: 20),
+                      FixturesWidget(),
+                    ],
+                  );
+                }),
 
-                SizedBox(height: 20),
-                NextMatchWidget(),
-
-                SizedBox(height: 20),
-                QuickStatsWidget(),
-
-                SizedBox(height: 20),
-                FixturesWidget(),
+                const SizedBox(height: 20),
               ],
             ),
           ),
