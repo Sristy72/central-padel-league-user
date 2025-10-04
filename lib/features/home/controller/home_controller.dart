@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 import '../models/player_model.dart';
@@ -7,7 +8,6 @@ import '../data/home_repository.dart';
 import '../../league/models/match_model.dart' as league_match;
 import '../../league/models/standing_model.dart';
 import '../../../core/services/get_user_profile_service.dart';
-// league models imported on demand where required
 
 class HomeController extends GetxController {
   final HomeRepository repository;
@@ -45,10 +45,53 @@ class HomeController extends GetxController {
   // Full standings list from API (used by See All -> StandingTab)
   var standingsList = <Standing>[].obs;
 
-  /// Grouped fixtures (by date)
+  // Loading state
+  var isLoading = true.obs;
+
+  // Static cache state - shared across all controller instances to persist between navigation
+  static bool _staticHasLoadedData = false;
+  static DateTime _staticLastLoadTime = DateTime.now().subtract(
+    Duration(hours: 1),
+  ); // Force initial load
+  static const cacheDuration = Duration(
+    minutes: 5,
+  ); // Data stays fresh for 5 minutes
+
+  // Static cache for all data - persists across controller recreations
+  static String _staticUserName = '';
+  static String _staticGameReminder = '';
+  static String _staticLeagueName = '';
+  static String _staticSeasonDates = '';
+  static String _staticStatus = '';
+  static String _staticNextMatchDate = '';
+  static String _staticNextMatchTime = '';
+  static String _staticNextMatchCourt = '';
+  static List<Player> _staticTeam1Players = [];
+  static List<Player> _staticTeam2Players = [];
+  static List<Map<String, dynamic>> _staticQuickStats = [];
+  static List<Match> _staticFixtures = [];
+  static List<league_match.Match> _staticLeagueMatches = [];
+  static List<Standing> _staticStandingsList = [];
+
+  // Cache grouped fixtures to avoid re-computing on every rebuild
+  var _cachedGroupedFixtures = <String, List<Match>>{};
+  var _fixturesCacheVersion = 0;
+  var _lastFixturesCacheVersion = -1;
+
+  /// Grouped fixtures (by date) - cached to avoid rebuilding
   Map<String, List<Match>> get groupedFixtures {
+    // Only recompute if fixtures changed
+    if (_lastFixturesCacheVersion != _fixturesCacheVersion) {
+      _cachedGroupedFixtures = _computeGroupedFixtures(fixtures);
+      _lastFixturesCacheVersion = _fixturesCacheVersion;
+    }
+    return _cachedGroupedFixtures;
+  }
+
+  // Helper to group fixtures (static so it could be moved to isolate if needed)
+  static Map<String, List<Match>> _computeGroupedFixtures(List<Match> matches) {
     final Map<String, List<Match>> grouped = {};
-    for (final match in fixtures) {
+    for (final match in matches) {
       grouped.putIfAbsent(match.date, () => []).add(match);
     }
     return grouped;
@@ -57,12 +100,46 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchHomeData();
+
+    print('📱 HomeController onInit() called');
+
+    // Check if we have cached data that's still fresh
+    if (_staticHasLoadedData && _isCacheValid()) {
+      // Data is cached and fresh, just load it into this controller instance
+      _loadFromStaticCache();
+      isLoading.value = false;
+      print('✅ Using cached home data - no API calls needed');
+      print(
+        '🕐 Cache age: ${DateTime.now().difference(_staticLastLoadTime).inSeconds} seconds',
+      );
+      return;
+    }
+
+    // Either no cache or cache is stale, fetch fresh data
+    if (_staticHasLoadedData) {
+      print(
+        '⏰ Cache expired (${DateTime.now().difference(_staticLastLoadTime).inMinutes} minutes old)',
+      );
+    } else {
+      print('🆕 No cache available');
+    }
+    print('🔄 Fetching fresh home data...');
+
+    // Defer heavy data fetch after first frame so UI renders immediately
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchHomeData();
+    });
+  }
+
+  /// Check if cached data is still valid (within cache duration)
+  bool _isCacheValid() {
+    return DateTime.now().difference(_staticLastLoadTime) < cacheDuration;
   }
 
   Future<void> fetchHomeData() async {
-    // Load user profile first so UI can greet the user. Only use the service
-    // if it was registered during app startup to avoid Get.find exceptions.
+    isLoading.value = true;
+
+    // Load user profile first (non-blocking quick call)
     try {
       if (Get.isRegistered<GetUserProfileService>()) {
         userProfileService = Get.find<GetUserProfileService>();
@@ -72,7 +149,8 @@ class HomeController extends GetxController {
     } catch (_) {
       // ignore errors; keep fallback name
     }
-    //* Try to load data from APIs. If any call fails, keep sample fallbacks.
+
+    //* Load API data - sequential is fine since they depend on each other
     try {
       //* Matches (for fixtures and next match)
       final matchesResult = await repository.getAllMatches();
@@ -84,6 +162,7 @@ class HomeController extends GetxController {
 
           //* Map league.Match -> home Match model (lightweight)
           fixtures.assignAll(data.map(_mapLeagueMatchToHome).toList());
+          _fixturesCacheVersion++; // Invalidate cache
 
           //* For next match, pick the earliest upcoming or the first one
           final upcoming = data
@@ -141,11 +220,65 @@ class HomeController extends GetxController {
     }
     if (quickStats.isEmpty) {
       quickStats.assignAll([
-        //! <-- Dummy data population --->
         {"name": "N/A", "GP": 0, "W": 0, "L": 0, "Pts": 0, "+/-": 0},
         {"name": "N/A", "GP": 0, "W": 0, "L": 0, "Pts": 0, "+/-": 0},
       ]);
     }
+
+    isLoading.value = false;
+    _saveToStaticCache();
+    _staticHasLoadedData = true;
+    _staticLastLoadTime = DateTime.now();
+    print('✅ Home data cached successfully');
+  }
+
+  /// Force refresh - bypasses cache and fetches fresh data
+  Future<void> forceRefresh() async {
+    print('🔄 Force refreshing home data...');
+    _staticHasLoadedData = false; // Reset cache
+    await fetchHomeData();
+  }
+
+  /// Check if we should show loading state
+  bool get shouldShowLoading {
+    return isLoading.value || (!_staticHasLoadedData && fixtures.isEmpty);
+  }
+
+  /// Load data from static cache into this controller instance
+  void _loadFromStaticCache() {
+    userName.value = _staticUserName;
+    gameReminder.value = _staticGameReminder;
+    leagueName.value = _staticLeagueName;
+    seasonDates.value = _staticSeasonDates;
+    status.value = _staticStatus;
+    nextMatchDate.value = _staticNextMatchDate;
+    nextMatchTime.value = _staticNextMatchTime;
+    nextMatchCourt.value = _staticNextMatchCourt;
+    team1Players.assignAll(_staticTeam1Players);
+    team2Players.assignAll(_staticTeam2Players);
+    quickStats.assignAll(_staticQuickStats);
+    fixtures.assignAll(_staticFixtures);
+    leagueMatches.assignAll(_staticLeagueMatches);
+    standingsList.assignAll(_staticStandingsList);
+    _fixturesCacheVersion++; // Invalidate fixture cache to trigger recalculation
+  }
+
+  /// Save current data to static cache for persistence across navigation
+  void _saveToStaticCache() {
+    _staticUserName = userName.value;
+    _staticGameReminder = gameReminder.value;
+    _staticLeagueName = leagueName.value;
+    _staticSeasonDates = seasonDates.value;
+    _staticStatus = status.value;
+    _staticNextMatchDate = nextMatchDate.value;
+    _staticNextMatchTime = nextMatchTime.value;
+    _staticNextMatchCourt = nextMatchCourt.value;
+    _staticTeam1Players = List.from(team1Players);
+    _staticTeam2Players = List.from(team2Players);
+    _staticQuickStats = List.from(quickStats);
+    _staticFixtures = List.from(fixtures);
+    _staticLeagueMatches = List.from(leagueMatches);
+    _staticStandingsList = List.from(standingsList);
   }
 
   /// Map API league match model to lightweight home Match model
@@ -239,7 +372,6 @@ class HomeController extends GetxController {
     }
 
     // Search leagues
-    // Check actual league name
     if (leagueName.value.isNotEmpty &&
         leagueName.value != "N/A" &&
         leagueName.value.toLowerCase().contains(query)) {
@@ -248,7 +380,7 @@ class HomeController extends GetxController {
         'name': leagueName.value,
         'imageUrl': '',
         'subtitle': 'League • ${status.value}',
-        'leagueId': '', // Will need to be populated from actual data
+        'leagueId': '',
       });
     }
 

@@ -18,8 +18,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable
-    final controller = Get.put(HomeController()); //! Do not comment this line
+    // Use cached controller from DI - prevents recreation and data reloading
+    final controller = Get.find<HomeController>();
 
     return Scaffold(
       appBar: PreferredSize(
@@ -32,7 +32,6 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Obx(() {
-                final controller = Get.find<HomeController>();
                 final name = controller.userName.value.isNotEmpty
                     ? controller.userName.value
                     : 'Guest';
@@ -79,10 +78,13 @@ class HomeScreen extends StatelessWidget {
 
                 // Show search results when searching, otherwise show regular content
                 Obx(() {
-                  final controller = Get.find<HomeController>();
-
                   if (controller.isSearching.value) {
                     return const SearchResultsWidget();
+                  }
+
+                  // Show skeleton loader while data is loading (first frame)
+                  if (controller.shouldShowLoading) {
+                    return _buildSkeletonLoader();
                   }
 
                   return Column(
@@ -120,6 +122,40 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: AppBottomNavBar(currentIndex: 0),
+    );
+  }
+
+  // Skeleton loader for fast initial render
+  Widget _buildSkeletonLoader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _skeletonBox(height: 24, width: 150),
+          const SizedBox(height: 12),
+          _skeletonBox(height: 90, width: double.infinity),
+          const SizedBox(height: 20),
+          _skeletonBox(height: 120, width: double.infinity),
+          const SizedBox(height: 20),
+          _skeletonBox(height: 200, width: double.infinity),
+          const SizedBox(height: 20),
+          _skeletonBox(height: 100, width: double.infinity),
+          const SizedBox(height: 20),
+          _skeletonBox(height: 150, width: double.infinity),
+        ],
+      ),
+    );
+  }
+
+  Widget _skeletonBox({required double height, required double width}) {
+    return Container(
+      height: height,
+      width: width,
+      decoration: BoxDecoration(
+        color: Colors.grey[800],
+        borderRadius: BorderRadius.circular(8),
+      ),
     );
   }
 }

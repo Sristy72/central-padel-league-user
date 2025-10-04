@@ -81,32 +81,35 @@ class AppBottomNavBar extends StatelessWidget {
         () => BottomNavigationBar(
           currentIndex: controller.currentIndex.value,
           onTap: (index) {
+            // If the tab is already selected, do nothing
+            if (controller.currentIndex.value == index) return;
+
+            // Update the local index state
             controller.changeIndex(index);
 
-            // Use GetX for navigation with smooth transitions
             if (index == 0) {
-              Get.to(
+              Get.offAll(
                 () => const HomeScreen(),
                 transition: Transition.fadeIn,
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 50),
               );
             } else if (index == 1) {
-              Get.to(
+              Get.offAll(
                 () => const LeaguesScreen(),
                 transition: Transition.fadeIn,
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 50),
               );
             } else if (index == 2) {
-              Get.to(
+              Get.offAll(
                 () => NotificationScreen(),
                 transition: Transition.fadeIn,
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 50),
               );
             } else if (index == 3) {
-              Get.to(
+              Get.offAll(
                 () => ProfileInfoScreen(member: dummyMember),
                 transition: Transition.fadeIn,
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 50),
               );
             }
           },
