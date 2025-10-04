@@ -81,15 +81,12 @@ class AppBottomNavBar extends StatelessWidget {
         () => BottomNavigationBar(
           currentIndex: controller.currentIndex.value,
           onTap: (index) {
-            // If the tab is already selected, do nothing (avoid stacking same screen)
+            // If the tab is already selected, do nothing
             if (controller.currentIndex.value == index) return;
 
             // Update the local index state
             controller.changeIndex(index);
 
-            // Replace the navigation stack with the selected tab's screen so
-            // tapping different tabs doesn't keep pushing pages on top.
-            // This prevents the "stacking" behaviour you observed.
             if (index == 0) {
               Get.offAll(
                 () => const HomeScreen(),
