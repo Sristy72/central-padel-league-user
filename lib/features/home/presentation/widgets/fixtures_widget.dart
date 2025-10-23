@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
+
 import '../../controller/home_controller.dart';
 import '../screens/home_fixtures_screen.dart';
 
@@ -12,8 +13,11 @@ class FixturesWidget extends StatelessWidget {
     final controller = Get.find<HomeController>();
 
     return Obx(() {
+      // Access the observable to ensure proper tracking
+      final groupedFixtures = controller.groupedFixtures;
+      
       // If no fixtures, show a small placeholder
-      if (controller.groupedFixtures.isEmpty) {
+      if (groupedFixtures.isEmpty) {
         return const Center(
           child: Text(
             "No fixtures available",  
@@ -42,7 +46,7 @@ class FixturesWidget extends StatelessWidget {
           ),
 
           //*<--- For each date group --->
-          ...controller.groupedFixtures.entries.map((entry) {
+          ...groupedFixtures.entries.map((entry) {
             final date = entry.key;
             final matches = entry.value;
 
