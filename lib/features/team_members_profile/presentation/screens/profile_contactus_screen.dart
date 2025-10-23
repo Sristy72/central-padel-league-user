@@ -19,8 +19,38 @@ class ProfileContactUsScreen extends StatelessWidget {
   final subjectController = TextEditingController();
   final yourCompanyController = TextEditingController();
 
+  // Method to clear all form fields
+  void _clearAllFields() {
+    firstNameController.clear();
+    lastNameController.clear();
+    addressController.clear();
+    phoneNumberController.clear();
+    subjectController.clear();
+    yourCompanyController.clear();
+  }
+
+  // Method to show snackbar
+  void _showSnackBar(String message, {bool isSuccess = true}) {
+    Get.snackbar(
+      isSuccess ? 'Success' : 'Error',
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: isSuccess ? Colors.green : Colors.red,
+      colorText: Colors.white,
+      duration: const Duration(seconds: 3),
+      margin: const EdgeInsets.all(16),
+      borderRadius: 8,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Set up success callback for the controller
+    controller.onSuccess = (String message) {
+      _showSnackBar(message, isSuccess: true);
+      _clearAllFields();
+    };
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -247,7 +277,7 @@ class ProfileContactUsScreen extends StatelessWidget {
   }
 
   // Submit form method
-  void _submitForm() {
+  void _submitForm() async {
     final firstName = firstNameController.text.trim();
     final lastName = lastNameController.text.trim();
     final address = addressController.text.trim();
@@ -257,12 +287,16 @@ class ProfileContactUsScreen extends StatelessWidget {
 
     // Basic validation
     if (firstName.isEmpty || lastName.isEmpty) {
-      controller.setError("First name and last name are required");
+      _showSnackBar("First name and last name are required", isSuccess: false);
       return;
     }
 
     controller.clearError();
-    controller.createContact(
+    
+    // Store the current error state before API call
+    final errorBefore = controller.errorMessage.value;
+    
+    await controller.createContact(
       firstName: firstName,
       lastName: lastName,
       address: address,
@@ -270,6 +304,11 @@ class ProfileContactUsScreen extends StatelessWidget {
       subject: subject,
       yourCompany: yourCompany,
     );
+    
+    // Check if there's a new error after API call
+    if (controller.errorMessage.value.isNotEmpty && controller.errorMessage.value != errorBefore) {
+      _showSnackBar(controller.errorMessage.value, isSuccess: false);
+    }
   }
 
   // Reusable TextField Builder with controller

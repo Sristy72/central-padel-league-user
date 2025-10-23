@@ -17,6 +17,9 @@ class ContactUsController extends BaseController {
     required String subject,
     required String yourCompany,
   }) async {
+    setLoading(true);
+    clearError();
+
     final request = ContactUsRequestModel(
       firstName: firstName,
       lastName: lastName,
@@ -31,10 +34,18 @@ class ContactUsController extends BaseController {
     
     result.fold((fail) {
       DPrint.log("concat us create fail : ${fail.message}");
+      setError(fail.message);
+      setLoading(false);
     }, (success) {
       DPrint.log("concat us create success : ${success.message}");
-
+      setLoading(false);
+      // Trigger success callback if provided
+      if (onSuccess != null) {
+        onSuccess!(success.message);
+      }
     });
-
   }
+
+  // Callback for success handling
+  Function(String)? onSuccess;
 }
