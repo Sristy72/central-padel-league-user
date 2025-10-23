@@ -24,7 +24,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final controller = Get.put(TermOfServicesAndPrivacyPolicyController());
 
   final _authController = Get.find<AuthController>();
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final FocusNode _nameFocus = FocusNode();
   final FocusNode _emailFocus = FocusNode();
@@ -32,11 +32,11 @@ class _SignupScreenState extends State<SignupScreen> {
   final FocusNode _passwordFocus = FocusNode();
   final FocusNode _confirmPasswordFocus = FocusNode();
 
-  TextEditingController _nameTEController = TextEditingController();
-  TextEditingController _emailTEController = TextEditingController();
-  TextEditingController _phoneNumberTEController = TextEditingController();
-  TextEditingController _passwordTEController = TextEditingController();
-  TextEditingController _confirmPasswordTEController = TextEditingController();
+  final TextEditingController _nameTEController = TextEditingController();
+  final TextEditingController _emailTEController = TextEditingController();
+  final TextEditingController _phoneNumberTEController = TextEditingController();
+  final TextEditingController _passwordTEController = TextEditingController();
+  final TextEditingController _confirmPasswordTEController = TextEditingController();
 
   final ValueNotifier<bool> _obscurePassword = ValueNotifier<bool>(true);
 
@@ -44,6 +44,7 @@ class _SignupScreenState extends State<SignupScreen> {
   late TapGestureRecognizer _privacyRecognizer;
   late TapGestureRecognizer _signInRecognizer;
 
+  @override
   void initState() {
     super.initState();
     _termsRecognizer = TapGestureRecognizer()
@@ -331,10 +332,10 @@ class _SignupScreenState extends State<SignupScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(2),
                               ),
-                              side: MaterialStateBorderSide.resolveWith((
+                              side: WidgetStateBorderSide.resolveWith((
                                 states,
                               ) {
-                                if (states.contains(MaterialState.selected)) {
+                                if (states.contains(WidgetState.selected)) {
                                   //  Border when checked
                                   return BorderSide(
                                     color: AppColors.prefixIconColor,

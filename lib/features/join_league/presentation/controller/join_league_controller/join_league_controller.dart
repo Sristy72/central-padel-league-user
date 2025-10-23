@@ -3,9 +3,9 @@ import 'package:flutx_core/flutx_core.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:karlfive/features/join_league/presentation/screens/otp_screen/otp_verification_screen.dart';
 import '../../../../../core/base/base_controller.dart';
 import '../../../../../core/network/services/multiple_form_data_manager.dart';
+import '../../../../payment/presentation/screens/payment_font_screen.dart';
 import '../../../data/model/league_reponse_model.dart';
 import '../../../domain/repo/team_repo.dart';
 
@@ -123,13 +123,11 @@ class JoinLeagueController extends BaseController {
       );
       _multiFormDataManager.addTextData('league', selectedLeague.value);
 
-      // Convert player level ID to string format
       final playerLevelString = _getPlayerLevelString(
         selectedPlayerLevelId.value!,
       );
       _multiFormDataManager.addTextData('playerLevels', playerLevelString);
 
-      // Add boolean values as strings
       _multiFormDataManager.addTextData(
         'agreedToRules',
         agreedRules.value.toString(),
@@ -139,7 +137,6 @@ class JoinLeagueController extends BaseController {
         confirmedAvailability.value.toString(),
       );
 
-      // Add logo file if selected
       if (selectedLogo.value != null) {
         final file = File(selectedLogo.value!.path);
         _multiFormDataManager.addFile(file, type: 'image');
@@ -155,8 +152,19 @@ class JoinLeagueController extends BaseController {
         },
         (success) {
           DPrint.log("Application submitted: ${success.message}");
-          Get.to(() => OtpVerificationScreen(),transition: Transition.rightToLeft);
-
+          final selectedLeagueModel = leagues.firstWhere(
+            (league) => league.id == selectedLeague.value,
+          );
+          final amount = double.tryParse(selectedLeagueModel.price ?? '0.0') ?? 0.0;
+          Get.to(
+            () => PaymentDialog(
+              userID: success.data.user,
+              leagueID: success.data.league,
+              teamID: success.data.id,
+              amount: amount.toString(),
+            ),
+            transition: Transition.rightToLeft,
+          );
         },
       );
     } catch (e) {
@@ -185,7 +193,6 @@ class JoinLeagueController extends BaseController {
     }
   }
 
-  // Method to update selected league (ID comes from widget)
   void updateSelectedLeague(String leagueId) {
     selectedLeague.value = leagueId;
     DPrint.log("League ID set: $leagueId");
@@ -230,7 +237,7 @@ class JoinLeagueController extends BaseController {
   String? validatePartnerName(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter partner name';
-      }           
+    }
     if (value.length < 2) {
       return 'Partner name must be at least 2 characters';
     }

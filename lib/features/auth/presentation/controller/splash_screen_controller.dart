@@ -6,7 +6,13 @@ import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
 import '../../../../core/network/services/secure_store_services.dart';
 import '../../../home/presentation/screens/home_screen.dart';
 
+// import '../../../home/presentation/screens/home_screen.dart';
+
 // import '../screens/home_screen.dart';
+
+import '../../../home/presentation/screens/home_screen.dart';
+import '../screens/login_screen.dart';
+import 'auth_controller.dart';
 
 
 class SplashController extends GetxController {

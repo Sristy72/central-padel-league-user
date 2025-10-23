@@ -1,203 +1,200 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
+import '../../models/match_model.dart';
 
-class FixturesTab extends StatefulWidget {
-  const FixturesTab({super.key});
+class FixturesTab extends StatelessWidget {
+  final List<Match> matches;
 
-  @override
-  State<FixturesTab> createState() => _FixturesTabState();
-}
+  const FixturesTab({super.key, required this.matches});
 
-class _FixturesTabState extends State<FixturesTab> {
-  int selectedWeek = 0;
-
-  final weeks = ["Game Week 1", "Game Week 2", "Game Week 3", "Game Week 4"];
-
-  final fixtures = {
-    "SAT 16 AUG 2025": [
-      {"home": "Baseline Smashers", "away": "Topspin Titans", "time": "01:00"},
-      {"home": "Baseline Smashers", "away": "Topspin Titans", "time": "01:00"},
-      {"home": "Baseline Smashers", "away": "Topspin Titans", "time": "01:00"},
-    ],
-    "SUN 17 AUG 2025": [
-      {"home": "Baseline Smashers", "away": "Topspin Titans", "time": "01:00"},
-      {"home": "Baseline Smashers", "away": "Topspin Titans", "time": "01:00"},
-      {"home": "Baseline Smashers", "away": "Topspin Titans", "time": "01:00"},
-    ],
-    "SAT 21 AUG 2025": [
-      {"home": "Baseline Smashers", "away": "Topspin Titans", "time": "01:00"},
-      {"home": "Baseline Smashers", "away": "Topspin Titans", "time": "01:00"},
-      {"home": "Baseline Smashers", "away": "Topspin Titans", "time": "01:00"},
-    ],
-    "SUN 30 AUG 2025": [
-      {"home": "Baseline Smashers", "away": "Topspin Titans", "time": "01:00"},
-      {"home": "Baseline Smashers", "away": "Topspin Titans", "time": "01:00"},
-      {"home": "Baseline Smashers", "away": "Topspin Titans", "time": "01:00"},
-    ],
-  };
+  //* Group matches by Date
+  Map<String, List<Match>> _groupByDate(List<Match> input) {
+    final map = <String, List<Match>>{};
+    for (final m in input) {
+      final key = DateFormat('yyyy-MM-dd').format(m.matchDateTime.toLocal());
+      map.putIfAbsent(key, () => []).add(m);
+    }
+    //* Keep the map sorted by date ascending
+    final sortedKeys = map.keys.toList()..sort();
+    return {for (var k in sortedKeys) k: map[k]!};
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          //* This is the "LINE"
-          padding: const EdgeInsets.only(
-            left: 21,
-            right: 21,
-            top: 27,
-            bottom: 21,
-          ),
-          child: Container(height: 2, color: AppColors.gray),
+    if (matches.isEmpty) {
+      return const Center(
+        child: Text(
+          'No fixtures available',
+          style: TextStyle(color: Colors.white),
         ),
+      );
+    }
 
-        const Text(
-          "Fixtures",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+    final grouped = _groupByDate(matches);
+
+    return MediaQuery.removePadding(
+      context: context,
+      removeLeft: true,
+      removeRight: true,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 24.0,
+              right: 24.0,
+              top: 17,
+              bottom: 11,
+            ),
+            child: Divider(color: AppColors.gray, height: 2, thickness: 2),
           ),
-        ),
 
-        const SizedBox(height: 12),
-
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: List.generate(weeks.length, (index) {
-              final isSelected = selectedWeek == index;
-              return Padding(
-                padding: const EdgeInsets.only(left: 12),
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.white,
-                    backgroundColor: AppColors.leagueFixtureBackground,
-                    // textStyle: TextStyle(color: AppColors.),
-                    side: BorderSide(
-                      color: isSelected
-                          ? AppColors.primaryGreen
-                          : AppColors.white,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      selectedWeek = index;
-                    });
-                  },
-                  child: Text(
-                    weeks[index],
-                    style: TextStyle(
-                      color: isSelected ? AppColors.white : AppColors.white,
-                    ),
-                  ),
-                ),
-              );
-            }),
+          const Text(
+            'Fixtures',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
-        ),
 
-        const SizedBox(height: 16),
+          const SizedBox(height: 12),
 
-        // Fixtures list
-        Expanded(
-          child: ListView.builder(
-            itemCount: fixtures.keys.length,
-            itemBuilder: (context, dateIndex) {
-              String date = fixtures.keys.elementAt(dateIndex);
-              var matches = fixtures[date]!;
+          Expanded(
+            child: ListView.separated(
+              itemCount: grouped.keys.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 6),
+              itemBuilder: (context, index) {
+                final dateKey = grouped.keys.elementAt(index);
+                final items = grouped[dateKey]!;
+                final displayDate = DateFormat(
+                  'EEE, d MMM yyyy',
+                ).format(DateTime.parse(dateKey));
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Date header
-                  Container(
-                    width: double.infinity,
-                    color: Colors.grey.shade800,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 16,
-                    ),
-                    child: Text(
-                      date,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-
-                  //* <--- Matches list --->
-                  ...List.generate(matches.length, (i) {
-                    var match = matches[i];
-                    return Container(
-                      color: i.isEven ? Colors.black : Colors.grey.shade900,
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      color: Colors.grey.shade800,
                       padding: const EdgeInsets.symmetric(
                         vertical: 8,
-                        horizontal: 12,
+                        horizontal: 16,
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Home team
-                          Expanded(
-                            child: Text(
-                              match["home"]!,
-                              style: const TextStyle(color: Colors.white),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-
-                          // Time
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.sports_soccer,
-                                color: Colors.green,
-                                size: 18,
+                      child: Text(
+                        displayDate,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    ...List.generate(items.length, (i) {
+                      final m = items[i];
+                      return Container(
+                        color: i.isEven ? Colors.black : Colors.grey.shade900,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 12,
+                        ),
+                        child: Row(
+                          children: [
+                            //* <--- Home team --->
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 16,
+                                    backgroundImage:
+                                        m.teamOne.logoPhotoUrl.startsWith(
+                                          'http',
+                                        )
+                                        ? NetworkImage(m.teamOne.logoPhotoUrl)
+                                        : const AssetImage(
+                                                'assets/images/group_logo.png',
+                                              )
+                                              as ImageProvider,
+                                    backgroundColor: Colors.transparent,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      m.teamOne.teamName,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 6),
-                              Text(
-                                match["time"]!,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                            ),
+
+                            // Time and score
+                            Column(
+                              children: [
+                                Text(
+                                  DateFormat(
+                                    'hh:mm a',
+                                  ).format(m.matchDateTime.toLocal()),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  m.formattedScore(),
+                                  style: const TextStyle(color: Colors.white70),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(width: 12),
+
+                            //* <--- Away team --->
+                            Expanded(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      m.teamTwo.teamName,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.end,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  CircleAvatar(
+                                    radius: 16,
+                                    backgroundImage:
+                                        m.teamTwo.logoPhotoUrl.startsWith(
+                                          'http',
+                                        )
+                                        ? NetworkImage(m.teamTwo.logoPhotoUrl)
+                                        : const AssetImage(
+                                                'assets/images/group_logo.png',
+                                              )
+                                              as ImageProvider,
+                                    backgroundColor: Colors.transparent,
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-
-                          // Away team
-                          Expanded(
-                            child: Text(
-                              match["away"]!,
-                              style: const TextStyle(color: Colors.white),
-                              textAlign: TextAlign.end,
-                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-
-                          // Favorite star
-                          IconButton(
-                            icon: const Icon(
-                              Icons.star_border,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {},
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-                ],
-              );
-            },
+                          ],
+                        ),
+                      );
+                    }),
+                  ],
+                );
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

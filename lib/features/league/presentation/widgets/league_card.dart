@@ -1,10 +1,9 @@
 // features/league/presentation/widgets/league_card.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/utils.dart';
 import 'package:karlfive/features/league/presentation/screens/league_details_screen.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../models/league_model.dart'; // or your model path
+import '../../models/league_model.dart';
 
 class LeagueCard extends StatelessWidget {
   final League league;
@@ -20,19 +19,18 @@ class LeagueCard extends StatelessWidget {
         SizedBox(
           width: screenWidth,
           height: 220,
-          child: Stack(
-            children: [
-              InkWell(
-                onTap: () {
-                  Get.to(LeagueDetailsScreen());
-                },
-                child: Container(
+          child: InkWell(
+            onTap: () {
+              Get.to(() => LeagueDetailsScreen(league: league));
+            },
+            child: Stack(
+              children: [
+                Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage(
-                        //! <-- Need to change to NetworkImage after API -->
-                        league.backgroundImageUrl,
-                      ),
+                      image: (league.bannerImage?.isNotEmpty ?? false)
+                          ? NetworkImage(league.bannerImage!)
+                          : const AssetImage("assets/images/example_bg.jpg"),
                       fit: BoxFit.cover,
                       colorFilter: ColorFilter.mode(
                         Colors.black.withValues(alpha: 0.5),
@@ -41,42 +39,47 @@ class LeagueCard extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          league.name,
-                          style: TextStyle(
-                            color: AppColors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
+
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            league.leagueName,
+                            style: const TextStyle(
+                              color: AppColors.white,
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Image.asset(
-                        //! <-- Need to change to NetworkImage after API -->
-                        league.logoImageUrl,
-                        height: 28,
-                        width: 28,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Icon(Icons.error, color: AppColors.white);
-                        },
-                      ),
-                    ],
+                        const SizedBox(width: 16),
+                        Image.network(
+                          league.leagueLogo.isEmpty
+                              ? 'https://via.placeholder.com/28'
+                              : league.leagueLogo,
+                          height: 28,
+                          width: 28,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(
+                              Icons.error,
+                              color: AppColors.white,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-        SizedBox(height: 28),
+        const SizedBox(height: 28),
       ],
     );
   }

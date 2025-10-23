@@ -1,27 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:karlfive/core/common/widgets/app_bottom_navbar.dart';
-import 'package:karlfive/features/privacy_policy/presentation/screens/privacy_pilicy_screen.dart';
-import 'package:karlfive/features/team_members_profile/presentation/screens/edit_profile_info.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_contactus_screen.dart';
+import 'package:karlfive/features/team_members_profile/presentation/controllers/profile_controller.dart';
+import 'package:karlfive/features/team_details/presentation/controllers/team_controller.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_report_screen.dart';
+import '../../../../core/common/widgets/app_bottom_navbar.dart';
 import '../../../auth/presentation/controller/auth_controller.dart';
-import '../../../auth/presentation/screens/login_screen.dart';
-import '../../models/edit_profile_model.dart';
-import '../../models/team_member_model.dart';
+import '../../../privacy_policy/presentation/screens/privacy_pilicy_screen.dart';
+import '../../../team_details/presentation/screens/team_details_screens.dart';
+import '../../data/models/edit_profile_model.dart';
+import '../../data/models/team_member_model.dart';
+import 'edit_profile_info.dart';
+
 
 class ProfileInfoScreen extends StatelessWidget {
   final TeamMemberModel member;
 
   const ProfileInfoScreen({super.key, required this.member});
 
+
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<ProfileController>();
+    final teamCtrl = Get.find<TeamController>();
+
+    // If profile has a linked team id, fetch team data so TeamDetailsScreen is ready.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final teamId = controller.profile.value?.clubAffiliation;
+      if (teamId != null && teamId.isNotEmpty && teamCtrl.team.value == null && !teamCtrl.isLoading.value) {
+        teamCtrl.fetchTeam(teamId);
+      }
+    });
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        
+
         backgroundColor: Colors.black,
         elevation: 0,
         title: const Text(
@@ -47,7 +61,10 @@ class ProfileInfoScreen extends StatelessWidget {
                 imageUrl: member.imageUrl,
               );
 
-              Get.to(EditProfileInfoScreen(member: editModel));
+              // Navigate to edit screen and refresh profile when returning
+              Get.to(EditProfileInfoScreen(member: editModel))?.then((_) async {
+                await controller.fetchProfile();
+              });
             },
             icon: Image.asset(
               'assets/icons/profile_Edit.png',
@@ -63,20 +80,30 @@ class ProfileInfoScreen extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            // Profile Image
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage(member.imageUrl),
-            ),
+            // Profile Image (from API if available)
+            Obx(() {
+              final p = controller.profile.value;
+              final displayImage = p?.profileImage ?? member.imageUrl;
+              return CircleAvatar(
+                radius: 50,
+        backgroundImage: displayImage.isNotEmpty
+          ? (displayImage.startsWith('http') ? NetworkImage(displayImage) : AssetImage(displayImage) as ImageProvider)
+          : const AssetImage('assets/images/profile.png'),
+              );
+            }),
             const SizedBox(height: 14),
-            Text(
-              member.name,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: Colors.white,
-              ),
-            ),
+            Obx(() {
+              final p = controller.profile.value;
+              final displayName = (p?.name?.isNotEmpty == true) ? p!.name! : member.name;
+              return Text(
+                displayName,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
+                ),
+              );
+            }),
 
             const SizedBox(height: 19),
             // My Team
@@ -89,7 +116,14 @@ class ProfileInfoScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  final teamId = controller.profile.value?.clubAffiliation;
+                  if (teamId != null && teamId.isNotEmpty) {
+                    Get.to(() => TeamDetailsScreen(teamId: teamId));
+                  } else {
+                    Get.snackbar('No team', 'No team associated with this account');
+                  }
+                },
                 child: const Text(
                   style: TextStyle(
                     fontSize: 16,
@@ -145,10 +179,13 @@ class ProfileInfoScreen extends StatelessWidget {
                             ),
                           ),
                           const Spacer(),
-                          Text(
-                            '01712451235',
-                            style: const TextStyle(color: Colors.white),
-                          ),
+                          Obx(() {
+                            final p = controller.profile.value;
+                            return Text(
+                              p?.phoneNumber ?? member.phone,
+                              style: const TextStyle(color: Colors.white),
+                            );
+                          }),
                         ],
                       ),
                       const SizedBox(height: 24),
@@ -170,10 +207,13 @@ class ProfileInfoScreen extends StatelessWidget {
                             ),
                           ),
                           const Spacer(),
-                          Text(
-                            'asbd@gmail.com',
-                            style: const TextStyle(color: Colors.white),
-                          ),
+                          Obx(() {
+                            final p = controller.profile.value;
+                            return Text(
+                              p?.email ?? member.email,
+                              style: const TextStyle(color: Colors.white),
+                            );
+                          }),
                         ],
                       ),
                     ],
@@ -252,7 +292,7 @@ class ProfileInfoScreen extends StatelessWidget {
                             imageUrl: member.imageUrl,
                           );
                           Get.to(
-                            () => ProfileContactUsScreen(member: editProfile),
+                                () => ProfileContactUsScreen(member: editProfile),
                           );
                         },
                         child: Row(
@@ -378,6 +418,7 @@ class ProfileInfoScreen extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(height: 61),
           ],
         ),
       ),

@@ -1,13 +1,56 @@
 import 'package:flutter/material.dart';
-import '../../models/edit_profile_model.dart';
+import 'package:get/get.dart';
+
+import '../../data/models/edit_profile_model.dart';
+import '../controllers/contact_us_controller.dart';
 
 class ProfileContactUsScreen extends StatelessWidget {
   final EditProfileModel member;
 
-  const ProfileContactUsScreen({super.key, required this.member});
+  final controller = Get.find<ContactUsController>();
+
+  ProfileContactUsScreen({super.key, required this.member});
+
+  // Create text editing controllers
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final addressController = TextEditingController();
+  final phoneNumberController = TextEditingController();
+  final subjectController = TextEditingController();
+  final yourCompanyController = TextEditingController();
+
+  // Method to clear all form fields
+  void _clearAllFields() {
+    firstNameController.clear();
+    lastNameController.clear();
+    addressController.clear();
+    phoneNumberController.clear();
+    subjectController.clear();
+    yourCompanyController.clear();
+  }
+
+  // Method to show snackbar
+  void _showSnackBar(String message, {bool isSuccess = true}) {
+    Get.snackbar(
+      isSuccess ? 'Success' : 'Error',
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: isSuccess ? Colors.green : Colors.red,
+      colorText: Colors.white,
+      duration: const Duration(seconds: 3),
+      margin: const EdgeInsets.all(16),
+      borderRadius: 8,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Set up success callback for the controller
+    controller.onSuccess = (String message) {
+      _showSnackBar(message, isSuccess: true);
+      _clearAllFields();
+    };
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -35,6 +78,7 @@ class ProfileContactUsScreen extends StatelessWidget {
                     child: _buildTextField(
                       label: "First Name*",
                       hintText: "Enter Your Surname",
+                      controller: firstNameController,
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -42,6 +86,7 @@ class ProfileContactUsScreen extends StatelessWidget {
                     child: _buildTextField(
                       label: "Last Name*",
                       hintText: "Enter Your Last Name",
+                      controller: lastNameController,
                     ),
                   ),
                 ],
@@ -52,6 +97,7 @@ class ProfileContactUsScreen extends StatelessWidget {
               _buildTextField(
                 label: "Address",
                 hintText: "Enter Your Address",
+                controller: addressController,
               ),
               const SizedBox(height: 10),
 
@@ -59,6 +105,7 @@ class ProfileContactUsScreen extends StatelessWidget {
               _buildTextField(
                 label: "Phone Number",
                 hintText: "Enter Phone Number",
+                controller: phoneNumberController,
               ),
               const SizedBox(height: 10),
 
@@ -66,6 +113,7 @@ class ProfileContactUsScreen extends StatelessWidget {
               _buildTextField(
                 label: "Subject",
                 hintText: "Enter Here",
+                controller: subjectController,
               ),
               const SizedBox(height: 10),
 
@@ -74,9 +122,11 @@ class ProfileContactUsScreen extends StatelessWidget {
                 label: "Your Company",
                 hintText: "Tell us how we can help you",
                 maxLines: 8,
+                controller: yourCompanyController,
               ),
               const SizedBox(height: 43),
 
+              // Contact Information section
               Container(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,13 +148,12 @@ class ProfileContactUsScreen extends StatelessWidget {
                           "assets/icons/contactus_mail.png",
                           width: 35,
                           height: 35,
-
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 51),
                         const Text(
                           'example@gmail.com',
                           style: TextStyle(
-                            color: Color(0xFFA7A7A7), // আগের hintText এর রঙ
+                            color: Color(0xFFA7A7A7),
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
                           ),
@@ -120,9 +169,8 @@ class ProfileContactUsScreen extends StatelessWidget {
                           "assets/icons/contactus_phone.png",
                           width: 35,
                           height: 35,
-
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 51),
                         const Text(
                           '+880 1234 567890',
                           style: TextStyle(
@@ -143,7 +191,7 @@ class ProfileContactUsScreen extends StatelessWidget {
                           width: 35,
                           height: 35,
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 51),
                         const Text(
                           '123, Main Street, Dhaka',
                           style: TextStyle(
@@ -163,9 +211,8 @@ class ProfileContactUsScreen extends StatelessWidget {
                           "assets/icons/contactus_clock.png",
                           width: 35,
                           height: 35,
-
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 51),
                         const Text(
                           'www.example.com',
                           style: TextStyle(
@@ -177,19 +224,26 @@ class ProfileContactUsScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 26),
-
                   ],
                 ),
               ),
 
-
-
               const SizedBox(height: 43),
+
+              // Error message
+              Obx(() => controller.errorMessage.isNotEmpty
+                  ? Text(
+                controller.errorMessage.value,
+                style: const TextStyle(color: Colors.red),
+              )
+                  : const SizedBox()),
+
+              const SizedBox(height: 10),
 
               // Submit Button
               Align(
                 alignment: Alignment.center,
-                child: SizedBox(
+                child: Obx(() => SizedBox(
                   height: 39,
                   width: 342,
                   child: ElevatedButton(
@@ -200,9 +254,11 @@ class ProfileContactUsScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: () {},
-                    child: const Text(
-                      "Sent Message",
+                    onPressed: controller.isLoading.value ? null : _submitForm,
+                    child: controller.isLoading.value
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                      "Send Message",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w500,
@@ -210,7 +266,9 @@ class ProfileContactUsScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                ),
               ),
+              const SizedBox(height: 170),
             ],
           ),
         ),
@@ -218,11 +276,47 @@ class ProfileContactUsScreen extends StatelessWidget {
     );
   }
 
-  // Reusable TextField Builder
+  // Submit form method
+  void _submitForm() async {
+    final firstName = firstNameController.text.trim();
+    final lastName = lastNameController.text.trim();
+    final address = addressController.text.trim();
+    final phoneNumber = phoneNumberController.text.trim();
+    final subject = subjectController.text.trim();
+    final yourCompany = yourCompanyController.text.trim();
+
+    // Basic validation
+    if (firstName.isEmpty || lastName.isEmpty) {
+      _showSnackBar("First name and last name are required", isSuccess: false);
+      return;
+    }
+
+    controller.clearError();
+    
+    // Store the current error state before API call
+    final errorBefore = controller.errorMessage.value;
+    
+    await controller.createContact(
+      firstName: firstName,
+      lastName: lastName,
+      address: address,
+      phoneNumber: phoneNumber,
+      subject: subject,
+      yourCompany: yourCompany,
+    );
+    
+    // Check if there's a new error after API call
+    if (controller.errorMessage.value.isNotEmpty && controller.errorMessage.value != errorBefore) {
+      _showSnackBar(controller.errorMessage.value, isSuccess: false);
+    }
+  }
+
+  // Reusable TextField Builder with controller
   Widget _buildTextField({
     required String label,
     required String hintText,
     int maxLines = 1,
+    required TextEditingController controller,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -237,6 +331,7 @@ class ProfileContactUsScreen extends StatelessWidget {
         ),
         const SizedBox(height: 5),
         TextFormField(
+          controller: controller,
           style: const TextStyle(color: Color(0xFFA7A7A7), fontSize: 12, fontWeight: FontWeight.w400),
           maxLines: maxLines,
           decoration: InputDecoration(

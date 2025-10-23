@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/common/widgets/app_bottom_navbar.dart';
 import 'package:karlfive/features/home/presentation/widgets/custom_search_bar.dart';
+import 'package:karlfive/features/home/presentation/widgets/search_results_widget.dart';
 import 'package:karlfive/features/join_league/presentation/screens/form_screen/join_league_screen.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -17,24 +18,30 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(HomeController());
+    // Use cached controller from DI - prevents recreation and data reloading
+    final controller = Get.find<HomeController>();
 
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: Colors.black,
+          backgroundColor: AppColors.leagueBackgroundGrey,
           elevation: 0,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
-                "Hello Mosh,",
-                style: TextStyle(color: AppColors.white, fontSize: 18),
-              ),
-              SizedBox(height: 4),
-              Text(
+            children: [
+              Obx(() {
+                final name = controller.userName.value.isNotEmpty
+                    ? controller.userName.value
+                    : 'Guest';
+                return Text(
+                  'Hello $name,',
+                  style: const TextStyle(color: AppColors.white, fontSize: 18),
+                );
+              }),
+              const SizedBox(height: 4),
+              const Text(
                 "Welcome to Padel app",
                 style: TextStyle(color: AppColors.white, fontSize: 14),
               ),
@@ -57,46 +64,98 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+
+      body: Container(
+        color: AppColors.leagueBackgroundGrey,
         child: SafeArea(
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                SizedBox(height: 20),
-                CustomSearchBar(),
+              children: [
+                const SizedBox(height: 20),
+                const CustomSearchBar(),
+                const SizedBox(height: 15),
 
-                SizedBox(height: 15),
-                Text(
-                  "Game Reminder",
-                  style: TextStyle(
-                    color: AppColors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                SizedBox(height: 12),
+                // Show search results when searching, otherwise show regular content
+                Obx(() {
+                  if (controller.isSearching.value) {
+                    return const SearchResultsWidget();
+                  }
 
-                GameReminderWidget(),
-                SizedBox(height: 20),
+                  // Show skeleton loader while data is loading (first frame)
+                  if (controller.shouldShowLoading) {
+                    return _buildSkeletonLoader();
+                  }
 
-                LeagueUpdateWidget(),
-                SizedBox(height: 20),
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24.0),
+                        child: Text(
+                          "Game Reminder",
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 12),
+                      GameReminderWidget(),
+                      SizedBox(height: 20),
+                      LeagueUpdateWidget(),
+                      SizedBox(height: 20),
+                      NextMatchWidget(),
+                      SizedBox(height: 20),
+                      QuickStatsWidget(),
+                      SizedBox(height: 20),
+                      FixturesWidget(),
+                    ],
+                  );
+                }),
 
-                NextMatchWidget(),
-                SizedBox(height: 20),
-
-                QuickStatsWidget(),
-                SizedBox(height: 20),
-
-                FixturesWidget(),
+                const SizedBox(height: 20),
               ],
             ),
           ),
         ),
       ),
       bottomNavigationBar: AppBottomNavBar(currentIndex: 0),
+    );
+  }
+
+  // Skeleton loader for fast initial render
+  Widget _buildSkeletonLoader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _skeletonBox(height: 24, width: 150),
+          const SizedBox(height: 12),
+          _skeletonBox(height: 90, width: double.infinity),
+          const SizedBox(height: 20),
+          _skeletonBox(height: 120, width: double.infinity),
+          const SizedBox(height: 20),
+          _skeletonBox(height: 200, width: double.infinity),
+          const SizedBox(height: 20),
+          _skeletonBox(height: 100, width: double.infinity),
+          const SizedBox(height: 20),
+          _skeletonBox(height: 150, width: double.infinity),
+        ],
+      ),
+    );
+  }
+
+  Widget _skeletonBox({required double height, required double width}) {
+    return Container(
+      height: height,
+      width: width,
+      decoration: BoxDecoration(
+        color: Colors.grey[800],
+        borderRadius: BorderRadius.circular(8),
+      ),
     );
   }
 }

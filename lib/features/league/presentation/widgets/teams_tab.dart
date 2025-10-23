@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
+import 'package:get/get.dart';
 import '../../models/team_model.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../team_details/presentation/screens/team_details_screens.dart';
 
 class TeamsTab extends StatelessWidget {
   final List<Team> teamsData;
@@ -12,6 +13,15 @@ class TeamsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.only(
+            left: 24.0,
+            right: 24.0,
+            top: 17,
+            bottom: 3,
+          ),
+          child: Divider(color: AppColors.gray, height: 2, thickness: 2),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Text(
@@ -84,28 +94,40 @@ class _TeamGridItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.leagueFieldBackground,
-        borderRadius: BorderRadius.circular(2),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            backgroundImage: AssetImage(team.teamLogoPath),
-            radius: 18.0,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            team.teamName,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              color: AppColors.buttonText,
+    return GestureDetector(
+      onTap: () {
+        // Navigate to team details screen with team ID
+        Get.to(() => TeamDetailsScreen(teamId: team.id));
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.leagueFieldBackground,
+          borderRadius: BorderRadius.circular(2),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 18.0,
+              backgroundColor: Colors.transparent,
+              backgroundImage: team.logoPhotoUrl.isNotEmpty
+                  ? NetworkImage(team.logoPhotoUrl)
+                  : const AssetImage('assets/images/group_logo.png')
+                        as ImageProvider,
             ),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              team.teamName,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: AppColors.buttonText,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ],
+        ),
       ),
     );
   }

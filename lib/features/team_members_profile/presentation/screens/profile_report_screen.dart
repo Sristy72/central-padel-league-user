@@ -1,6 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+
+import '../controllers/report_controller.dart';
 
 class ProfileReportScreen extends StatefulWidget {
   const ProfileReportScreen({super.key});
@@ -10,7 +14,35 @@ class ProfileReportScreen extends StatefulWidget {
 }
 
 class _ProfileReportScreenState extends State<ProfileReportScreen> {
+  final reportController = Get.find<ReportController>();
+
+  final TextEditingController eventController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+
   File? _selectedImage;
+
+  // Method to clear all form fields
+  void _clearAllFields() {
+    eventController.clear();
+    descriptionController.clear();
+    setState(() {
+      _selectedImage = null;
+    });
+  }
+
+  // Method to show snackbar
+  void _showSnackBar(String message, {bool isSuccess = true}) {
+    Get.snackbar(
+      isSuccess ? 'Success' : 'Error',
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: isSuccess ? Colors.green : Colors.red,
+      colorText: Colors.white,
+      duration: const Duration(seconds: 3),
+      margin: const EdgeInsets.all(16),
+      borderRadius: 8,
+    );
+  }
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -23,19 +55,43 @@ class _ProfileReportScreenState extends State<ProfileReportScreen> {
     }
   }
 
+  void _submitReport() async {
+    final event = eventController.text.trim();
+    final description = descriptionController.text.trim();
+
+    // Basic validation
+    if (event.isEmpty || description.isEmpty) {
+      _showSnackBar("Event and description are required", isSuccess: false);
+      return;
+    }
+
+    await reportController.createReport(
+      userId: "68ccd4854f2b792c1ee5a84a",
+      even: event,
+      description: description,
+      imageFile: _selectedImage,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Set up success and error callbacks for the controller
+    reportController.onSuccess = (String message) {
+      _showSnackBar(message, isSuccess: true);
+      _clearAllFields();
+    };
+    
+    reportController.onError = (String message) {
+      _showSnackBar(message, isSuccess: false);
+    };
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
         title: const Text(
           "Report",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
-          ),
+          style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w500),
         ),
         centerTitle: true,
       ),
@@ -46,25 +102,16 @@ class _ProfileReportScreenState extends State<ProfileReportScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Event
-              const Text(
-                "Event",
-                style: TextStyle(color: Color(0xFFF5F5F5), fontSize: 14),
-              ),
+              const Text("Event", style: TextStyle(color: Color(0xFFF5F5F5), fontSize: 14)),
               const SizedBox(height: 6),
               TextFormField(
+                controller: eventController,
                 style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 12,
-                  ),
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                  focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
                   fillColor: Colors.black,
                   filled: true,
                 ),
@@ -72,23 +119,17 @@ class _ProfileReportScreenState extends State<ProfileReportScreen> {
               const SizedBox(height: 8),
 
               // Description
-              const Text(
-                "Description",
-                style: TextStyle(color: Colors.white, fontSize: 14),
-              ),
+              const Text("Description", style: TextStyle(color: Colors.white, fontSize: 14)),
               const SizedBox(height: 6),
               TextFormField(
+                controller: descriptionController,
                 style: const TextStyle(color: Colors.white),
                 maxLines: 6,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: "Write here",
-                  hintStyle: const TextStyle(color: Color(0xFFA7A7A7), fontSize: 14),
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                  focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
+                  hintStyle: TextStyle(color: Color(0xFFA7A7A7), fontSize: 14),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
                   fillColor: Colors.black,
                   filled: true,
                 ),
@@ -109,53 +150,36 @@ class _ProfileReportScreenState extends State<ProfileReportScreen> {
                       ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset(
-                        'assets/icons/Report_drop_photo.png',
-                        width: 17,
-                        height: 17,
-                        color: Colors.white,
-                      ),
+                      Image.asset('assets/icons/Report_drop_photo.png',
+                          width: 17, height: 17, color: Colors.white),
                       const SizedBox(height: 7),
-                      const Text(
-                        "Drop your files here",
-                        style: TextStyle(color: Colors.white, fontSize: 8),
-                      ),
+                      const Text("Drop your files here", style: TextStyle(color: Colors.white, fontSize: 8)),
                       const SizedBox(height: 10),
-                      const Text(
-                        "Choose File",
-                        style: TextStyle(color: Colors.blue, fontSize: 8),
-                      ),
+                      const Text("Choose File", style: TextStyle(color: Colors.blue, fontSize: 8)),
                     ],
                   )
-                      : Image.file(
-                    _selectedImage!,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  ),
+                      : Image.file(_selectedImage!, fit: BoxFit.cover, width: double.infinity),
                 ),
               ),
 
               const SizedBox(height: 16),
 
               // Submit Button
-              SizedBox(
+              Obx(() => SizedBox(
                 width: double.infinity,
                 height: 45,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2B7FD0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                   ),
-                  onPressed: () {},
-                  child: const Text(
-                    "Submit",
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w500),
-                  ),
+                  onPressed: reportController.isLoading.value ? null : _submitReport,
+                  child: reportController.isLoading.value
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text("Submit",
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
                 ),
-              ),
+              )),
             ],
           ),
         ),

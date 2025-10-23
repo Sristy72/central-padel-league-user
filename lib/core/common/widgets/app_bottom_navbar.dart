@@ -3,9 +3,10 @@ import 'package:get/get.dart';
 import 'package:karlfive/features/home/presentation/screens/home_screen.dart';
 import 'package:karlfive/features/league/presentation/screens/leagues_screen.dart';
 import 'package:karlfive/features/notification/presentation/screen/notification_dummy_screen.dart';
-import 'package:karlfive/features/team_members_profile/models/team_member_model.dart';
+
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_info_screen.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../features/team_members_profile/data/models/team_member_model.dart';
 
 // Create a GetX controller for navigation
 class BottomNavController extends GetxController {
@@ -27,7 +28,7 @@ class AppBottomNavBar extends StatelessWidget {
     final BottomNavController controller = Get.put(BottomNavController());
     controller.currentIndex.value = currentIndex;
 
-    Widget _buildNavItem({
+    Widget buildNavItem({
       required int index,
       required String icon,
       required String activeIcon,
@@ -80,32 +81,35 @@ class AppBottomNavBar extends StatelessWidget {
         () => BottomNavigationBar(
           currentIndex: controller.currentIndex.value,
           onTap: (index) {
+            // If the tab is already selected, do nothing
+            if (controller.currentIndex.value == index) return;
+
+            // Update the local index state
             controller.changeIndex(index);
 
-            // Use GetX for navigation with smooth transitions
             if (index == 0) {
               Get.to(
                 () => const HomeScreen(),
                 transition: Transition.fadeIn,
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 50),
               );
             } else if (index == 1) {
               Get.to(
                 () => const LeaguesScreen(),
                 transition: Transition.fadeIn,
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 50),
               );
             } else if (index == 2) {
               Get.to(
                 () => NotificationScreen(),
                 transition: Transition.fadeIn,
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 50),
               );
             } else if (index == 3) {
               Get.to(
                 () => ProfileInfoScreen(member: dummyMember),
                 transition: Transition.fadeIn,
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 50),
               );
             }
           },
@@ -120,7 +124,7 @@ class AppBottomNavBar extends StatelessWidget {
 
           items: [
             BottomNavigationBarItem(
-              icon: _buildNavItem(
+              icon: buildNavItem(
                 index: 0,
                 icon: "assets/images/nav_home_off.png",
                 activeIcon: "assets/images/nav_home_on.png",
@@ -129,7 +133,7 @@ class AppBottomNavBar extends StatelessWidget {
               label: '',
             ),
             BottomNavigationBarItem(
-              icon: _buildNavItem(
+              icon: buildNavItem(
                 index: 1,
                 icon: "assets/images/nav_match_off.png",
                 activeIcon: "assets/images/nav_match_on.png",
@@ -138,7 +142,7 @@ class AppBottomNavBar extends StatelessWidget {
               label: '',
             ),
             BottomNavigationBarItem(
-              icon: _buildNavItem(
+              icon: buildNavItem(
                 index: 2,
                 icon: "assets/images/nav_noti_off.png",
                 activeIcon: "assets/images/nav_noti_on.png",
@@ -147,7 +151,7 @@ class AppBottomNavBar extends StatelessWidget {
               label: '',
             ),
             BottomNavigationBarItem(
-              icon: _buildNavItem(
+              icon: buildNavItem(
                 index: 3,
                 icon: "assets/images/nav_prof_off.png",
                 activeIcon: "assets/images/nav_prof_on.png",

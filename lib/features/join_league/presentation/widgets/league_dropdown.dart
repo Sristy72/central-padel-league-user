@@ -12,7 +12,7 @@ LeagueDropdown({super.key});
   Widget build(BuildContext context) {
     return Obx(
       () => DropdownButtonFormField<String>(
-        value: controller.selectedLeague.value.isEmpty
+        initialValue: controller.selectedLeague.value.isEmpty
             ? null
             : controller.selectedLeague.value,
         items: controller.leagues

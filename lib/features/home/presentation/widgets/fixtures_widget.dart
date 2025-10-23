@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
 import '../../controller/home_controller.dart';
+import '../screens/home_fixtures_screen.dart';
 
 class FixturesWidget extends StatelessWidget {
   const FixturesWidget({super.key});
@@ -15,7 +16,7 @@ class FixturesWidget extends StatelessWidget {
       if (controller.groupedFixtures.isEmpty) {
         return const Center(
           child: Text(
-            "No fixtures available",
+            "No fixtures available",  
             style: TextStyle(color: Colors.white70),
           ),
         );
@@ -24,13 +25,23 @@ class FixturesWidget extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Fixtures",
-            style: TextStyle(color: Colors.white, fontSize: 18),
+          Padding(
+            padding: EdgeInsets.only(
+              left: MediaQuery.of(context).size.width < 350 ? 12.0 : 24.0,
+              right: MediaQuery.of(context).size.width < 350 ? 12.0 : 25.0,
+              bottom: 12,
+            ),
+            child: const Text(
+              "Fixtures",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-          const SizedBox(height: 8),
 
-          // For each date group
+          //*<--- For each date group --->
           ...controller.groupedFixtures.entries.map((entry) {
             final date = entry.key;
             final matches = entry.value;
@@ -42,9 +53,11 @@ class FixturesWidget extends StatelessWidget {
                 Container(
                   width: double.infinity,
                   color: Colors.grey[900],
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 12,
+                  padding: EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: MediaQuery.of(context).size.width < 350
+                        ? 8.0
+                        : 12.0,
                   ),
                   child: Row(
                     children: [
@@ -67,10 +80,9 @@ class FixturesWidget extends StatelessWidget {
                   ),
                 ),
 
-                // Matches list for this date
+                //* <--- MATCHES LIST Per Date -->
                 ListView.separated(
-                  shrinkWrap:
-                      true, // important to allow embedding inside Column
+                  shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: matches.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 6),
@@ -93,23 +105,32 @@ class FixturesWidget extends StatelessWidget {
 
                     return Container(
                       color: bgColor,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 12,
+                      padding: EdgeInsets.symmetric(
+                        vertical: 4,
+                        horizontal: MediaQuery.of(context).size.width < 350
+                            ? 8.0
+                            : 12.0,
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // Team 1 (logo + name)
+                          //* Team 1 (logo + name)
                           Expanded(
-                            flex: 4,
+                            flex: MediaQuery.of(context).size.width < 400
+                                ? 3
+                                : 4,
                             child: Row(
                               children: [
-                                // Logo (circular)
                                 ClipOval(
                                   child: SizedBox(
-                                    width: 36,
-                                    height: 36,
+                                    width:
+                                        MediaQuery.of(context).size.width < 350
+                                        ? 28
+                                        : 36,
+                                    height:
+                                        MediaQuery.of(context).size.width < 350
+                                        ? 28
+                                        : 36,
                                     child: team1Img.isNotEmpty
                                         ? Image.network(
                                             team1Img,
@@ -126,17 +147,29 @@ class FixturesWidget extends StatelessWidget {
                                           ),
                                   ),
                                 ),
-                                const SizedBox(width: 10),
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width < 350
+                                      ? 4
+                                      : 8,
+                                ),
 
                                 // Team name — flexible to avoid overflow
                                 Expanded(
-                                  child: Text(
-                                    fix.team1.teamName,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      fix.team1.teamName,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize:
+                                            MediaQuery.of(context).size.width <
+                                                350
+                                            ? 12
+                                            : 14,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -145,58 +178,92 @@ class FixturesWidget extends StatelessWidget {
                           ),
 
                           Expanded(
-                            flex: 2,
+                            flex: MediaQuery.of(context).size.width < 400
+                                ? 2
+                                : 3,
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 FittedBox(
                                   fit: BoxFit.scaleDown,
                                   child: Text(
-                                    fix.time ?? '',
-                                    style: const TextStyle(
+                                    fix.time,
+                                    style: TextStyle(
                                       color: Colors.white70,
                                       fontWeight: FontWeight.bold,
+                                      fontSize:
+                                          MediaQuery.of(context).size.width <
+                                              350
+                                          ? 10
+                                          : 12,
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                const Text(
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.width < 350
+                                      ? 2
+                                      : 4,
+                                ),
+                                Text(
                                   "VS",
                                   style: TextStyle(
                                     color: Colors.white54,
-                                    fontSize: 12,
+                                    fontSize:
+                                        MediaQuery.of(context).size.width < 350
+                                        ? 10
+                                        : 12,
                                   ),
                                 ),
                               ],
                             ),
                           ),
 
-                          // Team 2 (name + logo) and star
+                          //* <--- Team 2 (name + logo) and star --->
                           Expanded(
-                            flex: 4,
+                            flex: MediaQuery.of(context).size.width < 400
+                                ? 4
+                                : 5,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 // Team name aligned to right
                                 Flexible(
-                                  child: Text(
-                                    fix.team2.teamName,
-                                    textAlign: TextAlign.right,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerRight,
+                                    child: Text(
+                                      fix.team2.teamName,
+                                      textAlign: TextAlign.right,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize:
+                                            MediaQuery.of(context).size.width <
+                                                350
+                                            ? 12
+                                            : 14,
+                                      ),
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 10),
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width < 350
+                                      ? 4
+                                      : 10,
+                                ),
 
-                                // Logo (circular)
                                 ClipOval(
                                   child: SizedBox(
-                                    width: 36,
-                                    height: 36,
+                                    width:
+                                        MediaQuery.of(context).size.width < 350
+                                        ? 28
+                                        : 36,
+                                    height:
+                                        MediaQuery.of(context).size.width < 350
+                                        ? 28
+                                        : 36,
                                     child: team2Img.isNotEmpty
                                         ? Image.network(
                                             team2Img,
@@ -214,13 +281,42 @@ class FixturesWidget extends StatelessWidget {
                                   ),
                                 ),
 
-                                const SizedBox(width: 8),
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width < 350
+                                      ? 2
+                                      : 4,
+                                ),
 
-                                // Favorite icon
-                                const Icon(
-                                  Icons.star_border,
-                                  color: Colors.white70,
-                                  size: 20,
+                                //! Star Icon Here - made responsive
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width < 350
+                                      ? 32
+                                      : 40,
+                                  height:
+                                      MediaQuery.of(context).size.width < 350
+                                      ? 32
+                                      : 40,
+                                  child: IconButton(
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                    icon: Image(
+                                      height:
+                                          MediaQuery.of(context).size.width <
+                                              350
+                                          ? 14
+                                          : 18,
+                                      width:
+                                          MediaQuery.of(context).size.width <
+                                              350
+                                          ? 14
+                                          : 18,
+                                      image: const AssetImage(
+                                        "assets/images/star_icon_off.png",
+                                      ),
+                                    ),
+                                    onPressed:
+                                        () {}, //TODO: Add favorite logic here
+                                  ),
                                 ),
                               ],
                             ),
@@ -232,15 +328,13 @@ class FixturesWidget extends StatelessWidget {
                 ),
               ],
             );
-          }).toList(),
+          }),
 
-          // "See All" button
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
               onPressed: () {
-                // TODO: Navigate to full fixtures page (replace with Get.to)
-                // Get.to(() => const FullFixturesScreen());
+                Get.to(() => const HomeFixturesScreen());
               },
               child: const Text(
                 "See All",

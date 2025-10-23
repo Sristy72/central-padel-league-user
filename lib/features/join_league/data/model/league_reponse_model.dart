@@ -21,6 +21,7 @@ class LeagueResponeModel {
   final DateTime createdAt;
   final DateTime updatedAt;
   final int v;
+  final String? price; // New field for amount
 
   LeagueResponeModel({
     required this.id,
@@ -41,6 +42,7 @@ class LeagueResponeModel {
     required this.createdAt,
     required this.updatedAt,
     required this.v,
+    required this.price, 
   });
 
   factory LeagueResponeModel.fromJson(Map<String, dynamic> json) {
@@ -65,6 +67,7 @@ class LeagueResponeModel {
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
       v: json['__v'] ?? 0,
+      price: json['price'], 
     );
   }
 
@@ -87,5 +90,6 @@ class LeagueResponeModel {
     'createdAt': createdAt.toIso8601String(),
     'updatedAt': updatedAt.toIso8601String(),
     '__v': v,
+    'price': price, 
   };
 }

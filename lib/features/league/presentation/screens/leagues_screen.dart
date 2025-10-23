@@ -1,54 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:karlfive/core/common/widgets/app_bottom_navbar.dart';
 import 'package:karlfive/features/league/presentation/widgets/league_card.dart';
 
-// features/league/presentation/pages/leagues_screen.dart
-import '../../data/league_remote_data_source.dart';
-import '../../data/league_repository.dart';
-import '../../models/league_model.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../presentation/controllers/league_controller.dart';
 
-class LeaguesScreen extends StatefulWidget {
+class LeaguesScreen extends StatelessWidget {
   const LeaguesScreen({super.key});
 
   @override
-  State<LeaguesScreen> createState() => _LeaguesScreenState();
-}
-
-class _LeaguesScreenState extends State<LeaguesScreen> {
-  late Future<List<League>> futureLeagues;
-  final LeagueRepository repository = LeagueRepositoryImpl(
-    remoteDataSource: LeagueRemoteDataSourceImpl(),
-  );
-
-  @override
-  void initState() {
-    super.initState();
-    futureLeagues = repository.getLeagues();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final LeagueController controller = Get.find<LeagueController>();
+
     return Scaffold(
-      body: FutureBuilder<List<League>>(
-        future: futureLeagues,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            final leagues = snapshot.data!;
-            return ListView.builder(
-              itemCount: leagues.length,
-              itemBuilder: (context, index) {
-                return LeagueCard(league: leagues[index]);
-              },
-            );
-          } else {
-            return const Center(child: Text('No leagues available'));
-          }
-        },
-      ),
+      backgroundColor: AppColors.leagueBackgroundGrey,
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (controller.errorMessage.isNotEmpty) {
+          return Center(child: Text('Error: ${controller.errorMessage}'));
+        } else if (controller.leagues.isEmpty) {
+          return const Center(child: Text('No leagues available'));
+        } else {
+          return ListView.builder(
+            itemCount: controller.leagues.length,
+            itemBuilder: (context, index) {
+              return LeagueCard(league: controller.leagues[index]);
+            },
+          );
+        }
+      }),
       bottomNavigationBar: AppBottomNavBar(currentIndex: 1),
     );
   }

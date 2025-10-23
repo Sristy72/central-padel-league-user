@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/match_model.dart'; // Import the new model
 import '../../../../core/theme/app_colors.dart'; // Assuming AppColors is defined here
+import 'package:intl/intl.dart';
 
 class MatchesTab extends StatelessWidget {
   final List<Match> matchesData;
@@ -28,7 +29,7 @@ class _MatchCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppColors.primaryBackground,
+      color: AppColors.leagueBackgroundGrey,
       margin: const EdgeInsets.only(bottom: 20),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
       child: Padding(
@@ -40,17 +41,20 @@ class _MatchCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildTeamDisplay(
-                  match.team1LogoPath,
-                  match.team1Name,
+                  match.teamOne.logoPhotoUrl,
+                  match.teamOne.teamName,
                 ), //* <--- Match API here
                 Column(
                   children: [
-                    const Text(
-                      'Today',
-                      style: TextStyle(color: AppColors.white, fontSize: 12),
+                    Text(
+                      DateFormat.yMMMd().format(match.matchDateTime),
+                      style: const TextStyle(
+                        color: AppColors.white,
+                        fontSize: 12,
+                      ),
                     ),
                     Text(
-                      match.matchTime,
+                      DateFormat.Hm().format(match.matchDateTime),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -59,7 +63,10 @@ class _MatchCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                _buildTeamDisplay(match.team2LogoPath, match.team2Name),
+                _buildTeamDisplay(
+                  match.teamTwo.logoPhotoUrl,
+                  match.teamTwo.teamName,
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -81,22 +88,22 @@ class _MatchCard extends StatelessWidget {
             _buildDetailRow(
               "assets/images/wistle_icon.png",
               'Date',
-              '${match.matchDate} - ${match.matchTime}',
+              '${DateFormat.yMMMd().format(match.matchDateTime)} - ${DateFormat.Hm().format(match.matchDateTime)}',
             ),
             _buildDetailRow(
               "assets/images/group_icon.png",
               'Arena',
-              match.arena,
+              match.venueName,
             ),
             _buildDetailRow(
               "assets/images/score_icon.png",
               'Score',
-              match.score,
+              '${match.formattedScore()} (${match.setsBreakdown()})',
             ),
             _buildDetailRow(
               "assets/images/winner_icon.png",
               'Winner',
-              match.winner,
+              match.winnerTeam?.teamName ?? 'TBD',
             ),
           ],
         ),
@@ -110,10 +117,27 @@ class _MatchCard extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(25),
           decoration: BoxDecoration(
-            color: AppColors.leagueFieldBackground,
+            // radial fade so the box dissolves to transparent on all sides
+            gradient: RadialGradient(
+              center: const Alignment(0, 0),
+              radius: 1.2,
+              colors: [
+                AppColors.leagueFieldBackground.withValues(alpha: 1.0),
+                AppColors.leagueBackgroundGrey.withValues(alpha: 0.0),
+              ],
+              stops: const [0.5, 1.0],
+            ),
             borderRadius: BorderRadius.circular(4),
           ),
-          child: Image.asset(logoPath, width: 40, height: 40),
+          child: (logoPath.startsWith('http') || logoPath.startsWith('https'))
+              ? Image.network(
+                  logoPath,
+                  width: 40,
+                  height: 40,
+                  errorBuilder: (_, __, ___) =>
+                      const Icon(Icons.broken_image, color: Colors.white),
+                )
+              : Image.asset(logoPath, width: 40, height: 40),
         ),
         const SizedBox(height: 8),
         Text(name, style: const TextStyle(color: Colors.white, fontSize: 14)),

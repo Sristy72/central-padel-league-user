@@ -2,6 +2,11 @@
 
     <!-- Additional -->
 
+    <!-- Internet Permission -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Internet Permission -->
+    
+
     <!-- Internet Check -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -15,7 +20,8 @@
     <application
         android:label="karlfive"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
             android:exported="true"

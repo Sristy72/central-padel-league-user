@@ -1,11 +1,11 @@
 class ApiConstants {
   /// [Base Configuration]
-  static const String baseDomain = 'https://karlfive223-backend.onrender.com';
+  static const String baseDomain = 'http://10.10.5.88:5001';
   static const String baseUrl = '$baseDomain/api/v1';
 
   /// soykot ip
 
-  static const String soyDomain = 'http://10.10.5.91:5002';
+  // static const String soyDomain = 'http://10.10.5.91:5002';
 
   /// [Headers]
   static Map<String, String> get defaultHeaders => {
@@ -32,8 +32,10 @@ class ApiConstants {
   static TeamEndpointcs get team => TeamEndpointcs();
   static LeagueEndpoints get league => LeagueEndpoints();
 
-}
+  static ContactEndpoints get contact => ContactEndpoints();
 
+  static PaymentEndpoints get payment => PaymentEndpoints();
+}
 
 /// [Authentication Endpoints]
 class AuthEndpoints {
@@ -72,4 +74,18 @@ class LeagueEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/league';
 
   final String getAllLeagues = '$_base/all-league';
+}
+
+class ContactEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/contact';
+  final String createContact = '$_base/create';
+}
+
+// New payment endpoints
+class PaymentEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/payment';
+
+  final String createPayment = '$_base/create-payment';
+
+  final String confirmPayment = '$_base/confirm-payment';
 }
