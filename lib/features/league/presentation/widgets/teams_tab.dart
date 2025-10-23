@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../models/team_model.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../team_details/presentation/screens/team_details_screens.dart';
+import '../../models/team_model.dart';
 
 class TeamsTab extends StatelessWidget {
   final List<Team> teamsData;
@@ -11,54 +12,56 @@ class TeamsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(
-            left: 24.0,
-            right: 24.0,
-            top: 17,
-            bottom: 3,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 24.0,
+              right: 24.0,
+              top: 17,
+              bottom: 3,
+            ),
+            child: Divider(color: AppColors.gray, height: 2, thickness: 2),
           ),
-          child: Divider(color: AppColors.gray, height: 2, thickness: 2),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Text(
-            "Teams",
-            style: TextStyle(
-              color: AppColors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(
+              "Teams",
+              style: TextStyle(
+                color: AppColors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
             ),
           ),
-        ),
-        SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24),
-            child: Column(
-              children: [
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 8.0,
-                    mainAxisSpacing: 8.0,
-                    childAspectRatio: 1.1,
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24),
+              child: Column(
+                children: [
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      crossAxisSpacing: 8.0,
+                      mainAxisSpacing: 8.0,
+                      childAspectRatio: 1.1,
+                    ),
+                    itemCount: teamsData.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final team = teamsData[index];
+                      return _TeamGridItem(team: team);
+                    },
                   ),
-                  itemCount: teamsData.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final team = teamsData[index];
-                    return _TeamGridItem(team: team);
-                  },
-                ),
-                _buildSeeTableButton(),
-              ],
+                  _buildSeeTableButton(),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
