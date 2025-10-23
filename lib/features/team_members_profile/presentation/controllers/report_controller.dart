@@ -1,5 +1,7 @@
 import 'dart:io';
+
 import 'package:get/get.dart' hide FormData, MultipartFile;
+
 import '../../../../core/network/services/multiple_form_data_manager.dart';
 import '../../domain/repo/contact_us_repo.dart';
 
@@ -19,6 +21,7 @@ class ReportController extends GetxController {
     required String description,
     File? imageFile,
   }) async {
+    isLoading.value = true;
 
     multiFormDataManager.addTextData("even", even);
     multiFormDataManager.addTextData("description", description);
@@ -28,7 +31,22 @@ class ReportController extends GetxController {
 
     final result = await _contactUsRepo.report(formData);
 
-    result.fold((fail) {}, (success) {});
-
+    result.fold((fail) {
+      isLoading.value = false;
+      // Trigger error callback if provided
+      if (onError != null) {
+        onError!(fail.message);
+      }
+    }, (success) {
+      isLoading.value = false;
+      // Trigger success callback if provided
+      if (onSuccess != null) {
+        onSuccess!(success.message);
+      }
+    });
   }
+
+  // Callbacks for success and error handling
+  Function(String)? onSuccess;
+  Function(String)? onError;
 }

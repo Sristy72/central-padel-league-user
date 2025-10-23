@@ -10,10 +10,7 @@ import 'package:karlfive/core/theme/input_decoration_extensions.dart';
 import 'package:karlfive/features/auth/presentation/controller/auth_controller.dart';
 import 'package:karlfive/features/auth/presentation/controller/term_of_services_and_privacy_policy_controller.dart';
 import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
-import 'package:karlfive/features/auth/presentation/screens/otp_verification_to_complete_register.dart';
-
 import '../../../../core/common/constants/app_images.dart';
-import '../../../../core/common/widgets/form_error_message.dart';
 import '../widgets/different_login_approach.dart';
 
 class SignupScreen extends StatefulWidget {

@@ -1,12 +1,12 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:get/get.dart';
 
-import '../controllers/edit_profile_controller.dart';
-import '../controllers/profile_controller.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../data/models/edit_profile_model.dart';
+import '../controllers/edit_profile_controller.dart';
+import '../controllers/profile_controller.dart';
 
 class EditProfileInfoScreen extends StatefulWidget {
   final EditProfileModel member;
@@ -26,6 +26,21 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
   String _selectedGender = "";
   File? _pickedImage;
   late final EditProfileController _controller;
+  late final ProfileController _profileController;
+
+  // Method to clear all form fields (except email which is uneditable)
+  void _clearAllFields() {
+    _firstNameController.clear();
+    _lastNameController.clear();
+    _phoneController.clear();
+    _birthdayController.clear();
+    setState(() {
+      _selectedGender = "";
+      _pickedImage = null;
+    });
+  }
+
+
 
   @override
   void initState() {
@@ -34,9 +49,14 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
     _selectedGender = widget.member.gender;
     _firstNameController = TextEditingController(text: widget.member.firstName);
     _lastNameController = TextEditingController(text: widget.member.lastName);
-    _emailController = TextEditingController(text: widget.member.email);
     _phoneController = TextEditingController(text: widget.member.phone);
     _controller = Get.find<EditProfileController>();
+    _profileController = Get.find<ProfileController>();
+    
+    // Set email from profile controller (uneditable)
+    _emailController = TextEditingController(
+      text: _profileController.profile.value?.email ?? widget.member.email
+    );
   }
 
   @override
@@ -191,6 +211,7 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                 label: "Email",
                 hintText: "Enter Email",
                 controller: _emailController,
+                enabled: false,
               ),
               const SizedBox(height: 16),
 
@@ -326,12 +347,27 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                       ),
                     ),
                     onPressed: () async {
-                      final firstName = _firstNameController.text;
-                      final lastName = _lastNameController.text;
-                      final email = _emailController.text;
-                      final phone = _phoneController.text;
-                      final birthday = _birthdayController.text;
+                      final firstName = _firstNameController.text.trim();
+                      final lastName = _lastNameController.text.trim();
+                      final email = _emailController.text.trim();
+                      final phone = _phoneController.text.trim();
+                      final birthday = _birthdayController.text.trim();
                       final gender = _selectedGender;
+
+                      // Basic validation
+                      if (firstName.isEmpty || lastName.isEmpty) {
+                        Get.snackbar(
+                          'Validation Error', 
+                          'First name and last name are required',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.red,
+                          colorText: Colors.white,
+                          duration: const Duration(seconds: 3),
+                          margin: const EdgeInsets.all(16),
+                          borderRadius: 8,
+                        );
+                        return;
+                      }
 
                       final success = await _controller.updateProfile(
                         firstName: firstName,
@@ -344,11 +380,19 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                       );
 
                       if (success) {
+                        // Clear all form fields after successful update
+                        _clearAllFields();
+                        
                         // Refresh global profile data so profile screen shows updates
                         final profileCtrl = Get.find<ProfileController>();
                         await profileCtrl.fetchProfile();
-                        Get.back();
+                        
+                        // Navigate back to profile screen after a short delay to show snackbar
+                        Future.delayed(const Duration(milliseconds: 800), () {
+                          Get.back();
+                        });
                       }
+                      // Error handling is already done by the controller with snackbars
                     },
                     child: const Text(
                       "Save",
@@ -373,6 +417,7 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
     required String hintText,
     String? initialValue,
     TextEditingController? controller,
+    bool enabled = true,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -391,7 +436,11 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
           child: TextFormField(
             controller: controller,
             initialValue: controller == null ? initialValue : null,
-            style: const TextStyle(color: Colors.white, fontSize: 14),
+            enabled: enabled,
+            style: TextStyle(
+              color: enabled ? Colors.white : Colors.grey, 
+              fontSize: 14
+            ),
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: const TextStyle(
@@ -400,11 +449,15 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
               contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               enabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.white),
+                borderSide: BorderSide(color: enabled ? Colors.white : Colors.grey),
                 borderRadius: BorderRadius.circular(4),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.white),
+                borderSide: BorderSide(color: enabled ? Colors.white : Colors.grey),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.grey),
                 borderRadius: BorderRadius.circular(4),
               ),
               fillColor: Colors.grey[900],

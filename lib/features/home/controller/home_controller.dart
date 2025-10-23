@@ -1,13 +1,13 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
-import '../models/player_model.dart';
-import '../models/team_model.dart';
-import '../models/match_model.dart';
-import '../data/home_repository.dart';
+import '../../../core/services/get_user_profile_service.dart';
 import '../../league/models/match_model.dart' as league_match;
 import '../../league/models/standing_model.dart';
-import '../../../core/services/get_user_profile_service.dart';
+import '../data/home_repository.dart';
+import '../models/match_model.dart';
+import '../models/player_model.dart';
+import '../models/team_model.dart';
 
 class HomeController extends GetxController {
   final HomeRepository repository;
@@ -73,19 +73,15 @@ class HomeController extends GetxController {
   static List<league_match.Match> _staticLeagueMatches = [];
   static List<Standing> _staticStandingsList = [];
 
-  // Cache grouped fixtures to avoid re-computing on every rebuild
-  var _cachedGroupedFixtures = <String, List<Match>>{};
-  var _fixturesCacheVersion = 0;
-  var _lastFixturesCacheVersion = -1;
+  // Make groupedFixtures observable
+  var _groupedFixtures = <String, List<Match>>{}.obs;
 
-  /// Grouped fixtures (by date) - cached to avoid rebuilding
-  Map<String, List<Match>> get groupedFixtures {
-    // Only recompute if fixtures changed
-    if (_lastFixturesCacheVersion != _fixturesCacheVersion) {
-      _cachedGroupedFixtures = _computeGroupedFixtures(fixtures);
-      _lastFixturesCacheVersion = _fixturesCacheVersion;
-    }
-    return _cachedGroupedFixtures;
+  /// Grouped fixtures (by date) - observable
+  RxMap<String, List<Match>> get groupedFixtures => _groupedFixtures;
+
+  // Method to update grouped fixtures when fixtures change
+  void _updateGroupedFixtures() {
+    _groupedFixtures.value = _computeGroupedFixtures(fixtures);
   }
 
   // Helper to group fixtures (static so it could be moved to isolate if needed)
@@ -162,7 +158,7 @@ class HomeController extends GetxController {
 
           //* Map league.Match -> home Match model (lightweight)
           fixtures.assignAll(data.map(_mapLeagueMatchToHome).toList());
-          _fixturesCacheVersion++; // Invalidate cache
+          _updateGroupedFixtures(); // Update grouped fixtures
 
           //* For next match, pick the earliest upcoming or the first one
           final upcoming = data
@@ -260,7 +256,7 @@ class HomeController extends GetxController {
     fixtures.assignAll(_staticFixtures);
     leagueMatches.assignAll(_staticLeagueMatches);
     standingsList.assignAll(_staticStandingsList);
-    _fixturesCacheVersion++; // Invalidate fixture cache to trigger recalculation
+    _updateGroupedFixtures(); // Update grouped fixtures
   }
 
   /// Save current data to static cache for persistence across navigation

@@ -88,25 +88,25 @@ class AppBottomNavBar extends StatelessWidget {
             controller.changeIndex(index);
 
             if (index == 0) {
-              Get.offAll(
+              Get.to(
                 () => const HomeScreen(),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 50),
               );
             } else if (index == 1) {
-              Get.offAll(
+              Get.to(
                 () => const LeaguesScreen(),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 50),
               );
             } else if (index == 2) {
-              Get.offAll(
+              Get.to(
                 () => NotificationScreen(),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 50),
               );
             } else if (index == 3) {
-              Get.offAll(
+              Get.to(
                 () => ProfileInfoScreen(member: dummyMember),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 50),

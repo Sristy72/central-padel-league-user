@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../controller/home_controller.dart';
 import '../screens/home_standings_screen.dart';
 
@@ -251,7 +252,7 @@ class QuickStatsWidget extends StatelessWidget {
                                     width:
                                         MediaQuery.of(context).size.width < 350
                                         ? 70
-                                        : 110,
+                                        : 82,
                                     child: Text(
                                       stat["name"] ?? "",
                                       style: const TextStyle(
