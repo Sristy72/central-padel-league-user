@@ -216,7 +216,7 @@ class QuickStatsWidget extends StatelessWidget {
                                                         context,
                                                       ).size.width <
                                                       350
-                                                  ? 12
+                                                  ? 10
                                                   : 14,
                                             ),
                                             overflow: TextOverflow.ellipsis,
