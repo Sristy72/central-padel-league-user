@@ -252,7 +252,7 @@ class QuickStatsWidget extends StatelessWidget {
                                     width:
                                         MediaQuery.of(context).size.width < 350
                                         ? 70
-                                        : 98,
+                                        : 82,
                                     child: Text(
                                       stat["name"] ?? "",
                                       style: const TextStyle(
