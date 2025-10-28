@@ -28,6 +28,7 @@ class JoinLeagueRequest {
       'contact_number': contactNumber,
       'league': league,
       'player_level': playerLevel.toString(),
+      'logo_path': logoPath ?? '',
     };
   }
 }

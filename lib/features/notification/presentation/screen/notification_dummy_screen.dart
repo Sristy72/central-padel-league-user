@@ -19,7 +19,7 @@ class NotificationScreen extends StatelessWidget {
           children: [
             // Header
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric( vertical: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -50,7 +50,7 @@ class NotificationScreen extends StatelessWidget {
                           child: Text(
                             unreadCount.toString(),
                             style: const TextStyle(
-                              color: AppColors.primaryText,
+                              color: AppColors.textColor,
                               fontSize: 12,
                             ),
                           ),
@@ -79,7 +79,7 @@ class NotificationScreen extends StatelessWidget {
                     final notification = controller.notifications[index];
                     return Container(
                       margin: const EdgeInsets.symmetric(
-                        horizontal: 12,
+                        // horizontal: 12,
                         vertical: 4,
                       ),
                       padding: const EdgeInsets.symmetric(

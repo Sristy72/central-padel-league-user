@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
+
 import '../../controller/home_controller.dart';
 
 class NextMatchWidget extends StatelessWidget {
@@ -76,6 +77,8 @@ class NextMatchWidget extends StatelessWidget {
                                       const SizedBox(height: 4),
                                       Text(
                                         player.name,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           fontSize:
                                               MediaQuery.of(
@@ -167,7 +170,17 @@ class NextMatchWidget extends StatelessWidget {
                                       const SizedBox(height: 4),
                                       Text(
                                         player.name,
-                                        style: const TextStyle(fontSize: 12),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize:
+                                              MediaQuery.of(
+                                                    context,
+                                                  ).size.width <
+                                                  350
+                                              ? 10
+                                              : 12,
+                                        ),
                                       ),
                                     ],
                                   );

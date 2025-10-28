@@ -26,6 +26,7 @@ class HomeScreen extends StatelessWidget {
         preferredSize: const Size.fromHeight(60),
         child: AppBar(
           automaticallyImplyLeading: false,
+          centerTitle: false,
           backgroundColor: AppColors.leagueBackgroundGrey,
           elevation: 0,
           title: Column(
