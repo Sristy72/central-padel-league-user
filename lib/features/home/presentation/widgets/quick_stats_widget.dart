@@ -34,7 +34,7 @@ class QuickStatsWidget extends StatelessWidget {
               child: Row(
                 children: const [
                   Expanded(
-                    flex: 3,
+                    flex: 4,
                     child: Text(
                       "Teams",
                       style: TextStyle(
@@ -110,7 +110,7 @@ class QuickStatsWidget extends StatelessWidget {
                     //* <--- Rank + Team Members + Avatar --->
                     Expanded(
                       // reduce flex so other columns get slightly more room on narrow screens
-                      flex: MediaQuery.of(context).size.width < 350 ? 2 : 3,
+                      flex: MediaQuery.of(context).size.width < 350 ? 3 : 4,
                       child: Row(
                         children: [
                           Text(

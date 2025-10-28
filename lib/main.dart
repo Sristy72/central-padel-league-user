@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:karlfive/core/init/app_initializer.dart';
 import 'package:karlfive/core/theme/app_theme.dart';
 import 'package:karlfive/features/auth/presentation/screens/splash_screen.dart';
-import 'features/auth/presentation/screens/splash_screen.dart';
 import 'package:karlfive/core/common/constants/stripe_key.dart';
 
 
