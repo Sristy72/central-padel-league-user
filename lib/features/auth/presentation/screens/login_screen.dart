@@ -8,12 +8,10 @@ import 'package:karlfive/core/theme/input_decoration_extensions.dart';
 import 'package:karlfive/features/auth/presentation/controller/remember_me_controller.dart';
 import 'package:karlfive/features/auth/presentation/screens/reset_password_screen.dart';
 import 'package:karlfive/features/auth/presentation/screens/signup_screen.dart';
-import 'package:karlfive/features/auth/presentation/widgets/different_login_approach.dart';
 
 import '../../../../core/common/widgets/app_logo.dart';
 import '../../../../core/common/widgets/app_scaffold.dart';
 import '../../../../core/common/widgets/form_error_message.dart';
-import '../../../../core/common/widgets/or_divider_with_circle.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../controller/auth_controller.dart';
 
@@ -308,14 +306,14 @@ class _LoginScreenState extends State<LoginScreen>
 
                         SizedBox(height: 16),
 
-                        OrDividerWithCircle(),
+                        // OrDividerWithCircle(),
 
-                        Gap.h16,
+                        // Gap.h16,
 
-                        DifferentLoginApproach(
-                          text: 'Continue With Google',
-                          image: AppImages.googleLogo,
-                        ),
+                        // DifferentLoginApproach(
+                        //   text: 'Continue With Google',
+                        //   image: AppImages.googleLogo,
+                        // ),
                       ],
                     ),
                   ),
