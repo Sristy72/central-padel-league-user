@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/common/widgets/app_bottom_navbar.dart';
+import 'package:karlfive/core/common/widgets/skeleton_loader.dart';
 import 'package:karlfive/features/home/presentation/widgets/custom_search_bar.dart';
 import 'package:karlfive/features/home/presentation/widgets/search_results_widget.dart';
 import 'package:karlfive/features/join_league/presentation/screens/form_screen/join_league_screen.dart';
@@ -85,7 +86,7 @@ class HomeScreen extends StatelessWidget {
 
                   // Show skeleton loader while data is loading (first frame)
                   if (controller.shouldShowLoading) {
-                    return _buildSkeletonLoader();
+                    return const HomeSkeletonLoader();
                   }
 
                   return Column(
@@ -123,40 +124,6 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: AppBottomNavBar(currentIndex: 0),
-    );
-  }
-
-  // Skeleton loader for fast initial render
-  Widget _buildSkeletonLoader() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _skeletonBox(height: 24, width: 150),
-          const SizedBox(height: 12),
-          _skeletonBox(height: 90, width: double.infinity),
-          const SizedBox(height: 20),
-          _skeletonBox(height: 120, width: double.infinity),
-          const SizedBox(height: 20),
-          _skeletonBox(height: 200, width: double.infinity),
-          const SizedBox(height: 20),
-          _skeletonBox(height: 100, width: double.infinity),
-          const SizedBox(height: 20),
-          _skeletonBox(height: 150, width: double.infinity),
-        ],
-      ),
-    );
-  }
-
-  Widget _skeletonBox({required double height, required double width}) {
-    return Container(
-      height: height,
-      width: width,
-      decoration: BoxDecoration(
-        color: Colors.grey[800],
-        borderRadius: BorderRadius.circular(8),
-      ),
     );
   }
 }

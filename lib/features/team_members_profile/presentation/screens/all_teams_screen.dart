@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:karlfive/core/common/widgets/skeleton_loader.dart';
 import 'package:karlfive/features/team_details/data/models/team_model.dart';
 import 'package:karlfive/features/team_details/presentation/screens/team_details_screens.dart';
 import 'package:karlfive/features/team_members_profile/presentation/controllers/all_teams_controller.dart';
@@ -20,7 +21,7 @@ class AllTeamsScreen extends StatelessWidget {
       backgroundColor: Colors.black,
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const SkeletonListItem(itemCount: 6);
         }
         if (controller.error.value != null) {
           return Center(child: Text(controller.error.value!, style: const TextStyle(color: Colors.white)));

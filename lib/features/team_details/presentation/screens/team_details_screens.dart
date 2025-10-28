@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:karlfive/core/common/widgets/skeleton_loader.dart';
 import 'package:karlfive/core/network/api_client.dart';
 import 'package:karlfive/features/league/data/league_repository_impl.dart';
 import 'package:karlfive/features/league/models/match_model.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../data/models/standing_row_data.dart';
+import '../controllers/team_controller.dart';
 import '../widgets/standing_table_widget.dart';
 import '../widgets/team_fixtures_widget.dart';
-import '../controllers/team_controller.dart';
 
 class TeamDetailsScreen extends StatefulWidget {
   final String? teamId;
@@ -141,9 +143,7 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
         child: Obx(() {
           final teamController = Get.find<TeamController>();
           if (teamController.isLoading.value) {
-            return const Center(
-              child: CircularProgressIndicator(color: Colors.green),
-            );
+            return const TeamDetailsSkeletonLoader();
           }
 
           if (teamController.error.value != null) {
@@ -250,8 +250,9 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
                 const SizedBox(height: 12),
                 Obx(() {
                   if (_isLoadingStandings.value) {
-                    return const Center(
-                      child: CircularProgressIndicator(color: Colors.green),
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20.0),
+                      child: LeagueDetailsSkeletonLoader(),
                     );
                   }
                   if (_standingsError.value.isNotEmpty) {

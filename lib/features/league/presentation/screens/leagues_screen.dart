@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/common/widgets/app_bottom_navbar.dart';
+import 'package:karlfive/core/common/widgets/skeleton_loader.dart';
 import 'package:karlfive/features/league/presentation/widgets/league_card.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -17,7 +18,7 @@ class LeaguesScreen extends StatelessWidget {
       backgroundColor: AppColors.leagueBackgroundGrey,
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const SkeletonListItem(itemCount: 6);
         } else if (controller.errorMessage.isNotEmpty) {
           return Center(child: Text('Error: ${controller.errorMessage}'));
         } else if (controller.leagues.isEmpty) {
