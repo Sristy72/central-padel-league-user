@@ -108,40 +108,36 @@ class ProfileInfoScreen extends StatelessWidget {
 
             const SizedBox(height: 19),
                     // My Team - open All Teams list (API: /team/all-team)
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFFD9D9D9),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                    Row(
+                      children: [
+                        // _buildStatBox("${member.level}", "Level"),
+                        const Spacer(),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              shadowColor: Colors.white54,
+                              elevation: 10,
+                              backgroundColor: Color(0xFFD9D9D9),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onPressed: () {
+                              Get.to(() => const AllTeamsScreen());
+                            },
+                            child: const Text(
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xFF060606),
+                              ),
+                              "My team",
+                            ),
                           ),
                         ),
-                        onPressed: () {
-                          Get.to(() => const AllTeamsScreen());
-                        },
-                        child: const Text(
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xFF060606),
-                          ),
-                          "My team",
-                        ),
-                      ),
+                      ],
                     ),
-
-            const SizedBox(height: 36),
-            // Matches and Level
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildStatBox("${member.matches}", "Matches"),
-                const SizedBox(width: 21),
-                _buildStatBox("${member.level}", "Level"),
-              ],
-            ),
-
             const SizedBox(height: 33),
             Card(
               elevation: 4,
@@ -426,29 +422,29 @@ class ProfileInfoScreen extends StatelessWidget {
   Widget _buildStatBox(String value, String label) {
     return Container(
       width: 96,
-      height: 51,
+      height: 40,
       decoration: BoxDecoration(
         color: const Color(0xFFD9D9D9),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(8),
       ),
-      child: Column(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Text(
+            label+" : ",
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w400,
+              color: Colors.black,
+            ),
+          ),
+        const SizedBox(height: 2),
           Text(
             value,
             style: const TextStyle(
               color: Color(0xFF2AAF08),
               fontSize: 18,
               fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Colors.black,
             ),
           ),
         ],
