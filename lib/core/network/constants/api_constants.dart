@@ -1,11 +1,12 @@
 class ApiConstants {
   /// [Base Configuration]
-  static const String baseDomain = 'http://10.10.5.88:5001';
+  // static const String baseDomain = 'http://10.10.5.88:5001';
+  // static const String baseDomain = 'http://192.168.0.103:5001';
   static const String baseUrl = '$baseDomain/api/v1';
 
   /// soykot ip
 
-  // static const String soyDomain = 'http://10.10.5.91:5002';
+  static const String baseDomain = 'http://10.10.5.91:5001';
 
   /// [Headers]
   static Map<String, String> get defaultHeaders => {
@@ -68,6 +69,7 @@ class TeamEndpointcs {
   static const String _base = '${ApiConstants.baseUrl}/team';
 
   final String create = '$_base/create';
+  final String getAll = '$_base/all-team';
 }
 
 class LeagueEndpoints {

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:karlfive/features/team_members_profile/presentation/screens/profile_contactus_screen.dart';
-import 'package:karlfive/features/team_members_profile/presentation/controllers/profile_controller.dart';
 import 'package:karlfive/features/team_details/presentation/controllers/team_controller.dart';
+import 'package:karlfive/features/team_members_profile/presentation/controllers/profile_controller.dart';
+import 'package:karlfive/features/team_members_profile/presentation/screens/all_teams_screen.dart';
+import 'package:karlfive/features/team_members_profile/presentation/screens/profile_contactus_screen.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_report_screen.dart';
+
+import '../../../../../core/common/widgets/skeleton_loader.dart';
 import '../../../../core/common/widgets/app_bottom_navbar.dart';
 import '../../../auth/presentation/controller/auth_controller.dart';
 import '../../../privacy_policy/presentation/screens/privacy_pilicy_screen.dart';
-import '../../../team_details/presentation/screens/team_details_screens.dart';
 import '../../data/models/edit_profile_model.dart';
 import '../../data/models/team_member_model.dart';
 import 'edit_profile_info.dart';
@@ -76,78 +78,77 @@ class ProfileInfoScreen extends StatelessWidget {
         ],
       ),
 
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            // Profile Image (from API if available)
-            Obx(() {
-              final p = controller.profile.value;
-              final displayImage = p?.profileImage ?? member.imageUrl;
-              return CircleAvatar(
-                radius: 50,
-        backgroundImage: displayImage.isNotEmpty
-          ? (displayImage.startsWith('http') ? NetworkImage(displayImage) : AssetImage(displayImage) as ImageProvider)
-          : const AssetImage('assets/images/profile.png'),
-              );
-            }),
-            const SizedBox(height: 14),
-            Obx(() {
-              final p = controller.profile.value;
-              final displayName = (p?.name?.isNotEmpty == true) ? p!.name! : member.name;
-              return Text(
-                displayName,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white,
-                ),
-              );
-            }),
+      body: Obx(() {
+        // Show skeleton while profile is being fetched, otherwise show content
+        if (controller.isLoading.value) {
+          return const ProfileSkeletonLoader();
+        }
 
-            const SizedBox(height: 19),
-            // My Team
-            Align(
-              alignment: Alignment.centerRight,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFD9D9D9),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                onPressed: () {
-                  final teamId = controller.profile.value?.clubAffiliation;
-                  if (teamId != null && teamId.isNotEmpty) {
-                    Get.to(() => TeamDetailsScreen(teamId: teamId));
-                  } else {
-                    Get.snackbar('No team', 'No team associated with this account');
-                  }
-                },
-                child: const Text(
-                  style: TextStyle(
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              // Profile Image (from API if available)
+              Obx(() {
+                final p = controller.profile.value;
+                final displayImage = p?.profileImage ?? member.imageUrl;
+                return CircleAvatar(
+                  radius: 50,
+                  backgroundImage: displayImage.isNotEmpty
+                      ? (displayImage.startsWith('http')
+                          ? NetworkImage(displayImage)
+                          : AssetImage(displayImage) as ImageProvider)
+                      : const AssetImage('assets/images/profile.png'),
+                );
+              }),
+              const SizedBox(height: 14),
+              Obx(() {
+                final p = controller.profile.value;
+                final displayName = (p?.name?.isNotEmpty == true) ? p!.name! : member.name;
+                return Text(
+                  displayName,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
-                    color: Color(0xFF060606),
+                    color: Colors.white,
                   ),
-                  "My team",
-                ),
+                );
+              }),
+
+              const SizedBox(height: 19),
+              // My Team - open All Teams list (API: /team/all-team)
+              Row(
+                children: [
+                  // _buildStatBox("${member.level}", "Level"),
+                  const Spacer(),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        shadowColor: Colors.white54,
+                        elevation: 10,
+                        backgroundColor: Color(0xFFD9D9D9),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () {
+                        Get.to(() => const AllTeamsScreen());
+                      },
+                      child: const Text(
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF060606),
+                        ),
+                        "My team",
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-
-            const SizedBox(height: 36),
-            // Matches and Level
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildStatBox("${member.matches}", "Matches"),
-                const SizedBox(width: 21),
-                _buildStatBox("${member.level}", "Level"),
-              ],
-            ),
-
-            const SizedBox(height: 33),
-            Card(
+              const SizedBox(height: 33),
+              Card(
               elevation: 4,
               shadowColor: Colors.grey,
               child: Container(
@@ -421,7 +422,8 @@ class ProfileInfoScreen extends StatelessWidget {
             const SizedBox(height: 61),
           ],
         ),
-      ),
+      );
+    }),
       bottomNavigationBar: AppBottomNavBar(currentIndex: 3),
     );
   }
@@ -430,29 +432,29 @@ class ProfileInfoScreen extends StatelessWidget {
   Widget _buildStatBox(String value, String label) {
     return Container(
       width: 96,
-      height: 51,
+      height: 40,
       decoration: BoxDecoration(
         color: const Color(0xFFD9D9D9),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(8),
       ),
-      child: Column(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Text(
+            label+" : ",
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w400,
+              color: Colors.black,
+            ),
+          ),
+        const SizedBox(height: 2),
           Text(
             value,
             style: const TextStyle(
               color: Color(0xFF2AAF08),
               fontSize: 18,
               fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Colors.black,
             ),
           ),
         ],

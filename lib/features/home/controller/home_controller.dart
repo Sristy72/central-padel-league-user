@@ -210,17 +210,6 @@ class HomeController extends GetxController {
       print('Error fetching home data: $e'); //! <-- Remove when in production
     }
 
-    //! <-- Dummy data population --->
-    if (fixtures.isEmpty) {
-      _populateSampleData();
-    }
-    if (quickStats.isEmpty) {
-      quickStats.assignAll([
-        {"name": "N/A", "GP": 0, "W": 0, "L": 0, "Pts": 0, "+/-": 0},
-        {"name": "N/A", "GP": 0, "W": 0, "L": 0, "Pts": 0, "+/-": 0},
-      ]);
-    }
-
     isLoading.value = false;
     _saveToStaticCache();
     _staticHasLoadedData = true;
@@ -483,94 +472,5 @@ class HomeController extends GetxController {
     searchQuery.value = '';
     searchResults.clear();
     isSearching.value = false;
-  }
-
-  //! <-- Dummy data population function --->
-  void _populateSampleData() {
-    gameReminder.value = "N/A";
-    leagueName.value = "N/A";
-    seasonDates.value = "None";
-    status.value = "Not Started";
-
-    nextMatchDate.value = "00/00/0000";
-    nextMatchTime.value = "00:00 PM";
-    nextMatchCourt.value = "Court - 00";
-
-    /// Example Team 1
-    team1Players.assignAll([
-      Player(
-        name: "N/A",
-        imageUrl:
-            "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F49917726%2Fretrieving-default-image-all-url-profile-picture-from-facebook-graph-api&psig=AOvVaw3NHjSypnn9PiQGGYvy14QX&ust=1758529667866000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJjlhtm36Y8DFQAAAAAdAAAAABAE",
-      ),
-      Player(
-        name: "N/A",
-        imageUrl:
-            "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F49917726%2Fretrieving-default-image-all-url-profile-picture-from-facebook-graph-api&psig=AOvVaw3NHjSypnn9PiQGGYvy14QX&ust=1758529667866000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJjlhtm36Y8DFQAAAAAdAAAAABAE",
-      ),
-    ]);
-
-    /// Example Team 2
-    team2Players.assignAll([
-      Player(
-        name: "N/A",
-        imageUrl:
-            "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F49917726%2Fretrieving-default-image-all-url-profile-picture-from-facebook-graph-api&psig=AOvVaw3NHjSypnn9PiQGGYvy14QX&ust=1758529667866000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJjlhtm36Y8DFQAAAAAdAAAAABAE",
-      ),
-      Player(
-        name: "N/A",
-        imageUrl:
-            "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F49917726%2Fretrieving-default-image-all-url-profile-picture-from-facebook-graph-api&psig=AOvVaw3NHjSypnn9PiQGGYvy14QX&ust=1758529667866000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJjlhtm36Y8DFQAAAAAdAAAAABAE",
-      ),
-    ]);
-
-    fixtures.assignAll([
-      Match(
-        date: "SAT 16 AUG 2025",
-        time: "01:00",
-        team1: MatchTeam(
-          teamName: "Baseline Smashers",
-          players: [
-            Player(
-              name: "N/A",
-              imageUrl:
-                  "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F49917726%2Fretrieving-default-image-all-url-profile-picture-from-facebook-graph-api&psig=AOvVaw3NHjSypnn9PiQGGYvy14QX&ust=1758529667866000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJjlhtm36Y8DFQAAAAAdAAAAABAE",
-            ),
-            Player(
-              name: "N/A",
-              imageUrl:
-                  "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F49917726%2Fretrieving-default-image-all-url-profile-picture-from-facebook-graph-api&psig=AOvVaw3NHjSypnn9PiQGGYvy14QX&ust=1758529667866000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJjlhtm36Y8DFQAAAAAdAAAAABAE",
-            ),
-          ],
-        ),
-        team2: MatchTeam(
-          teamName: "N/A",
-          players: [
-            Player(
-              name: "N/A",
-              imageUrl:
-                  "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F49917726%2Fretrieving-default-image-all-url-profile-picture-from-facebook-graph-api&psig=AOvVaw3NHjSypnn9PiQGGYvy14QX&ust=1758529667866000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJjlhtm36Y8DFQAAAAAdAAAAABAE",
-            ),
-            Player(
-              name: "N/A",
-              imageUrl:
-                  "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F49917726%2Fretrieving-default-image-all-url-profile-picture-from-facebook-graph-api&psig=AOvVaw3NHjSypnn9PiQGGYvy14QX&ust=1758529667866000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJjlhtm36Y8DFQAAAAAdAAAAABAE",
-            ),
-          ],
-        ),
-      ),
-      Match(
-        date: "N/A",
-        time: "00:00",
-        team1: MatchTeam(teamName: "N/A", players: []),
-        team2: MatchTeam(teamName: "N/A", players: []),
-      ),
-      Match(
-        date: "N/A",
-        time: "00:00",
-        team1: MatchTeam(teamName: "N/A", players: []),
-        team2: MatchTeam(teamName: "N/A", players: []),
-      ),
-    ]);
   }
 }

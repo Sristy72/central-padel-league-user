@@ -55,7 +55,7 @@ class TeamsTab extends StatelessWidget {
                       return _TeamGridItem(team: team);
                     },
                   ),
-                  _buildSeeTableButton(),
+                  // _buildSeeTableButton(),
                 ],
               ),
             ),
@@ -65,29 +65,29 @@ class TeamsTab extends StatelessWidget {
     );
   }
 
-  Widget _buildSeeTableButton() {
-    return OutlinedButton(
-      onPressed: () {
-        // Get.to(() => const YourNextScreen());
-      },
-      style: TextButton.styleFrom(
-        backgroundColor: Color(0xFF353535), // Text color
-        side: const BorderSide(width: 0), // Black border
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      ),
-      child: const Text(
-        'See Table >',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: AppColors.white,
-        ),
-      ),
-    );
-  }
+  // Widget _buildSeeTableButton() {
+  //   return OutlinedButton(
+  //     onPressed: () {
+  //       // Get.to(() => const YourNextScreen());
+  //     },
+  //     style: TextButton.styleFrom(
+  //       backgroundColor: Color(0xFF353535), // Text color
+  //       side: const BorderSide(width: 0), // Black border
+  //       shape: RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.circular(10.0),
+  //       ),
+  //       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+  //     ),
+  //     child: const Text(
+  //       'See Table >',
+  //       style: TextStyle(
+  //         fontSize: 16,
+  //         fontWeight: FontWeight.bold,
+  //         color: AppColors.white,
+  //       ),
+  //     ),
+  //   );
+  // }
 }
 
 class _TeamGridItem extends StatelessWidget {

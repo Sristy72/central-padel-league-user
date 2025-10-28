@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:karlfive/core/common/widgets/skeleton_loader.dart';
+import 'package:karlfive/core/theme/app_colors.dart';
 import 'package:karlfive/features/league/presentation/widgets/custom_league_appbar.dart';
 import 'package:karlfive/features/league/presentation/widgets/fixtures_tab.dart';
 import 'package:karlfive/features/league/presentation/widgets/matches_tab.dart';
 import 'package:karlfive/features/league/presentation/widgets/standing_tab.dart';
-import 'package:get/get.dart';
-import 'package:karlfive/core/theme/app_colors.dart';
-import '../controllers/league_details_controller.dart';
 
 import '../../models/league_model.dart';
+import '../controllers/league_details_controller.dart';
 import '../widgets/teams_tab.dart'; // Import the model class
 
 class LeagueDetailsScreen extends StatefulWidget {
@@ -64,7 +65,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
           Obx(() {
             final ctrl = Get.find<LeagueDetailsController>();
             if (ctrl.isLoadingStandings.value)
-              return const Center(child: CircularProgressIndicator());
+              return const LeagueDetailsSkeletonLoader();
             if (ctrl.standings.isEmpty) {
               final msg = ctrl.standingsError.value.isNotEmpty
                   ? ctrl.standingsError.value
@@ -79,7 +80,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
           Obx(() {
             final ctrl = Get.find<LeagueDetailsController>();
             if (ctrl.isLoadingMatches.value)
-              return const Center(child: CircularProgressIndicator());
+              return const LeagueDetailsSkeletonLoader();
             if (ctrl.matches.isEmpty) {
               final msg = ctrl.matchesError.value.isNotEmpty
                   ? ctrl.matchesError.value
@@ -95,7 +96,7 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
           Obx(() {
             final ctrl = Get.find<LeagueDetailsController>();
             if (ctrl.isLoadingMatches.value)
-              return const Center(child: CircularProgressIndicator());
+              return const LeagueDetailsSkeletonLoader();
             if (ctrl.matches.isEmpty) {
               final msg = ctrl.matchesError.value.isNotEmpty
                   ? ctrl.matchesError.value
