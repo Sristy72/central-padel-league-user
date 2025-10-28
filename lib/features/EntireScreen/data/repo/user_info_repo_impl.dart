@@ -14,9 +14,9 @@ class UserInfoRepoImpl implements UserInfoRepo {
   NetworkResult<UserInfoResponseModel> updateprofile(FormData formData) {
     return _apiClient.put<UserInfoResponseModel>(
       ApiConstants.user.updateProfile,
-      data: formData,
+      formData: formData,
       fromJsonT: (json) => UserInfoResponseModel.fromJson(json),
-      // isFormData: true
+      isFormData: true,
     );
   }
 }

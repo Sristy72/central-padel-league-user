@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:karlfive/features/team_members_profile/presentation/screens/profile_contactus_screen.dart';
-import 'package:karlfive/features/team_members_profile/presentation/screens/all_teams_screen.dart';
-import 'package:karlfive/features/team_members_profile/presentation/controllers/profile_controller.dart';
 import 'package:karlfive/features/team_details/presentation/controllers/team_controller.dart';
+import 'package:karlfive/features/team_members_profile/presentation/controllers/profile_controller.dart';
+import 'package:karlfive/features/team_members_profile/presentation/screens/all_teams_screen.dart';
+import 'package:karlfive/features/team_members_profile/presentation/screens/profile_contactus_screen.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_report_screen.dart';
+
 import '../../../../core/common/widgets/app_bottom_navbar.dart';
 import '../../../auth/presentation/controller/auth_controller.dart';
 import '../../../privacy_policy/presentation/screens/privacy_pilicy_screen.dart';
- 
 import '../../data/models/edit_profile_model.dart';
 import '../../data/models/team_member_model.dart';
 import 'edit_profile_info.dart';

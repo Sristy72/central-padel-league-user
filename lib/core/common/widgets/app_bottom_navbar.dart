@@ -26,7 +26,14 @@ class AppBottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     // Initialize the controller if not already initialized
     final BottomNavController controller = Get.put(BottomNavController());
-    controller.currentIndex.value = currentIndex;
+    // Avoid mutating observable state synchronously during build
+    // (which causes "setState() or markNeedsBuild() called during build" errors).
+    // Schedule the update to happen after the current frame when needed.
+    if (controller.currentIndex.value != currentIndex) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.currentIndex.value = currentIndex;
+      });
+    }
 
     Widget buildNavItem({
       required int index,

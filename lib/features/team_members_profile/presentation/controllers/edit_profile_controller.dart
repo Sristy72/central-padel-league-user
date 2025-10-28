@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart' as dio;
 import 'package:get/get.dart';
 import 'package:karlfive/core/network/services/multiple_form_data_manager.dart';
 import 'package:karlfive/features/EntireScreen/domain/repo/user_info_repo.dart';
@@ -38,11 +39,19 @@ class EditProfileController extends GetxController {
       }
       manager.addTextData('gender', gender);
 
-      if (image != null) {
-        manager.addImageFile(image);
-      }
-
+      // Do not add the image to the manager (it would use the 'images' field name).
+      // Instead, validate text fields first then attach the single profile image under 'image'.
       final formData = await manager.toFormDataWithValidation();
+
+      if (image != null) {
+        formData.files.add(MapEntry(
+          'image',
+          await dio.MultipartFile.fromFile(
+            image.path,
+            filename: image.path.split('/').last,
+          ),
+        ));
+      }
 
       final result = await _repo.updateprofile(formData);
 
