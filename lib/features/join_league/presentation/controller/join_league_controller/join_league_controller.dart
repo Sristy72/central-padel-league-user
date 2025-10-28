@@ -1,8 +1,11 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:flutx_core/flutx_core.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+
 import '../../../../../core/base/base_controller.dart';
 import '../../../../../core/network/services/multiple_form_data_manager.dart';
 import '../../../../payment/presentation/screens/payment_font_screen.dart';
@@ -137,12 +140,25 @@ class JoinLeagueController extends BaseController {
         confirmedAvailability.value.toString(),
       );
 
+      // Create FormData manually to use custom field name for logo
+      final formData = dio.FormData();
+      
+      // Add text fields
+      _multiFormDataManager.textData.forEach((key, value) {
+        formData.fields.add(MapEntry(key, value));
+      });
+      
+      // Add logo file with correct field name 'logo' as per API requirements
       if (selectedLogo.value != null) {
         final file = File(selectedLogo.value!.path);
-        _multiFormDataManager.addFile(file, type: 'image');
+        formData.files.add(MapEntry(
+          'logo', // API expects 'logo' as field name
+          await dio.MultipartFile.fromFile(
+            file.path,
+            filename: file.path.split('/').last,
+          ),
+        ));
       }
-
-      final formData = await _multiFormDataManager.toFormDataWithValidation();
       final response = await _repository.createTeam(formData);
 
       response.fold(
