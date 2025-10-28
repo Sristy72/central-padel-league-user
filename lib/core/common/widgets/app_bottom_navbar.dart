@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:karlfive/features/home/presentation/screens/home_screen.dart';
 import 'package:karlfive/features/league/presentation/screens/leagues_screen.dart';
 import 'package:karlfive/features/notification/presentation/screen/notification_dummy_screen.dart';
-
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_info_screen.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../features/team_members_profile/data/models/team_member_model.dart';
 
@@ -26,7 +26,14 @@ class AppBottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     // Initialize the controller if not already initialized
     final BottomNavController controller = Get.put(BottomNavController());
-    controller.currentIndex.value = currentIndex;
+    // Avoid mutating observable state synchronously during build
+    // (which causes "setState() or markNeedsBuild() called during build" errors).
+    // Schedule the update to happen after the current frame when needed.
+    if (controller.currentIndex.value != currentIndex) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.currentIndex.value = currentIndex;
+      });
+    }
 
     Widget buildNavItem({
       required int index,

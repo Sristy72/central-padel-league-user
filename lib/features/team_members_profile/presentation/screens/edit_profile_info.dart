@@ -5,8 +5,10 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../data/models/edit_profile_model.dart';
+import '../../data/models/team_member_model.dart';
 import '../controllers/edit_profile_controller.dart';
 import '../controllers/profile_controller.dart';
+import 'profile_info_screen.dart';
 
 class EditProfileInfoScreen extends StatefulWidget {
   final EditProfileModel member;
@@ -45,13 +47,15 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
   @override
   void initState() {
     super.initState();
-    _birthdayController = TextEditingController(text: widget.member.birthday);
-    _selectedGender = widget.member.gender;
-    _firstNameController = TextEditingController(text: widget.member.firstName);
-    _lastNameController = TextEditingController(text: widget.member.lastName);
-    _phoneController = TextEditingController(text: widget.member.phone);
+    // Show existing profile data as hint text; leave fields empty so user can type.
+    _birthdayController = TextEditingController(text: '');
+    _firstNameController = TextEditingController(text: '');
+    _lastNameController = TextEditingController(text: '');
+    _phoneController = TextEditingController(text: '');
     _controller = Get.find<EditProfileController>();
-    _profileController = Get.find<ProfileController>();
+  _profileController = Get.find<ProfileController>();
+  // prefer profile values when available for initial hinting
+  _selectedGender = _profileController.profile.value?.gender ?? widget.member.gender;
     
     // Set email from profile controller (uneditable)
     _emailController = TextEditingController(
@@ -173,12 +177,25 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                 child: Stack(
                   alignment: Alignment.bottomRight,
                   children: [
-                    CircleAvatar(
-                      radius: 55,
-                      backgroundImage: _pickedImage != null
-                          ? FileImage(_pickedImage!)
-                          : AssetImage(widget.member.imageUrl) as ImageProvider,
-                    ),
+                    Builder(builder: (_) {
+                      final profileImg = _profileController.profile.value?.profileImage ?? '';
+                      final fallback = widget.member.imageUrl;
+                      ImageProvider display;
+                      if (_pickedImage != null) {
+                        display = FileImage(_pickedImage!);
+                      } else if (profileImg.isNotEmpty) {
+                        display = profileImg.startsWith('http') ? NetworkImage(profileImg) : AssetImage(profileImg);
+                      } else if (fallback.isNotEmpty) {
+                        display = fallback.startsWith('http') ? NetworkImage(fallback) : AssetImage(fallback);
+                      } else {
+                        display = const AssetImage('assets/images/profile.png');
+                      }
+
+                      return CircleAvatar(
+                        radius: 55,
+                        backgroundImage: display,
+                      );
+                    }),
                   ],
                 ),
               ),
@@ -190,7 +207,9 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                   Expanded(
                     child: _buildTextField(
                       label: "First Name",
-                      hintText: "Ken",
+            hintText: (_profileController.profile.value?.name != null && _profileController.profile.value!.name!.isNotEmpty)
+              ? _profileController.profile.value!.name!.split(' ').first
+              : (widget.member.firstName.isNotEmpty ? widget.member.firstName : 'First Name'),
                       controller: _firstNameController,
                     ),
                   ),
@@ -198,7 +217,9 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                   Expanded(
                     child: _buildTextField(
                       label: "Last Name",
-                      hintText: "Adams",
+            hintText: (_profileController.profile.value?.name != null && _profileController.profile.value!.name!.isNotEmpty && _profileController.profile.value!.name!.split(' ').length > 1)
+              ? _profileController.profile.value!.name!.split(' ').sublist(1).join(' ')
+              : (widget.member.lastName.isNotEmpty ? widget.member.lastName : 'Last Name'),
                       controller: _lastNameController,
                     ),
                   ),
@@ -218,7 +239,9 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
               // Phone
               _buildTextField(
                 label: "Phone",
-                hintText: "Enter Phone Number",
+        hintText: _profileController.profile.value?.phoneNumber?.isNotEmpty == true
+          ? _profileController.profile.value!.phoneNumber!
+          : (widget.member.phone.isNotEmpty ? widget.member.phone : 'Enter Phone Number'),
                 controller: _phoneController,
               ),
               const SizedBox(height: 16),
@@ -244,7 +267,7 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                       style:
                       const TextStyle(color: Colors.white, fontSize: 14),
                       decoration: InputDecoration(
-                        hintText: "29/02/2000",
+                        hintText: widget.member.birthday.isNotEmpty ? widget.member.birthday : '29/02/2000',
                         hintStyle: const TextStyle(
                             color: Color(0xFF7D807D), fontSize: 16),
                         isDense: true,
@@ -291,8 +314,13 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                   SizedBox(
                     height: 38,
                     child: DropdownButtonFormField<String>(
-                      initialValue:
-                      _selectedGender.isNotEmpty ? _selectedGender : null,
+                      initialValue: null,
+                      hint: Text(
+                        _profileController.profile.value?.gender?.isNotEmpty == true
+                            ? _profileController.profile.value!.gender!
+                            : (widget.member.gender.isNotEmpty ? widget.member.gender : 'Select'),
+                        style: const TextStyle(color: Colors.white),
+                      ),
                       dropdownColor: Colors.black,
                       style: const TextStyle(color: Colors.white, fontSize: 14),
                       icon: const Icon(Icons.keyboard_arrow_down_sharp,
@@ -347,17 +375,36 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                       ),
                     ),
                     onPressed: () async {
-                      final firstName = _firstNameController.text.trim();
-                      final lastName = _lastNameController.text.trim();
+                      final rawFirst = _firstNameController.text.trim();
+                      final rawLast = _lastNameController.text.trim();
                       final email = _emailController.text.trim();
-                      final phone = _phoneController.text.trim();
-                      final birthday = _birthdayController.text.trim();
-                      final gender = _selectedGender;
+                      final rawPhone = _phoneController.text.trim();
+                      final rawBirthday = _birthdayController.text.trim();
+                      final rawGender = _selectedGender;
+
+                      // Use existing member/profile values as fallback when fields left empty
+                      final profileVal = _profileController.profile.value;
+                      final firstName = rawFirst.isNotEmpty
+                          ? rawFirst
+                          : (widget.member.firstName.isNotEmpty
+                              ? widget.member.firstName
+                              : (profileVal?.name?.split(' ').first ?? ''));
+                      final lastName = rawLast.isNotEmpty
+                          ? rawLast
+                          : (widget.member.lastName.isNotEmpty
+                              ? widget.member.lastName
+                              : (profileVal?.name?.split(' ').length ?? 0) > 1
+                                  ? profileVal!.name!.split(' ').sublist(1).join(' ')
+                                  : '');
+
+                      final phone = rawPhone.isNotEmpty ? rawPhone : (widget.member.phone.isNotEmpty ? widget.member.phone : (profileVal?.phoneNumber ?? ''));
+                      final birthday = rawBirthday.isNotEmpty ? rawBirthday : (widget.member.birthday.isNotEmpty ? widget.member.birthday : '');
+                      final gender = rawGender.isNotEmpty ? rawGender : (widget.member.gender.isNotEmpty ? widget.member.gender : (profileVal?.gender ?? ''));
 
                       // Basic validation
                       if (firstName.isEmpty || lastName.isEmpty) {
                         Get.snackbar(
-                          'Validation Error', 
+                          'Validation Error',
                           'First name and last name are required',
                           snackPosition: SnackPosition.BOTTOM,
                           backgroundColor: Colors.red,
@@ -382,15 +429,30 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                       if (success) {
                         // Clear all form fields after successful update
                         _clearAllFields();
-                        
+
                         // Refresh global profile data so profile screen shows updates
                         final profileCtrl = Get.find<ProfileController>();
                         await profileCtrl.fetchProfile();
-                        
-                        // Navigate back to profile screen after a short delay to show snackbar
-                        Future.delayed(const Duration(milliseconds: 800), () {
-                          Get.back();
-                        });
+
+                        // Build a TeamMemberModel from updated profile and navigate to ProfileInfoScreen
+                        final updated = profileCtrl.profile.value;
+                        final memberModel = TeamMemberModel(
+                          id: updated?.id ?? '',
+                          name: updated?.name ?? '${firstName} ${lastName}',
+                          role: updated?.role ?? '',
+                          imageUrl: updated?.profileImage ?? widget.member.imageUrl,
+                          matches: 0,
+                          level: int.tryParse(updated?.playingLevel ?? '') ?? 1,
+                          firstName: firstName,
+                          lastName: lastName,
+                          email: updated?.email ?? email,
+                          phone: updated?.phoneNumber ?? phone,
+                          birthday: birthday,
+                          gender: updated?.gender ?? gender,
+                        );
+
+                        // Navigate to the profile screen replacing the current edit page
+                        Get.off(() => ProfileInfoScreen(member: memberModel));
                       }
                       // Error handling is already done by the controller with snackbars
                     },
