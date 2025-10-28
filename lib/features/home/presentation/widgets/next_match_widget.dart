@@ -213,21 +213,21 @@ class NextMatchWidget extends StatelessWidget {
                     ),
 
                     const SizedBox(height: 12),
-                    ElevatedButton(
-                      onPressed: () {
-                        //! Navigate or show details
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.leagueBackground,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        "View Match Details",
-                        style: TextStyle(color: AppColors.white),
-                      ),
-                    ),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     //! Navigate or show details
+                    //   },
+                    //   style: ElevatedButton.styleFrom(
+                    //     backgroundColor: AppColors.leagueBackground,
+                    //     shape: RoundedRectangleBorder(
+                    //       borderRadius: BorderRadius.circular(8),
+                    //     ),
+                    //   ),
+                    //   child: const Text(
+                    //     "View Match Details",
+                    //     style: TextStyle(color: AppColors.white),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

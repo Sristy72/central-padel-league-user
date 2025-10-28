@@ -3,4 +3,5 @@ import '../../data/models/team_model.dart';
 
 abstract class TeamRepo {
   NetworkResult<TeamModel> getTeamById(String id);
+  NetworkResult<List<TeamModel>> getAllTeams();
 }

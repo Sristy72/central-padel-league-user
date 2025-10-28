@@ -68,6 +68,7 @@ class TeamEndpointcs {
   static const String _base = '${ApiConstants.baseUrl}/team';
 
   final String create = '$_base/create';
+  final String getAll = '$_base/all-team';
 }
 
 class LeagueEndpoints {

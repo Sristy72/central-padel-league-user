@@ -1,6 +1,6 @@
 class TeamModel {
   final String id;
-  final String? user;
+  final UserModel? user;
   final String teamName;
   final String captainName;
   final String partnerName;
@@ -36,7 +36,9 @@ class TeamModel {
   factory TeamModel.fromJson(Map<String, dynamic> json) {
     return TeamModel(
       id: json['_id'] as String,
-      user: json['user'] as String?,
+      user: json['user'] is String
+          ? UserModel(id: json['user'] as String)
+          : (json['user'] != null ? UserModel.fromJson(json['user'] as Map<String, dynamic>) : null),
       teamName: json['teamName'] as String? ?? '',
       captainName: json['captainName'] as String? ?? '',
       partnerName: json['partnerName'] as String? ?? '',
@@ -68,6 +70,44 @@ class LeagueModel {
       leagueName: json['leagueName'] as String? ?? '',
       leagueLogo: json['leagueLogo'] as String? ?? '',
       location: json['location'] as String? ?? '',
+    );
+  }
+}
+
+class UserModel {
+  final String id;
+  final String? name;
+  final String? email;
+  final String? profileImage;
+  final String? role;
+  final String? phoneNumber;
+  final String? playingLevel;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  UserModel({
+    required this.id,
+    this.name,
+    this.email,
+    this.profileImage,
+    this.role,
+    this.phoneNumber,
+    this.playingLevel,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['_id'] as String,
+      name: json['name'] as String?,
+      email: json['email'] as String?,
+      profileImage: json['profileImage'] as String?,
+      role: json['role'] as String?,
+      phoneNumber: json['phoneNumber'] as String?,
+      playingLevel: json['playingLevel']?.toString(),
+      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'] as String) : null,
+      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt'] as String) : null,
     );
   }
 }

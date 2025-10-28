@@ -16,4 +16,15 @@ class TeamRepoImpl implements TeamRepo {
       fromJsonT: (json) => TeamModel.fromJson(json as Map<String, dynamic>),
     );
   }
+
+  @override
+  NetworkResult<List<TeamModel>> getAllTeams() {
+    final path = '${ApiConstants.baseUrl}/team/all-team';
+    return _apiClient.get<List<TeamModel>>(
+      path,
+      fromJsonT: (json) => (json as List)
+          .map((item) => TeamModel.fromJson(item as Map<String, dynamic>))
+          .toList(),
+    );
+  }
 }
