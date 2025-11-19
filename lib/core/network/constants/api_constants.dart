@@ -1,7 +1,7 @@
 class ApiConstants {
   /// [Base Configuration]
-  // static const String baseDomain = 'http://10.10.5.88:5001';
-  static const String baseDomain = 'http://72.61.161.196';
+  static const String baseDomain = 'http://10.10.5.53:5001';
+  // static const String baseDomain = 'http://72.61.161.196';
   static const String baseUrl = '$baseDomain/api/v1';
 
   /// soykot ip

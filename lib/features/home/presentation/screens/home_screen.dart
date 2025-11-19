@@ -7,6 +7,7 @@ import 'package:karlfive/features/home/presentation/widgets/search_results_widge
 import 'package:karlfive/features/join_league/presentation/screens/form_screen/join_league_screen.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../create_league/presentation/screens/create_league_screen.dart';
 import '../../controller/home_controller.dart';
 import '../widgets/fixtures_widget.dart';
 import '../widgets/game_reminder_widget.dart';
@@ -53,11 +54,35 @@ class HomeScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(right: 12),
               child: CircleAvatar(
-                backgroundColor: Colors.grey[850],
+                backgroundColor: Color(0xFF3B3B3B),
                 child: IconButton(
                   onPressed: () {
-                    // TODO: button logic here
-                    Get.to(() => JoinLeagueScreen());
+                    showMenu(
+                      context: context,
+                      position: const RelativeRect.fromLTRB(1000, 80, 16, 0),
+                      color: Color(0xFFD9D9D9),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      items: [
+                        PopupMenuItem(
+                          child: const Text("Join League", style: TextStyle(color: Colors.black)),
+                          onTap: () {
+                            Future.delayed(Duration.zero, () {
+                              Get.to(() => JoinLeagueScreen());
+                            });
+                          },
+                        ),
+                        PopupMenuItem(
+                          child: const Text("Create Your League", style: TextStyle(color: Colors.black)),
+                          onTap: () {
+                            Future.delayed(Duration.zero, () {
+                              Get.to(() => CreateLeagueScreen());
+                            });
+                          },
+                        ),
+                      ],
+                    );
                   },
                   icon: const Icon(Icons.add, color: Colors.white),
                 ),
