@@ -143,7 +143,7 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: AppBottomNavBar(currentIndex: 0),
+      bottomNavigationBar: const AppBottomNavBar(),
     );
   }
 }

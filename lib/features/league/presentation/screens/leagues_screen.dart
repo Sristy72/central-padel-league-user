@@ -32,7 +32,7 @@ class LeaguesScreen extends StatelessWidget {
           );
         }
       }),
-      bottomNavigationBar: AppBottomNavBar(currentIndex: 1),
+      bottomNavigationBar: const AppBottomNavBar(),
     );
   }
 }
