@@ -1,10 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 
 import '../controllers/report_controller.dart';
+
 
 class ProfileReportScreen extends StatefulWidget {
   const ProfileReportScreen({super.key});
@@ -21,29 +21,6 @@ class _ProfileReportScreenState extends State<ProfileReportScreen> {
 
   File? _selectedImage;
 
-  // Method to clear all form fields
-  void _clearAllFields() {
-    eventController.clear();
-    descriptionController.clear();
-    setState(() {
-      _selectedImage = null;
-    });
-  }
-
-  // Method to show snackbar
-  void _showSnackBar(String message, {bool isSuccess = true}) {
-    Get.snackbar(
-      isSuccess ? 'Success' : 'Error',
-      message,
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: isSuccess ? Colors.green : Colors.red,
-      colorText: Colors.white,
-      duration: const Duration(seconds: 3),
-      margin: const EdgeInsets.all(16),
-      borderRadius: 8,
-    );
-  }
-
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -55,36 +32,37 @@ class _ProfileReportScreenState extends State<ProfileReportScreen> {
     }
   }
 
-  void _submitReport() async {
-    final event = eventController.text.trim();
-    final description = descriptionController.text.trim();
-
-    // Basic validation
-    if (event.isEmpty || description.isEmpty) {
-      _showSnackBar("Event and description are required", isSuccess: false);
-      return;
-    }
-
+  Future<void> _submitReport() async {
     await reportController.createReport(
       userId: "68ccd4854f2b792c1ee5a84a",
-      even: event,
-      description: description,
+      even: eventController.text.trim(),
+      description: descriptionController.text.trim(),
       imageFile: _selectedImage,
     );
+
+    // If successful, clear fields and image
+    if (!reportController.isLoading.value) {
+      eventController.clear();
+      descriptionController.clear();
+      setState(() {
+        _selectedImage = null;
+      });
+
+      Get.snackbar(
+        "Report Sent",
+        "Your report has been submitted successfully!",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.shade600,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 2),
+      );
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
-    // Set up success and error callbacks for the controller
-    reportController.onSuccess = (String message) {
-      _showSnackBar(message, isSuccess: true);
-      _clearAllFields();
-    };
-    
-    reportController.onError = (String message) {
-      _showSnackBar(message, isSuccess: false);
-    };
-
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(

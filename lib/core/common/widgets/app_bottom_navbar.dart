@@ -4,6 +4,8 @@ import 'package:karlfive/features/home/presentation/screens/home_screen.dart';
 import 'package:karlfive/features/league/presentation/screens/leagues_screen.dart';
 import 'package:karlfive/features/notification/presentation/screen/notification_dummy_screen.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_info_screen.dart';
+import 'package:karlfive/features/team_members_profile/presentation/controllers/profile_controller.dart';
+import 'package:karlfive/features/team_members_profile/domain/repo/user_profile_repo.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../features/team_members_profile/data/models/team_member_model.dart';
@@ -82,7 +84,7 @@ class AppBottomNavBar extends StatelessWidget {
       child: Obx(
             () => BottomNavigationBar(
           currentIndex: controller.currentIndex.value,
-          onTap: (index) {
+          onTap: (index) async {
             // If the tab is already selected, do nothing
             if (controller.currentIndex.value == index) return;
 
@@ -118,12 +120,52 @@ class AppBottomNavBar extends StatelessWidget {
                 duration: const Duration(milliseconds: 50),
               );
             } else if (index == 4) {
-              // Profile
-              Get.to(
-                    () => ProfileInfoScreen(member: dummyMember),
-                transition: Transition.fadeIn,
-                duration: const Duration(milliseconds: 50),
-              );
+              // Profile: ensure profile controller has latest data before navigating
+              try {
+                // Ensure ProfileController and its repo are registered
+                if (!Get.isRegistered<ProfileController>()) {
+                  // Attempt to resolve repository from Get; setup_repository normally registers this
+                  final repo = Get.find<UserProfileRepo>();
+                  Get.put(ProfileController(repository: repo));
+                }
+
+                final profileController = Get.find<ProfileController>();
+
+                // Try to fetch latest profile (non-blocking if already loaded)
+                await profileController.fetchProfile();
+
+                // Map UserProfileModel -> TeamMemberModel for navigation fallback
+                final apiProfile = profileController.profile.value;
+                final memberToShow = apiProfile != null
+                    ? TeamMemberModel(
+                        id: apiProfile.id ?? '',
+                        name: apiProfile.name ?? '',
+                        role: apiProfile.role ?? '',
+                        imageUrl: apiProfile.profileImage ?? '',
+                        matches: 0,
+                        level: 0,
+                        firstName: apiProfile.name?.split(' ').first ?? '',
+                        lastName: apiProfile.name?.contains(' ') == true ? apiProfile.name!.split(' ').sublist(1).join(' ') : '',
+                        email: apiProfile.email,
+                        phone: apiProfile.phoneNumber ?? '',
+                        birthday: apiProfile.createdAt?.toIso8601String() ?? '',
+                        gender: apiProfile.gender ?? '',
+                      )
+                    : dummyMember;
+
+                Get.to(
+                      () => ProfileInfoScreen(member: memberToShow),
+                  transition: Transition.fadeIn,
+                  duration: const Duration(milliseconds: 50),
+                );
+              } catch (e) {
+                // Fallback to dummy member if anything goes wrong
+                Get.to(
+                      () => ProfileInfoScreen(member: dummyMember),
+                  transition: Transition.fadeIn,
+                  duration: const Duration(milliseconds: 50),
+                );
+              }
             }
           },
           backgroundColor: Colors.transparent,

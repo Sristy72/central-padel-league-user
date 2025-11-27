@@ -25,17 +25,17 @@ class EditProfileModel {
       phone: json['phoneNumber'] ?? json['phone'] ?? '',
       birthday: json['birthday'] ?? '',
       gender: json['gender'] ?? '',
-      imageUrl: json['profileImage'] ?? json['imageUrl'] ?? 'assets/images/profile.png',
+      imageUrl: json['image'] ?? json['imageUrl'] ?? 'assets/images/profile.png',
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'firstName': firstName,
-        'lastName': lastName,
-        'email': email,
-        'phone': phone,
-        'birthday': birthday,
-        'gender': gender,
-        'profileImage': imageUrl,
-      };
+    'firstName': firstName,
+    'lastName': lastName,
+    'email': email,
+    'phone': phone,
+    'birthday': birthday,
+    'gender': gender,
+    'image': imageUrl,
+  };
 }

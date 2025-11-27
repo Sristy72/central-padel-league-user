@@ -1,9 +1,8 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart' as dio;
 import 'package:get/get.dart';
-import 'package:karlfive/core/network/services/multiple_form_data_manager.dart';
-import 'package:karlfive/features/EntireScreen/domain/repo/user_info_repo.dart';
+import '../../../../core/network/services/multiple_form_data_manager.dart';
+import '../../../EntireScreen/domain/repo/user_info_repo.dart';
 
 class EditProfileController extends GetxController {
   final UserInfoRepo _repo;
@@ -93,9 +92,9 @@ class EditProfileController extends GetxController {
       final daysInMonth = <int>[0, 31, _isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
       if (day < 1 || day > daysInMonth[month]) return null;
 
-  final mm = month.toString().padLeft(2, '0');
-  final dd = day.toString().padLeft(2, '0');
-  return '${year.toString().padLeft(4, '0')}-$mm-$dd';
+      final mm = month.toString().padLeft(2, '0');
+      final dd = day.toString().padLeft(2, '0');
+      return '${year.toString().padLeft(4, '0')}-$mm-$dd';
     } catch (_) {
       return null;
     }

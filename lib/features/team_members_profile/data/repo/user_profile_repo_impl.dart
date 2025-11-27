@@ -1,6 +1,6 @@
-import 'package:karlfive/core/network/api_client.dart';
-import 'package:karlfive/core/network/constants/api_constants.dart';
-import 'package:karlfive/core/network/network_result.dart';
+import '../../../../core/network/api_client.dart';
+import '../../../../core/network/constants/api_constants.dart';
+import '../../../../core/network/network_result.dart';
 import '../../data/models/user_profile_model.dart';
 import '../../domain/repo/user_profile_repo.dart';
 

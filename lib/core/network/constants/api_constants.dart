@@ -1,7 +1,7 @@
 class ApiConstants {
   /// [Base Configuration]
-  static const String baseDomain = 'https://karlfive223-backend.onrender.com';
-  // static const String baseDomain = 'http://72.61.161.196';
+  // static const String baseDomain = 'https://karlfive223-backend.onrender.com';
+  static const String baseDomain = 'http://72.61.161.196';
   static const String baseUrl = '$baseDomain/api/v1';
 
   /// soykot ip
@@ -36,6 +36,7 @@ class ApiConstants {
   static ContactEndpoints get contact => ContactEndpoints();
 
   static PaymentEndpoints get payment => PaymentEndpoints();
+  static ReportEndpoints get report => ReportEndpoints();
 }
 
 /// [Authentication Endpoints]
@@ -90,4 +91,14 @@ class PaymentEndpoints {
   final String createPayment = '$_base/create-payment';
 
   final String confirmPayment = '$_base/confirm-payment';
+}
+
+class ReportEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/report';
+
+  /// Create a report (POST)
+  final String createReport = '$_base/create';
+
+  /// Optional — in case backend supports fetching user reports later
+  final String getReports = '$_base/all';
 }
