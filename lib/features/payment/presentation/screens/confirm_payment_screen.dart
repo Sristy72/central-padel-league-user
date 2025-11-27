@@ -64,7 +64,7 @@ class ConfirmPaymentScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: AppBottomNavBar(currentIndex: 0),
+      bottomNavigationBar: const AppBottomNavBar(),
     );
   }
 }

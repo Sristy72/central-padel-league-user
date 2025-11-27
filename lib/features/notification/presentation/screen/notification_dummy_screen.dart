@@ -147,7 +147,7 @@ class NotificationScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: AppBottomNavBar(currentIndex: 2),
+      bottomNavigationBar: const AppBottomNavBar(),
     );
   }
 }

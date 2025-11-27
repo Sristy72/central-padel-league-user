@@ -18,22 +18,12 @@ class BottomNavController extends GetxController {
 }
 
 class AppBottomNavBar extends StatelessWidget {
-  final int currentIndex;
-
-  const AppBottomNavBar({super.key, required this.currentIndex});
+  const AppBottomNavBar({super.key});
 
   @override
   Widget build(BuildContext context) {
     // Initialize the controller if not already initialized
     final BottomNavController controller = Get.put(BottomNavController());
-    // Avoid mutating observable state synchronously during build
-    // (which causes "setState() or markNeedsBuild() called during build" errors).
-    // Schedule the update to happen after the current frame when needed.
-    if (controller.currentIndex.value != currentIndex) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        controller.currentIndex.value = currentIndex;
-      });
-    }
 
     Widget buildNavItem({
       required int index,
@@ -59,7 +49,12 @@ class AppBottomNavBar extends StatelessWidget {
             const SizedBox(height: 4),
 
             // Icon
-            Image.asset(isSelected ? activeIcon : icon, width: 24, height: 24),
+            Image.asset(
+              isSelected ? activeIcon : icon,
+              width: 24,
+              height: 24,
+              color: isSelected ? AppColors.primaryGreen : Colors.white,
+            ),
 
             const SizedBox(height: 4),
 
@@ -85,7 +80,7 @@ class AppBottomNavBar extends StatelessWidget {
         ),
       ),
       child: Obx(
-        () => BottomNavigationBar(
+            () => BottomNavigationBar(
           currentIndex: controller.currentIndex.value,
           onTap: (index) {
             // If the tab is already selected, do nothing
@@ -95,26 +90,37 @@ class AppBottomNavBar extends StatelessWidget {
             controller.changeIndex(index);
 
             if (index == 0) {
+              // Home
               Get.to(
-                () => const HomeScreen(),
+                    () => const HomeScreen(),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 50),
               );
             } else if (index == 1) {
+              // Main league
               Get.to(
-                () => const LeaguesScreen(),
+                    () => const LeaguesScreen(),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 50),
               );
             } else if (index == 2) {
+              // Matches (still using LeaguesScreen for now)
               Get.to(
-                () => NotificationScreen(),
+                    () => const LeaguesScreen(),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 50),
               );
             } else if (index == 3) {
+              // Notification
               Get.to(
-                () => ProfileInfoScreen(member: dummyMember),
+                    () => NotificationScreen(),
+                transition: Transition.fadeIn,
+                duration: const Duration(milliseconds: 50),
+              );
+            } else if (index == 4) {
+              // Profile
+              Get.to(
+                    () => ProfileInfoScreen(member: dummyMember),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 50),
               );
@@ -130,6 +136,7 @@ class AppBottomNavBar extends StatelessWidget {
           unselectedItemColor: Colors.transparent,
 
           items: [
+            // 0 - Home
             BottomNavigationBarItem(
               icon: buildNavItem(
                 index: 0,
@@ -139,27 +146,44 @@ class AppBottomNavBar extends StatelessWidget {
               ),
               label: '',
             ),
+
+            // 1 - Main league
             BottomNavigationBarItem(
               icon: buildNavItem(
                 index: 1,
+                icon: "assets/icons/mainleauge.png",
+                activeIcon: "assets/icons/mainleauge.png",
+                label: "Main league",
+              ),
+              label: '',
+            ),
+
+            // 2 - Matches
+            BottomNavigationBarItem(
+              icon: buildNavItem(
+                index: 2,
                 icon: "assets/images/nav_match_off.png",
                 activeIcon: "assets/images/nav_match_on.png",
                 label: "Matches",
               ),
               label: '',
             ),
+
+            // 3 - Notification
             BottomNavigationBarItem(
               icon: buildNavItem(
-                index: 2,
+                index: 3,
                 icon: "assets/images/nav_noti_off.png",
                 activeIcon: "assets/images/nav_noti_on.png",
                 label: "Notification",
               ),
               label: '',
             ),
+
+            // 4 - Profile
             BottomNavigationBarItem(
               icon: buildNavItem(
-                index: 3,
+                index: 4,
                 icon: "assets/images/nav_prof_off.png",
                 activeIcon: "assets/images/nav_prof_on.png",
                 label: "Profile",
