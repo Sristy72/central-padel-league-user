@@ -11,6 +11,7 @@ import '../widget/create_league_image_upload.dart';
 import '../widget/create_league_rule_selection.dart';
 import '../widget/create_league_selection_button.dart';
 import '../widget/private_league_validation.dart';
+import '../../../league/presentation/screens/leagues_screen.dart';
 
 class CreateLeagueScreen extends StatefulWidget {
   const CreateLeagueScreen({super.key});
@@ -214,28 +215,102 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
 
   // --------------------------- CREATE HANDLER ---------------------------
   void handleCreate() async {
-  final success = await controller.createLeagueDummy();
-
-  if (success) {
-    if (_selectedLeagueType == 'Private') {
-      // Show the Private League dialog
-      showDialog(
-        context: context,
-        builder: (context) => const PrivateLeagueCodeDialog(
-          leagueCode: "ABCD1234", // Replace with your generated league code
-        ),
-      );
-    } else {
-      // For public league, just show a snackbar or navigate
+    // Basic validation
+    if (_leagueNameController.text.trim().isEmpty) {
       Get.snackbar(
-        "Success",
-        "League created (dummy)!",
+        "Error",
+        "Please enter a league name",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+      return;
+    }
+
+    if (_startDateController.text.trim().isEmpty) {
+      Get.snackbar(
+        "Error", 
+        "Please select a start date",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+
+    if (_locationController.text.trim().isEmpty) {
+      Get.snackbar(
+        "Error",
+        "Please enter a location", 
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    // Call the actual API
+    final response = await controller.createLeague(
+      leagueName: _leagueNameController.text.trim(),
+      description: _descriptionController.text.trim(),
+      startDate: _startDateController.text.trim(),
+      location: _locationController.text.trim(),
+      totalGameWeeks: int.tryParse(_totalGameWeeksController.text) ?? 0,
+      type: _selectedType,
+      leagueType: _selectedLeagueType.toLowerCase(),
+      matchFormat: _selectedMatchFormat,
+      tiebreakOption: _selectedTiebreak,
+      allowSubstitutes: _allowSubstitutes,
+      entryFee: _entryFeeController.text.trim(),
+    );
+
+    if (response != null) {
+      // Success
+      if (_selectedLeagueType.toLowerCase() == 'private') {
+        // Show the Private League dialog with the actual league code
+        showDialog(
+          context: context,
+          builder: (context) => PrivateLeagueCodeDialog(
+            leagueCode: response.leagueCode,
+          ),
+        );
+      } else {
+        // For public league, show success message and navigate to Main League tab
+        Get.snackbar(
+          "Success",
+          "League '${response.leagueName}' created successfully!",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+        // Navigate to Main League tab to show the newly created public league
+        Get.offAll(() => const LeaguesScreen(
+          leagueType: 'public',
+          limit: 200,
+        ));
+      }
+    } else {
+      // Error is already handled in the controller and displayed
+      // Just show a generic fallback message if needed
+      if (controller.errorMessage.value.isEmpty) {
+        Get.snackbar(
+          "Error",
+          "Failed to create league. Please try again.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      } else {
+        Get.snackbar(
+          "Error",
+          controller.errorMessage.value,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
     }
   }
-}
 
 }

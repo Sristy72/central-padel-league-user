@@ -474,7 +474,7 @@ class ProfileInfoScreen extends StatelessWidget {
         ),
       );
       }),
-      bottomNavigationBar: AppBottomNavBar(),
+      bottomNavigationBar: const AppBottomNavBar(currentIndex: 4),
     );
   }
 }

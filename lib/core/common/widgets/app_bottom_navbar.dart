@@ -20,12 +20,21 @@ class BottomNavController extends GetxController {
 }
 
 class AppBottomNavBar extends StatelessWidget {
-  const AppBottomNavBar({super.key});
+  final int currentIndex;
+  
+  const AppBottomNavBar({super.key, this.currentIndex = 0});
 
   @override
   Widget build(BuildContext context) {
     // Initialize the controller if not already initialized
     final BottomNavController controller = Get.put(BottomNavController());
+    
+    // Update controller's index to match the current screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (controller.currentIndex.value != currentIndex) {
+        controller.currentIndex.value = currentIndex;
+      }
+    });
 
     Widget buildNavItem({
       required int index,
@@ -92,29 +101,35 @@ class AppBottomNavBar extends StatelessWidget {
             controller.changeIndex(index);
 
             if (index == 0) {
-              // Home
-              Get.to(
+              // Home - Clear navigation stack and go to home
+              Get.offAll(
                     () => const HomeScreen(),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 50),
               );
             } else if (index == 1) {
-              // Main league
-              Get.to(
-                    () => const LeaguesScreen(),
+              // Main league - show public leagues - Clear navigation stack
+              Get.offAll(
+                    () => const LeaguesScreen(
+                      leagueType: 'public',
+                      limit: 200,
+                    ),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 50),
               );
             } else if (index == 2) {
-              // Matches (still using LeaguesScreen for now)
-              Get.to(
-                    () => const LeaguesScreen(),
+              // Matches - show private leagues - Clear navigation stack
+              Get.offAll(
+                    () => const LeaguesScreen(
+                      leagueType: 'private',
+                      limit: 200,
+                    ),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 50),
               );
             } else if (index == 3) {
-              // Notification
-              Get.to(
+              // Notification - Clear navigation stack
+              Get.offAll(
                     () => NotificationScreen(),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 50),
@@ -153,14 +168,14 @@ class AppBottomNavBar extends StatelessWidget {
                       )
                     : dummyMember;
 
-                Get.to(
+                Get.offAll(
                       () => ProfileInfoScreen(member: memberToShow),
                   transition: Transition.fadeIn,
                   duration: const Duration(milliseconds: 50),
                 );
               } catch (e) {
                 // Fallback to dummy member if anything goes wrong
-                Get.to(
+                Get.offAll(
                       () => ProfileInfoScreen(member: dummyMember),
                   transition: Transition.fadeIn,
                   duration: const Duration(milliseconds: 50),

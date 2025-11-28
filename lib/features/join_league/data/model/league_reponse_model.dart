@@ -18,6 +18,8 @@ class LeagueResponeModel {
   final String matchFormat;
   final String tiebreakOption;
   final bool allowSubstitutes;
+  final String leagueType; // Add leagueType field
+  final String? leagueCode; // Add leagueCode field for OTP verification
   final DateTime createdAt;
   final DateTime updatedAt;
   final int v;
@@ -39,6 +41,8 @@ class LeagueResponeModel {
     required this.matchFormat,
     required this.tiebreakOption,
     required this.allowSubstitutes,
+    required this.leagueType, // Add leagueType parameter
+    this.leagueCode, // Add leagueCode parameter
     required this.createdAt,
     required this.updatedAt,
     required this.v,
@@ -48,26 +52,53 @@ class LeagueResponeModel {
   factory LeagueResponeModel.fromJson(Map<String, dynamic> json) {
     return LeagueResponeModel(
       id: json['_id'] ?? '',
-      user: UserModel.fromJson(json['user']),
+      user: json['user'] != null 
+          ? UserModel.fromJson(json['user'] as Map<String, dynamic>) 
+          : _createDummyUser(),
       leagueName: json['leagueName'] ?? '',
       description: json['description'] ?? '',
       leagueLogo: json['leagueLogo'] ?? '',
       bannerImage: json['bannerImage'],
-      startDate: DateTime.parse(json['startDate']),
+      startDate: json['startDate'] != null 
+          ? DateTime.parse(json['startDate']) 
+          : DateTime.now(),
       endDate: json['endDate'] != null ? DateTime.parse(json['endDate']) : null,
       location: json['location'] ?? '',
-      addTeams: List<Team>.from(
-        (json['addTeams'] ?? []).map((x) => Team.fromJson(x)),
-      ),
+      addTeams: json['addTeams'] != null 
+          ? List<Team>.from((json['addTeams'] as List).map((x) => Team.fromJson(x as Map<String, dynamic>)))
+          : [],
       totalGameWeeks: json['totalGameWeeks'] ?? 0,
       type: json['type'] ?? '',
       matchFormat: json['matchFormat'] ?? '',
       tiebreakOption: json['tiebreakOption'] ?? '',
       allowSubstitutes: json['allowSubstitutes'] ?? false,
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      leagueType: json['leagueType'] ?? 'public', // Add leagueType parsing
+      leagueCode: json['leagueCode'], // Add leagueCode parsing
+      createdAt: json['createdAt'] != null 
+          ? DateTime.parse(json['createdAt']) 
+          : DateTime.now(),
+      updatedAt: json['updatedAt'] != null 
+          ? DateTime.parse(json['updatedAt']) 
+          : DateTime.now(),
       v: json['__v'] ?? 0,
-      price: json['price'], 
+      price: json['price']?.toString(), 
+    );
+  }
+
+  // Helper method for null user handling
+  static UserModel _createDummyUser() {
+    return UserModel(
+      id: '',
+      name: 'Unknown User',
+      email: '',
+      password: '',
+      role: 'player',
+      phoneNumber: '',
+      isVerified: false,
+      refreshToken: '',
+      createdAt: DateTime.now().toIso8601String(),
+      updatedAt: DateTime.now().toIso8601String(),
+      v: 0,
     );
   }
 
@@ -87,6 +118,8 @@ class LeagueResponeModel {
     'matchFormat': matchFormat,
     'tiebreakOption': tiebreakOption,
     'allowSubstitutes': allowSubstitutes,
+    'leagueType': leagueType, // Add leagueType to JSON
+    'leagueCode': leagueCode, // Add leagueCode to JSON
     'createdAt': createdAt.toIso8601String(),
     'updatedAt': updatedAt.toIso8601String(),
     '__v': v,

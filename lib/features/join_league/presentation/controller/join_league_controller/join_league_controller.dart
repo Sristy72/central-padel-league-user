@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../../core/base/base_controller.dart';
 import '../../../../../core/network/services/multiple_form_data_manager.dart';
+import '../../../../../core/theme/app_colors.dart';
 import '../../../../payment/presentation/screens/payment_font_screen.dart';
 import '../../../data/model/league_reponse_model.dart';
 import '../../../domain/repo/team_repo.dart';
@@ -28,6 +29,8 @@ class JoinLeagueController extends BaseController {
   final contactNumberController = TextEditingController();
 
   final selectedLeague = ''.obs;
+  final selectedLeagueType = 'public'.obs; // Track selected league type
+  final otpController = TextEditingController(); // Controller for OTP input
   final selectedPlayerLevelId = RxnInt();
   final agreedRules = false.obs;
   final confirmedAvailability = false.obs;
@@ -56,6 +59,7 @@ class JoinLeagueController extends BaseController {
     partnerNameController.dispose();
     emailController.dispose();
     contactNumberController.dispose();
+    otpController.dispose(); // Dispose OTP controller
     super.onClose();
   }
 
@@ -75,18 +79,25 @@ class JoinLeagueController extends BaseController {
 
   Future<void> fetchLeagues() async {
     setLoading(true);
-    final response = await _repository.getAllLeague();
-    response.fold(
-      (fail) {
-        setError(fail.message);
-        setLoading(false);
-      },
-      (success) {
-        leagues.assignAll(success.data);
-        DPrint.log("Leagues fetched: ${leagues.length}");
-        setLoading(false);
-      },
-    );
+    try {
+      // Fetch only public leagues for the dropdown
+      final response = await _repository.getAllLeague(leagueType: 'public', limit: 200);
+      response.fold(
+        (fail) {
+          setError(fail.message);
+          setLoading(false);
+        },
+        (success) {
+          leagues.assignAll(success.data);
+          DPrint.log("✅ Public leagues fetched: ${leagues.length}");
+          setLoading(false);
+        },
+      );
+    } catch (e) {
+      DPrint.log("❌ Error fetching leagues: $e");
+      setError("Failed to load leagues");
+      setLoading(false);
+    }
   }
 
   Future<void> submitApplication() async {
@@ -212,11 +223,145 @@ class JoinLeagueController extends BaseController {
   void updateSelectedLeague(String leagueId) {
     selectedLeague.value = leagueId;
     DPrint.log("League ID set: $leagueId");
+    
+    // Find the selected league and update the type
+    final selectedLeagueModel = leagues.firstWhere(
+      (league) => league.id == leagueId,
+      orElse: () => leagues.first,
+    );
+    
+    selectedLeagueType.value = selectedLeagueModel.leagueType;
+    DPrint.log("Selected league type: ${selectedLeagueModel.leagueType}");
   }
 
   // Method to update player level
   void updatePlayerLevel(int levelId) {
     selectedPlayerLevelId.value = levelId;
+  }
+
+  // Method to update selected league and track its type - DUPLICATE REMOVED
+
+  // Method to show private league OTP dialog
+  Future<void> showPrivateLeagueOtpDialog() async {
+    otpController.clear(); // Clear previous OTP
+    
+    await Get.dialog<bool>(
+      AlertDialog(
+        backgroundColor: AppColors.textFieldBackground,
+        title: const Text(
+          'Join Private League',
+          style: TextStyle(color: AppColors.white, fontSize: 18),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Enter the OTP (League Code) provided by the league owner to join a private league.',
+              style: TextStyle(color: AppColors.white, fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: otpController,
+              decoration: InputDecoration(
+                hintText: 'Enter League OTP/Code',
+                hintStyle: const TextStyle(color: AppColors.textFieldTextiHint),
+                filled: true,
+                fillColor: AppColors.textFieldBackground,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: AppColors.textFieldTextiHint),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: AppColors.textFieldTextiHint),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: AppColors.primaryGreen),
+                ),
+              ),
+              style: const TextStyle(color: AppColors.white),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.textFieldTextiHint)),
+          ),
+          ElevatedButton(
+            onPressed: () => _findAndJoinPrivateLeagueByOtp(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryGreen,
+            ),
+            child: const Text('Find & Join League', style: TextStyle(color: AppColors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Method to find and join private league by OTP
+  Future<void> _findAndJoinPrivateLeagueByOtp() async {
+    if (otpController.text.trim().isEmpty) {
+      setError("Please enter OTP/League Code");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // Fetch all leagues to find the one with matching leagueCode
+      final response = await _repository.getAllLeague(limit: 200);
+      
+      response.fold(
+        (fail) {
+          setError("Failed to verify OTP: ${fail.message}");
+          setLoading(false);
+        },
+        (success) {
+          // Find league with matching leagueCode (OTP)
+          final privateLeague = success.data.firstWhere(
+            (league) => league.leagueCode == otpController.text.trim() && 
+                        league.leagueType.toLowerCase() == 'private',
+            orElse: () => success.data.first, // This will cause an error if not found
+          );
+
+          // Check if we found a matching private league
+          final foundMatch = success.data.any(
+            (league) => league.leagueCode == otpController.text.trim() && 
+                        league.leagueType.toLowerCase() == 'private'
+          );
+
+          if (foundMatch) {
+            // Success! Set this as selected league and close dialog
+            selectedLeague.value = privateLeague.id;
+            selectedLeagueType.value = 'private';
+            Get.back(result: true);
+            clearError();
+            setLoading(false);
+            
+            // Show success message
+            Get.snackbar(
+              'Success',
+              'Private league "${privateLeague.leagueName}" found! You can now complete your application.',
+              backgroundColor: AppColors.primaryGreen.withOpacity(0.8),
+              colorText: AppColors.white,
+              snackPosition: SnackPosition.BOTTOM,
+            );
+            
+            DPrint.log("✅ Private league found and selected: ${privateLeague.leagueName}");
+          } else {
+            setError("Invalid OTP/League Code. Please check with the league owner.");
+            setLoading(false);
+          }
+        },
+      );
+    } catch (e) {
+      setError("Error verifying OTP: $e");
+      setLoading(false);
+      DPrint.log("❌ Error in OTP verification: $e");
+    }
   }
 
   // Method to toggle agreement rules

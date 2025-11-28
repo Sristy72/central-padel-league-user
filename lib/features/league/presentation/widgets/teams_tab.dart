@@ -117,6 +117,9 @@ class _TeamGridItem extends StatelessWidget {
                   ? NetworkImage(team.logoPhotoUrl)
                   : const AssetImage('assets/images/group_logo.png')
                         as ImageProvider,
+              onBackgroundImageError: (exception, stackTrace) {
+                // Silently handle image loading errors
+              },
             ),
             const SizedBox(height: 8),
             Text(

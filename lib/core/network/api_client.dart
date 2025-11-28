@@ -211,6 +211,9 @@ class ApiClient {
         DPrint.log(
           "🛜 Api Endpoint -> $endpoint ${options.contentType} $method",
         );
+        if (queryParameters != null && queryParameters.isNotEmpty) {
+          DPrint.log("🛜 Query Parameters -> $queryParameters");
+        }
         DPrint.log(
           "🛜 Request payload -> FormData: ${fromData != null}, Data: $data",
         );

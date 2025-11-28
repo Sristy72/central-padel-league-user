@@ -25,20 +25,43 @@ class LeagueCard extends StatelessWidget {
             },
             child: Stack(
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: (league.bannerImage?.isNotEmpty ?? false)
-                          ? NetworkImage(league.bannerImage!)
-                          : const AssetImage("assets/images/example_bg.jpg"),
-                      fit: BoxFit.cover,
-                      colorFilter: ColorFilter.mode(
-                        Colors.black.withValues(alpha: 0.5),
-                        BlendMode.darken,
+                // Background image with error handling
+                (league.bannerImage?.isNotEmpty ?? false)
+                    ? Image.network(
+                        league.bannerImage!,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                        color: Colors.black.withValues(alpha: 0.5),
+                        colorBlendMode: BlendMode.darken,
+                        errorBuilder: (context, error, stackTrace) {
+                          // Fallback to asset image on error
+                          return Container(
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage("assets/images/example_bg.jpg"),
+                                fit: BoxFit.cover,
+                                colorFilter: ColorFilter.mode(
+                                  Colors.black54,
+                                  BlendMode.darken,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                    : Container(
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage("assets/images/example_bg.jpg"),
+                            fit: BoxFit.cover,
+                            colorFilter: ColorFilter.mode(
+                              Colors.black54,
+                              BlendMode.darken,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ),
 
                 Center(
                   child: Padding(

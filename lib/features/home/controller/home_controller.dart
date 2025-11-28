@@ -195,8 +195,8 @@ class HomeController extends GetxController {
         }
       });
 
-      //* League Update
-      final leaguesResult = await repository.getAllLeagues();
+      //* League Update - fetch public leagues only with limit
+      final leaguesResult = await repository.getAllLeagues(leagueType: 'public', limit: 10);
       leaguesResult.fold((failure) {}, (success) {
         final ldata = success.data;
         if (ldata.isNotEmpty) {

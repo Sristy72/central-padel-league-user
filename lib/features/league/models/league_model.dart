@@ -14,6 +14,7 @@ class League {
   final List<Team> addTeams; // Added field for teams
   final int? totalGameWeeks;
   final String type;
+  final String leagueType; // public or private
   final String matchFormat;
   final String tiebreakOption;
   final bool allowSubstitutes;
@@ -31,6 +32,7 @@ class League {
     this.addTeams = const [],
     this.totalGameWeeks,
     required this.type,
+    required this.leagueType,
     required this.matchFormat,
     required this.tiebreakOption,
     required this.allowSubstitutes,
@@ -49,7 +51,7 @@ class League {
     // parse teams if present; will be mapped inline below
     return League(
       id: json['_id'] ?? '',
-      user: json['user'] != null ? User.fromJson(json['user']) : null,
+      user: json['user'] != null && json['user'] is Map<String, dynamic> ? User.fromJson(json['user']) : null,
       leagueName: json['leagueName'] ?? '',
       description: json['description'] ?? '',
       leagueLogo: json['leagueLogo'] ?? '',
@@ -59,11 +61,13 @@ class League {
       location: json['location'] ?? '',
       addTeams: (json['addTeams'] is List)
           ? (json['addTeams'] as List)
+                .where((e) => e != null && e is Map<String, dynamic>)
                 .map((e) => Team.fromJson(e as Map<String, dynamic>))
                 .toList()
           : [],
       totalGameWeeks: json['totalGameWeeks'],
       type: json['type'] ?? '',
+      leagueType: json['leagueType'] ?? 'public', // Default to public if not specified
       matchFormat: json['matchFormat'] ?? '',
       tiebreakOption: json['tiebreakOption'] ?? '',
       allowSubstitutes: json['allowSubstitutes'] ?? false,

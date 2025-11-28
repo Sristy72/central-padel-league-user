@@ -51,9 +51,19 @@ class JoinLeagueRepositoryImpl implements JoinLeagueRepository {
   }
 
   @override
-  NetworkResult<List<LeagueResponeModel>> getAllLeague() {
+  NetworkResult<List<LeagueResponeModel>> getAllLeague({String? leagueType, int? limit}) {
+    // Build query parameters
+    final Map<String, dynamic> queryParams = {};
+    if (leagueType != null) {
+      queryParams['leagueType'] = leagueType;
+    }
+    if (limit != null) {
+      queryParams['limit'] = limit.toString();
+    }
+
     return _apiClient.get<List<LeagueResponeModel>>(
       ApiConstants.league.getAllLeagues,
+      queryParameters: queryParams.isNotEmpty ? queryParams : null,
       fromJsonT: (json) => (json as List)
           .map((item) => LeagueResponeModel.fromJson(item))
           .toList(),

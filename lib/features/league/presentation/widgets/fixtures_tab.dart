@@ -115,6 +115,9 @@ class FixturesTab extends StatelessWidget {
                                               )
                                               as ImageProvider,
                                     backgroundColor: Colors.transparent,
+                                    onBackgroundImageError: (exception, stackTrace) {
+                                      // Silently handle image loading errors
+                                    },
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
@@ -180,6 +183,9 @@ class FixturesTab extends StatelessWidget {
                                               )
                                               as ImageProvider,
                                     backgroundColor: Colors.transparent,
+                                    onBackgroundImageError: (exception, stackTrace) {
+                                      // Silently handle image loading errors
+                                    },
                                   ),
                                 ],
                               ),

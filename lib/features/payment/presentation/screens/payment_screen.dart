@@ -259,7 +259,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: const AppBottomNavBar(),
+      bottomNavigationBar: const AppBottomNavBar(currentIndex: 1),
     );
   }
 }
