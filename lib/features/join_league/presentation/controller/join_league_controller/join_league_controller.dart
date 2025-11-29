@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../../core/base/base_controller.dart';
 import '../../../../../core/network/services/multiple_form_data_manager.dart';
 import '../../../../../core/theme/app_colors.dart';
+import '../../../../home/presentation/screens/home_screen.dart';
 import '../../../../payment/presentation/screens/payment_font_screen.dart';
 import '../../../data/model/league_reponse_model.dart';
 import '../../../domain/repo/team_repo.dart';
@@ -44,7 +45,52 @@ class JoinLeagueController extends BaseController {
     {'id': 5, 'label': 'Pro', 'asset': null},
   ];
 
-  final leagues = RxList<LeagueResponeModel>();
+  final leagues = RxList<LeagueResponeModel>(); // Public leagues only
+  final selectedPrivateLeague = Rxn<LeagueResponeModel>(); // Selected private league
+
+  // Computed property for dropdown display - public leagues + selected private league
+  List<LeagueResponeModel> get displayLeagues {
+    try {
+      // Return empty list immediately if leagues is not initialized
+      if (leagues.isEmpty) {
+        return <LeagueResponeModel>[];
+      }
+      
+      // Safely filter public leagues with null checks
+      final publicLeagues = <LeagueResponeModel>[];
+      for (final league in leagues) {
+        try {
+          if (league.leagueType.toLowerCase() == 'public') {
+            publicLeagues.add(league);
+          }
+        } catch (e) {
+          DPrint.log('Error filtering league ${league.id}: $e');
+          continue; // Skip problematic leagues
+        }
+      }
+      
+      // Add selected private league to display if it exists and is valid
+      final privateLeague = selectedPrivateLeague.value;
+      if (privateLeague != null && 
+          privateLeague.id.isNotEmpty && 
+          privateLeague.leagueName.isNotEmpty) {
+        try {
+          // Check if it's not already in the list
+          final isAlreadyInList = publicLeagues.any((league) => league.id == privateLeague.id);
+          if (!isAlreadyInList) {
+            return List<LeagueResponeModel>.from(publicLeagues)..add(privateLeague);
+          }
+        } catch (e) {
+          DPrint.log('Error adding private league: $e');
+        }
+      }
+      
+      return List<LeagueResponeModel>.from(publicLeagues);
+    } catch (e) {
+      DPrint.log('Critical error in displayLeagues getter: $e');
+      return <LeagueResponeModel>[];
+    }
+  }
 
   @override
   void onInit() {
@@ -80,7 +126,7 @@ class JoinLeagueController extends BaseController {
   Future<void> fetchLeagues() async {
     setLoading(true);
     try {
-      // Fetch only public leagues for the dropdown
+      // Fetch only public leagues for the dropdown, excluding user's own leagues
       final response = await _repository.getAllLeague(leagueType: 'public', limit: 200);
       response.fold(
         (fail) {
@@ -88,8 +134,16 @@ class JoinLeagueController extends BaseController {
           setLoading(false);
         },
         (success) {
-          leagues.assignAll(success.data);
-          DPrint.log("✅ Public leagues fetched: ${leagues.length}");
+          // Filter out leagues created by the current user
+          final filteredLeagues = success.data.where((league) {
+            // You can implement user ID check here if available
+            // For now, we'll show all public leagues
+            // TODO: Add user ID filtering when user data is available
+            return true; // league.user.id != currentUserId;
+          }).toList();
+          
+          leagues.assignAll(filteredLeagues);
+          DPrint.log("✅ Public leagues fetched (excluding own): ${leagues.length}");
           setLoading(false);
         },
       );
@@ -102,16 +156,20 @@ class JoinLeagueController extends BaseController {
 
   Future<void> submitApplication() async {
     if (!(formKey.currentState?.validate() ?? false)) return;
+    
+    // Check if a league is selected (either from dropdown or private league via OTP)
     if (selectedLeague.value.isEmpty) {
       setError("Please select a league");
       return;
     }
+    
     if (selectedPlayerLevelId.value == null) {
       setError("Please select a player level");
       return;
     }
+    
     if (!agreedRules.value || !confirmedAvailability.value) {
-      setError("Please agree and confirm to proceed");
+      setError("Please agree to rules and confirm availability to proceed");
       return;
     }
 
@@ -179,19 +237,61 @@ class JoinLeagueController extends BaseController {
         },
         (success) {
           DPrint.log("Application submitted: ${success.message}");
-          final selectedLeagueModel = leagues.firstWhere(
+          
+          // Find the selected league from display leagues (public + selected private)
+          final selectedLeagueModel = displayLeagues.firstWhere(
             (league) => league.id == selectedLeague.value,
+            orElse: () => displayLeagues.isNotEmpty ? displayLeagues.first : leagues.first,
           );
-          final amount = double.tryParse(selectedLeagueModel.price ?? '0.0') ?? 0.0;
-          Get.to(
-            () => PaymentDialog(
-              userID: success.data.user,
-              leagueID: success.data.league,
-              teamID: success.data.id,
-              amount: amount.toString(),
-            ),
-            transition: Transition.rightToLeft,
-          );
+          
+          // Check if the selected league is private
+          if (selectedLeagueModel.leagueType.toLowerCase() == 'private') {
+            // For private leagues, show success message and navigate back
+            DPrint.log("✅ Private league application successful - No payment required");
+            
+            Get.snackbar(
+              'Success',
+              'Your application to join "${selectedLeagueModel.leagueName}" has been submitted successfully!',
+              backgroundColor: AppColors.primaryGreen.withOpacity(0.8),
+              colorText: AppColors.white,
+              snackPosition: SnackPosition.BOTTOM,
+              duration: const Duration(seconds: 3),
+              margin: const EdgeInsets.all(16),
+            );
+            
+            // Clear form and navigate back after delay
+            Future.delayed(const Duration(seconds: 1), () {
+              // Clear form fields
+              teamNameController.clear();
+              captainNameController.clear();
+              partnerNameController.clear();
+              emailController.clear();
+              contactNumberController.clear();
+              selectedLogo.value = null;
+              selectedLeague.value = '';
+              selectedPrivateLeague.value = null;
+              selectedPlayerLevelId.value = null;
+              agreedRules.value = false;
+              confirmedAvailability.value = false;
+              
+              // Navigate to home screen and clear navigation stack
+              Get.offAll(() => const HomeScreen());
+            });
+          } else {
+            // For public leagues, proceed to payment
+            DPrint.log("🔵 Public league - Proceeding to payment");
+            
+            final amount = double.tryParse(selectedLeagueModel.price ?? '0.0') ?? 0.0;
+            Get.to(
+              () => PaymentDialog(
+                userID: success.data.user,
+                leagueID: success.data.league,
+                teamID: success.data.id,
+                amount: amount.toString(),
+              ),
+              transition: Transition.rightToLeft,
+            );
+          }
         },
       );
     } catch (e) {
@@ -221,17 +321,65 @@ class JoinLeagueController extends BaseController {
   }
 
   void updateSelectedLeague(String leagueId) {
-    selectedLeague.value = leagueId;
-    DPrint.log("League ID set: $leagueId");
-    
-    // Find the selected league and update the type
-    final selectedLeagueModel = leagues.firstWhere(
-      (league) => league.id == leagueId,
-      orElse: () => leagues.first,
-    );
-    
-    selectedLeagueType.value = selectedLeagueModel.leagueType;
-    DPrint.log("Selected league type: ${selectedLeagueModel.leagueType}");
+    try {
+      // Validate input
+      if (leagueId.isEmpty) {
+        DPrint.log('Cannot select league: empty league ID');
+        return;
+      }
+      
+      selectedLeague.value = leagueId;
+      DPrint.log("League ID set: $leagueId");
+      
+      // Safely find the selected league from display leagues
+      try {
+        final availableLeagues = displayLeagues;
+        if (availableLeagues.isEmpty) {
+          DPrint.log('No leagues available for type detection');
+          selectedLeagueType.value = 'public'; // Default fallback
+          return;
+        }
+        
+        LeagueResponeModel? selectedLeagueModel;
+        for (final league in availableLeagues) {
+          try {
+            if (league.id == leagueId) {
+              selectedLeagueModel = league;
+              break;
+            }
+          } catch (e) {
+            DPrint.log('Error checking league ${league.id}: $e');
+            continue;
+          }
+        }
+        
+        if (selectedLeagueModel != null) {
+          selectedLeagueType.value = selectedLeagueModel.leagueType;
+          DPrint.log("Selected league type: ${selectedLeagueModel.leagueType}");
+        } else {
+          DPrint.log('League not found in available leagues, using first available');
+          if (availableLeagues.isNotEmpty) {
+            selectedLeagueType.value = availableLeagues.first.leagueType;
+          } else {
+            selectedLeagueType.value = 'public';
+          }
+        }
+        
+      } catch (e) {
+        DPrint.log('Error in league type detection: $e');
+        selectedLeagueType.value = 'public'; // Safe fallback
+      }
+      
+    } catch (e) {
+      DPrint.log('Critical error updating selected league: $e');
+      // Ensure we don't leave the state in an invalid condition
+      try {
+        selectedLeague.value = leagueId;
+        selectedLeagueType.value = 'public';
+      } catch (e2) {
+        DPrint.log('Failed to set fallback values: $e2');
+      }
+    }
   }
 
   // Method to update player level
@@ -294,7 +442,7 @@ class JoinLeagueController extends BaseController {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryGreen,
             ),
-            child: const Text('Find & Join League', style: TextStyle(color: AppColors.white)),
+            child: const Text('Find League', style: TextStyle(color: AppColors.white)),
           ),
         ],
       ),
@@ -334,7 +482,8 @@ class JoinLeagueController extends BaseController {
           );
 
           if (foundMatch) {
-            // Success! Set this as selected league and close dialog
+            // Success! Store the private league but don't add to dropdown
+            selectedPrivateLeague.value = privateLeague;
             selectedLeague.value = privateLeague.id;
             selectedLeagueType.value = 'private';
             Get.back(result: true);
@@ -348,6 +497,7 @@ class JoinLeagueController extends BaseController {
               backgroundColor: AppColors.primaryGreen.withOpacity(0.8),
               colorText: AppColors.white,
               snackPosition: SnackPosition.BOTTOM,
+              duration: const Duration(seconds: 3),
             );
             
             DPrint.log("✅ Private league found and selected: ${privateLeague.leagueName}");
