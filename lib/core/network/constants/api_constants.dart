@@ -6,7 +6,7 @@ class ApiConstants {
 
   /// soykot ip
 
-  static const String baseDomain = 'http://10.10.5.59:8000';
+  static const String baseDomain = 'http://10.10.5.59:5002';
 
   /// [Headers]
   static Map<String, String> get defaultHeaders => {
@@ -64,6 +64,8 @@ class NotificationEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/notification';
 
   final String getnotifications = '$_base/getnotifications';
+
+  String getNotificationsByUserId(String userId) => '$_base/$userId';
 }
 
 class TeamEndpointcs {

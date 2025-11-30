@@ -1,9 +1,11 @@
-import 'package:karlfive/core/network/api_client.dart';
-import 'package:karlfive/core/network/constants/api_constants.dart';
-import 'package:karlfive/core/network/network_result.dart';
-import 'package:karlfive/features/notification/data/model/notification_request_model.dart';
-import 'package:karlfive/features/notification/data/model/notification_response_model.dart';
-import 'package:karlfive/features/notification/domain/repo/notification_repo.dart';
+
+
+import '../../../../core/network/api_client.dart';
+import '../../../../core/network/constants/api_constants.dart';
+import '../../../../core/network/network_result.dart';
+import '../../domain/repo/notification_repo.dart';
+import '../model/notification_request_model.dart';
+import '../model/notification_response_model.dart';
 
 class NotificationRepoImpl implements NotificationRepo {
   final ApiClient _apiClient;
@@ -31,6 +33,20 @@ class NotificationRepoImpl implements NotificationRepo {
       queryParameters: request.toJson(),
       fromJsonT: (json) => NotificationResponseModel.fromJson(json),
       // isFormData: true
+    );
+  }
+
+  @override
+  NetworkResult<List<NotificationResponseModel>> getNotificationsByUserId(String userId) {
+    return _apiClient.get<List<NotificationResponseModel>>(
+      ApiConstants.notification.getNotificationsByUserId(userId),
+      fromJsonT: (json) {
+        // json is already the 'data' array from the BaseResponse
+        final dataList = json as List<dynamic>? ?? [];
+        return dataList
+            .map((item) => NotificationResponseModel.fromJson(item as Map<String, dynamic>))
+            .toList();
+      },
     );
   }
 }
