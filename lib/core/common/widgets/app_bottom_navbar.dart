@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/features/home/presentation/screens/home_screen.dart';
 import 'package:karlfive/features/league/presentation/screens/leagues_screen.dart';
+import 'package:karlfive/features/league/presentation/screens/private_leagues_screen.dart';
 import 'package:karlfive/features/notification/presentation/screen/notification_dummy_screen.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_info_screen.dart';
 import 'package:karlfive/features/team_members_profile/presentation/controllers/profile_controller.dart';
@@ -118,12 +119,9 @@ class AppBottomNavBar extends StatelessWidget {
                 duration: const Duration(milliseconds: 50),
               );
             } else if (index == 2) {
-              // Matches - show private leagues - Clear navigation stack
+              // Matches - show private leagues screen with filters - Clear navigation stack
               Get.offAll(
-                    () => const LeaguesScreen(
-                      leagueType: 'private',
-                      limit: 200,
-                    ),
+                    () => const PrivateLeaguesScreen(),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 50),
               );

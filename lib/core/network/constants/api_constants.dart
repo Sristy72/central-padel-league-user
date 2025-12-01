@@ -1,12 +1,12 @@
 class ApiConstants {
   /// [Base Configuration]
-  // static const String baseDomain = 'https://karlfive223-backend.onrender.com';
+  static const String baseDomain = 'https://karlfive223-backend.onrender.com';
   // static const String baseDomain = 'http://72.61.161.196';
   static const String baseUrl = '$baseDomain/api/v1';
 
   /// soykot ip
 
-  static const String baseDomain = 'http://10.10.5.88:5002';
+  // static const String baseDomain = 'http://10.10.5.88:5002';
 
   /// [Headers]
   static Map<String, String> get defaultHeaders => {
