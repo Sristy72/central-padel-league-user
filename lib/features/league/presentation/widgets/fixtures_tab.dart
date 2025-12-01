@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
+
+import '../../../chat/presentation/screens/chat_message_screen.dart';
 import '../../models/match_model.dart';
 
 class FixturesTab extends StatelessWidget {
@@ -145,7 +148,15 @@ class FixturesTab extends StatelessWidget {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                IconButton(
+                                  onPressed: (){
+                                    Get.to(() => ChatMessageScreen(
+                                      participantName: m.teamOne.teamName,
+                                      participantImage: m.teamOne.logoPhotoUrl,
+                                    ));
+                                  } ,
+                                  icon: Icon(Icons.message,color: AppColors.notificationColor,)
+                                ),
                                 Text(
                                   m.formattedScore(),
                                   style: const TextStyle(color: Colors.white70),

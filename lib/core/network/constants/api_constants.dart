@@ -6,7 +6,7 @@ class ApiConstants {
 
   /// soykot ip
 
-  static const String baseDomain = 'http://10.10.5.59:5002';
+  static const String baseDomain = 'http://10.10.5.88:5002';
 
   /// [Headers]
   static Map<String, String> get defaultHeaders => {
