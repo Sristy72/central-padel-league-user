@@ -117,6 +117,9 @@ class StandingTab extends StatelessWidget {
                               ? NetworkImage(standing.teamLogoUrl)
                               : AssetImage(standing.teamLogoUrl)
                                     as ImageProvider,
+                          onBackgroundImageError: (exception, stackTrace) {
+                            // Silently handle image loading errors
+                          },
                         ),
                         const SizedBox(width: 8.0),
                         Text(standing.teamName),

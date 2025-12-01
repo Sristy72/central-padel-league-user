@@ -9,5 +9,5 @@ abstract class HomeRepository {
 
   NetworkResult<List<league_standing.Standing>> getAllStandings();
 
-  NetworkResult<List<league_model.League>> getAllLeagues();
+  NetworkResult<List<league_model.League>> getAllLeagues({String? leagueType, int? limit});
 }

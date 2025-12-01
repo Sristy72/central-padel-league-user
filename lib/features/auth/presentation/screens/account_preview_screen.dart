@@ -4,6 +4,7 @@ import 'package:karlfive/core/network/services/secure_store_services.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
 import 'package:karlfive/features/auth/presentation/controller/auth_controller.dart';
 import 'package:karlfive/features/auth/presentation/controller/remember_me_controller.dart';
+import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
 import '../../../../core/theme/app_buttoms.dart';
 import '../../../home/presentation/screens/home_screen.dart';
 import '../../../../core/common/constants/app_images.dart';
@@ -101,7 +102,15 @@ class _AccountPreviewScreenState extends State<AccountPreviewScreen> {
                 Get.offAll(() => const HomeScreen());
             },
             text: "This is your account",
-          )),
+          )
+          ),
+              const SizedBox(height: 10),
+
+              PrimaryButton(onPressed: () async{
+                Get.offAll(()=> const LoginScreen());
+
+              },
+                  text: 'Login with another account')
             ],
           ),
         ),

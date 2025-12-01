@@ -52,7 +52,7 @@ class HomeScreen extends StatelessWidget {
                             'Hello $name,',
                             style: const TextStyle(
                               color: AppColors.white,
-                              fontSize: 18,
+                              fontSize: 14,
                             ),
                           );
                         }),
@@ -202,7 +202,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: const AppBottomNavBar (),
+      bottomNavigationBar: const AppBottomNavBar(currentIndex: 0),
     );
   }
 }

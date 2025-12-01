@@ -6,7 +6,7 @@ class ApiConstants {
 
   /// soykot ip
 
-  // static const String baseDomain = 'http://10.10.5.91:5001';
+  // static const String baseDomain = 'http://10.10.5.88:5002';
 
   /// [Headers]
   static Map<String, String> get defaultHeaders => {
@@ -36,6 +36,7 @@ class ApiConstants {
   static ContactEndpoints get contact => ContactEndpoints();
 
   static PaymentEndpoints get payment => PaymentEndpoints();
+  static ReportEndpoints get report => ReportEndpoints();
 }
 
 /// [Authentication Endpoints]
@@ -63,6 +64,8 @@ class NotificationEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/notification';
 
   final String getnotifications = '$_base/getnotifications';
+
+  String getNotificationsByUserId(String userId) => '$_base/$userId';
 }
 
 class TeamEndpointcs {
@@ -76,6 +79,7 @@ class LeagueEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/league';
 
   final String getAllLeagues = '$_base/all-league';
+  final String create = '$_base/create';
 }
 
 class ContactEndpoints {
@@ -90,4 +94,14 @@ class PaymentEndpoints {
   final String createPayment = '$_base/create-payment';
 
   final String confirmPayment = '$_base/confirm-payment';
+}
+
+class ReportEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/report';
+
+  /// Create a report (POST)
+  final String createReport = '$_base/create';
+
+  /// Optional — in case backend supports fetching user reports later
+  final String getReports = '$_base/all';
 }

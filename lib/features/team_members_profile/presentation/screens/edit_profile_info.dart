@@ -53,13 +53,13 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
     _lastNameController = TextEditingController(text: '');
     _phoneController = TextEditingController(text: '');
     _controller = Get.find<EditProfileController>();
-  _profileController = Get.find<ProfileController>();
-  // prefer profile values when available for initial hinting
-  _selectedGender = _profileController.profile.value?.gender ?? widget.member.gender;
-    
+    _profileController = Get.find<ProfileController>();
+    // prefer profile values when available for initial hinting
+    _selectedGender = _profileController.profile.value?.gender ?? widget.member.gender;
+
     // Set email from profile controller (uneditable)
     _emailController = TextEditingController(
-      text: _profileController.profile.value?.email ?? widget.member.email
+        text: _profileController.profile.value?.email ?? widget.member.email
     );
   }
 
@@ -129,7 +129,7 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
             ListTile(
               leading: const Icon(Icons.photo, color: Colors.green),
               title: const Text("Gallery"),
-                onTap: () {
+              onTap: () {
                 _pickImage(ImageSource.gallery);
                 Get.back();
               },
@@ -207,9 +207,9 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                   Expanded(
                     child: _buildTextField(
                       label: "First Name",
-            hintText: (_profileController.profile.value?.name != null && _profileController.profile.value!.name!.isNotEmpty)
-              ? _profileController.profile.value!.name!.split(' ').first
-              : (widget.member.firstName.isNotEmpty ? widget.member.firstName : 'First Name'),
+                      hintText: (_profileController.profile.value?.name != null && _profileController.profile.value!.name!.isNotEmpty)
+                          ? _profileController.profile.value!.name!.split(' ').first
+                          : (widget.member.firstName.isNotEmpty ? widget.member.firstName : 'First Name'),
                       controller: _firstNameController,
                     ),
                   ),
@@ -217,9 +217,9 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                   Expanded(
                     child: _buildTextField(
                       label: "Last Name",
-            hintText: (_profileController.profile.value?.name != null && _profileController.profile.value!.name!.isNotEmpty && _profileController.profile.value!.name!.split(' ').length > 1)
-              ? _profileController.profile.value!.name!.split(' ').sublist(1).join(' ')
-              : (widget.member.lastName.isNotEmpty ? widget.member.lastName : 'Last Name'),
+                      hintText: (_profileController.profile.value?.name != null && _profileController.profile.value!.name!.isNotEmpty && _profileController.profile.value!.name!.split(' ').length > 1)
+                          ? _profileController.profile.value!.name!.split(' ').sublist(1).join(' ')
+                          : (widget.member.lastName.isNotEmpty ? widget.member.lastName : 'Last Name'),
                       controller: _lastNameController,
                     ),
                   ),
@@ -239,9 +239,9 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
               // Phone
               _buildTextField(
                 label: "Phone",
-        hintText: _profileController.profile.value?.phoneNumber?.isNotEmpty == true
-          ? _profileController.profile.value!.phoneNumber!
-          : (widget.member.phone.isNotEmpty ? widget.member.phone : 'Enter Phone Number'),
+                hintText: _profileController.profile.value?.phoneNumber?.isNotEmpty == true
+                    ? _profileController.profile.value!.phoneNumber!
+                    : (widget.member.phone.isNotEmpty ? widget.member.phone : 'Enter Phone Number'),
                 controller: _phoneController,
               ),
               const SizedBox(height: 16),
@@ -387,15 +387,15 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                       final firstName = rawFirst.isNotEmpty
                           ? rawFirst
                           : (widget.member.firstName.isNotEmpty
-                              ? widget.member.firstName
-                              : (profileVal?.name?.split(' ').first ?? ''));
+                          ? widget.member.firstName
+                          : (profileVal?.name?.split(' ').first ?? ''));
                       final lastName = rawLast.isNotEmpty
                           ? rawLast
                           : (widget.member.lastName.isNotEmpty
-                              ? widget.member.lastName
-                              : (profileVal?.name?.split(' ').length ?? 0) > 1
-                                  ? profileVal!.name!.split(' ').sublist(1).join(' ')
-                                  : '');
+                          ? widget.member.lastName
+                          : (profileVal?.name?.split(' ').length ?? 0) > 1
+                          ? profileVal!.name!.split(' ').sublist(1).join(' ')
+                          : '');
 
                       final phone = rawPhone.isNotEmpty ? rawPhone : (widget.member.phone.isNotEmpty ? widget.member.phone : (profileVal?.phoneNumber ?? ''));
                       final birthday = rawBirthday.isNotEmpty ? rawBirthday : (widget.member.birthday.isNotEmpty ? widget.member.birthday : '');
@@ -500,8 +500,8 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
             initialValue: controller == null ? initialValue : null,
             enabled: enabled,
             style: TextStyle(
-              color: enabled ? Colors.white : Colors.grey, 
-              fontSize: 14
+                color: enabled ? Colors.white : Colors.grey,
+                fontSize: 14
             ),
             decoration: InputDecoration(
               hintText: hintText,

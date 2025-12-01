@@ -171,12 +171,7 @@ class CreateLeagueSelectionButtons extends StatelessWidget {
         const SizedBox(height: 8),
         Row(
           children: [
-            _buildSelectionButton(
-              'Public',
-              selectedLeagueType == 'Public',
-                  () => onLeagueTypeChanged('Public'),
-            ),
-            const SizedBox(width: 7),
+
             _buildSelectionButton(
               'Private',
               selectedLeagueType == 'Private',

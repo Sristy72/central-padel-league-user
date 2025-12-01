@@ -219,6 +219,7 @@ class SearchResultsWidget extends StatelessWidget {
         startDate: DateTime.now(),
         location: '',
         type: '',
+        leagueType: 'public', // Default to public for search results
         matchFormat: '',
         tiebreakOption: '',
         allowSubstitutes: false,

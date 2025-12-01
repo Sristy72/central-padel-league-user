@@ -41,4 +41,3 @@ final TeamMemberModel dummyMember = TeamMemberModel(
   matches: 0,
   level: 1,
 );
-

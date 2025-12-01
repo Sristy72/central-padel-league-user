@@ -66,7 +66,35 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
                   const SizedBox(height: 20),
 
                   /// Error message from controller
-                  //
+                  Obx(
+                    () {
+                      // Use a safe getter to prevent layout issues
+                      final errorMsg = controller.errorMessage.value;
+                      if (errorMsg.isEmpty) return const SizedBox.shrink();
+                      
+                      return Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.1),
+                          border: Border.all(color: Colors.red.withOpacity(0.3)),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.error_outline, color: Colors.red, size: 20),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                errorMsg,
+                                style: const TextStyle(color: Colors.red, fontSize: 14),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
 
                   const SizedBox(height: 8),
 
@@ -143,7 +171,7 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const AppBottomNavBar(),
+      bottomNavigationBar: const AppBottomNavBar(currentIndex: 1),
     );
   }
 }

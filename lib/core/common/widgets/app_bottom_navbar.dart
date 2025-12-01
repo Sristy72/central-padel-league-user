@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/features/home/presentation/screens/home_screen.dart';
 import 'package:karlfive/features/league/presentation/screens/leagues_screen.dart';
+import 'package:karlfive/features/league/presentation/screens/private_leagues_screen.dart';
 import 'package:karlfive/features/notification/presentation/screen/notification_dummy_screen.dart';
+import 'package:karlfive/features/team_members_profile/domain/repo/user_profile_repo.dart';
+import 'package:karlfive/features/team_members_profile/presentation/controllers/profile_controller.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_info_screen.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -18,12 +21,21 @@ class BottomNavController extends GetxController {
 }
 
 class AppBottomNavBar extends StatelessWidget {
-  const AppBottomNavBar({super.key});
+  final int currentIndex;
+  
+  const AppBottomNavBar({super.key, this.currentIndex = 0});
 
   @override
   Widget build(BuildContext context) {
     // Initialize the controller if not already initialized
     final BottomNavController controller = Get.put(BottomNavController());
+    
+    // Update controller's index to match the current screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (controller.currentIndex.value != currentIndex) {
+        controller.currentIndex.value = currentIndex;
+      }
+    });
 
     Widget buildNavItem({
       required int index,
@@ -82,7 +94,7 @@ class AppBottomNavBar extends StatelessWidget {
       child: Obx(
             () => BottomNavigationBar(
           currentIndex: controller.currentIndex.value,
-          onTap: (index) {
+          onTap: (index) async {
             // If the tab is already selected, do nothing
             if (controller.currentIndex.value == index) return;
 
@@ -90,40 +102,83 @@ class AppBottomNavBar extends StatelessWidget {
             controller.changeIndex(index);
 
             if (index == 0) {
-              // Home
-              Get.to(
+              // Home - Clear navigation stack and go to home
+              Get.offAll(
                     () => const HomeScreen(),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 50),
               );
             } else if (index == 1) {
-              // Main league
-              Get.to(
-                    () => const LeaguesScreen(),
+              // Main league - show public leagues - Clear navigation stack
+              Get.offAll(
+                    () => const LeaguesScreen(
+                      leagueType: 'public',
+                      limit: 200,
+                    ),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 50),
               );
             } else if (index == 2) {
-              // Matches (still using LeaguesScreen for now)
-              Get.to(
-                    () => const LeaguesScreen(),
+              // Matches - show private leagues screen with filters - Clear navigation stack
+              Get.offAll(
+                    () => const PrivateLeaguesScreen(),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 50),
               );
             } else if (index == 3) {
-              // Notification
-              Get.to(
+              // Notification - Clear navigation stack
+              Get.offAll(
                     () => NotificationScreen(),
                 transition: Transition.fadeIn,
                 duration: const Duration(milliseconds: 50),
               );
             } else if (index == 4) {
-              // Profile
-              Get.to(
-                    () => ProfileInfoScreen(member: dummyMember),
-                transition: Transition.fadeIn,
-                duration: const Duration(milliseconds: 50),
-              );
+              // Profile: ensure profile controller has latest data before navigating
+              try {
+                // Ensure ProfileController and its repo are registered
+                if (!Get.isRegistered<ProfileController>()) {
+                  // Attempt to resolve repository from Get; setup_repository normally registers this
+                  final repo = Get.find<UserProfileRepo>();
+                  Get.put(ProfileController(repository: repo));
+                }
+
+                final profileController = Get.find<ProfileController>();
+
+                // Try to fetch latest profile (non-blocking if already loaded)
+                await profileController.fetchProfile();
+
+                // Map UserProfileModel -> TeamMemberModel for navigation fallback
+                final apiProfile = profileController.profile.value;
+                final memberToShow = apiProfile != null
+                    ? TeamMemberModel(
+                        id: apiProfile.id ?? '',
+                        name: apiProfile.name ?? '',
+                        role: apiProfile.role ?? '',
+                        imageUrl: apiProfile.profileImage ?? '',
+                        matches: 0,
+                        level: 0,
+                        firstName: apiProfile.name?.split(' ').first ?? '',
+                        lastName: apiProfile.name?.contains(' ') == true ? apiProfile.name!.split(' ').sublist(1).join(' ') : '',
+                        email: apiProfile.email,
+                        phone: apiProfile.phoneNumber ?? '',
+                        birthday: apiProfile.createdAt?.toIso8601String() ?? '',
+                        gender: apiProfile.gender ?? '',
+                      )
+                    : dummyMember;
+
+                Get.offAll(
+                      () => ProfileInfoScreen(member: memberToShow),
+                  transition: Transition.fadeIn,
+                  duration: const Duration(milliseconds: 50),
+                );
+              } catch (e) {
+                // Fallback to dummy member if anything goes wrong
+                Get.offAll(
+                      () => ProfileInfoScreen(member: dummyMember),
+                  transition: Transition.fadeIn,
+                  duration: const Duration(milliseconds: 50),
+                );
+              }
             }
           },
           backgroundColor: Colors.transparent,

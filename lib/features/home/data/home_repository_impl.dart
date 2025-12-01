@@ -42,11 +42,39 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  NetworkResult<List<league_model.League>> getAllLeagues() {
+  NetworkResult<List<league_model.League>> getAllLeagues({String? leagueType, int? limit}) {
+    // Build query parameters
+    final Map<String, dynamic> queryParams = {};
+    if (leagueType != null) {
+      queryParams['leagueType'] = leagueType;
+    }
+    if (limit != null) {
+      queryParams['limit'] = limit.toString();
+    }
+
+    print('🔶 HomeRepository: Fetching leagues with type=$leagueType, limit=$limit');
+
     return apiClient.get<List<league_model.League>>(
       ApiConstants.league.getAllLeagues,
-      fromJsonT: (json) =>
-          (json as List).map((e) => league_model.League.fromJson(e)).toList(),
+      queryParameters: queryParams.isNotEmpty ? queryParams : null,
+      fromJsonT: (json) {
+        var leagues = (json as List).map((e) => league_model.League.fromJson(e)).toList();
+        
+        // CLIENT-SIDE FILTERING: Backup filter to ensure correct league type
+        if (leagueType != null && leagueType.isNotEmpty) {
+          final beforeFilter = leagues.length;
+          leagues = leagues.where((league) {
+            final matches = league.leagueType.toLowerCase() == leagueType.toLowerCase();
+            if (!matches) {
+              print('🔶 HomeRepository: Filtered out "${league.leagueName}" (type: ${league.leagueType}, wanted: $leagueType)');
+            }
+            return matches;
+          }).toList();
+          print('🟢 HomeRepository: Client-side filter: $beforeFilter → ${leagues.length} leagues (type=$leagueType)');
+        }
+        
+        return leagues;
+      },
     );
   }
 }

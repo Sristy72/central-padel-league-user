@@ -1,6 +1,29 @@
+class ReportResponse {
+  final bool success;
+  final int statusCode;
+  final String message;
+  final ReportData data;
+
+  ReportResponse({
+    required this.success,
+    required this.statusCode,
+    required this.message,
+    required this.data,
+  });
+
+  factory ReportResponse.fromJson(Map<String, dynamic> json) {
+    return ReportResponse(
+      success: json['success'] ?? false,
+      statusCode: json['statusCode'] ?? 0,
+      message: json['message'] ?? '',
+      data: ReportData.fromJson(json['data'] ?? {}),
+    );
+  }
+}
+
 class ReportData {
   final String user;
-  final String even; // note: API key is "even". If it's a typo, rename to "event"
+  final String even; // API key is "even", not "event"
   final String description;
   final String? reportImage;
   final String id;

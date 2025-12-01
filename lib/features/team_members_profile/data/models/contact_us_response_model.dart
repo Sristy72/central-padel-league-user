@@ -5,7 +5,7 @@ class ContactUsResponseModel {
   final String address;
   final String phoneNumber;
   final String subject;
-  final String yourCompony;
+  final String yourCompany;
   final String id;
   final String createdAt;
   final String updatedAt;
@@ -18,7 +18,7 @@ class ContactUsResponseModel {
     required this.address,
     required this.phoneNumber,
     required this.subject,
-    required this.yourCompony,
+    required this.yourCompany,
     required this.id,
     required this.createdAt,
     required this.updatedAt,
@@ -33,7 +33,7 @@ class ContactUsResponseModel {
       address: json['address'] ?? '',
       phoneNumber: json['phoneNumber'] ?? '',
       subject: json['subject'] ?? '',
-      yourCompony: json['yourCompony'] ?? '',
+      yourCompany: json['yourCompany'] ?? '',
       id: json['_id'] ?? '',
       createdAt: json['createdAt'] ?? '',
       updatedAt: json['updatedAt'] ?? '',

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-import '../../../home/presentation/screens/home_screen.dart';
+import '../../../league/presentation/screens/private_leagues_screen.dart';
 
 class PrivateLeagueCodeDialog extends StatefulWidget {
   final String leagueCode;
@@ -89,7 +89,8 @@ class _PrivateLeagueCodeDialogState extends State<PrivateLeagueCodeDialog> {
           child: TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              Get.offAll(() => const HomeScreen());
+              // Navigate to Private Leagues screen with "My League" filter selected
+              Get.offAll(() => const PrivateLeaguesScreen());
             },
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
