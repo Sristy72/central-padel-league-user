@@ -111,7 +111,9 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
           
           messages.add(newMessage);
           _messageController.clear();
-          _scrollToBottom();
+          
+          // Use Future.delayed to ensure ListView has been rebuilt with new message
+          Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
         },
       );
     } catch (e) {
@@ -216,10 +218,8 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                 itemCount: messages.length,
                 itemBuilder: (_, index) {
                   final msg = messages[index];
-                  // Check if message belongs to current user - compare with chatModel seller/user IDs
-                  final isMe = widget.chatModel != null 
-                      ? msg.userId == widget.currentUserId || msg.userId == widget.chatModel!.seller || msg.userId == widget.chatModel!.user
-                      : false;
+                  // Check if message belongs to current user by comparing user ID
+                  final isMe = widget.currentUserId != null && msg.userId == widget.currentUserId;
                   return MessageBubble(message: msg, isMe: isMe);
                 },
               );

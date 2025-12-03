@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
 
+import '../../../../core/network/services/auth_storage_service.dart';
 import '../../../chat/data/chat_repository.dart';
 import '../../../chat/presentation/screens/chat_message_screen.dart';
 import '../../models/match_model.dart';
@@ -18,6 +19,7 @@ class FixturesTab extends StatefulWidget {
 
 class _FixturesTabState extends State<FixturesTab> {
   final ChatRepository _chatRepository = ChatRepository();
+  final AuthStorageService _authStorageService = AuthStorageService();
   bool _isCreatingChat = false;
 
   //* Group matches by Date
@@ -68,7 +70,10 @@ class _FixturesTabState extends State<FixturesTab> {
             );
           }
         },
-        (chatModel) {
+        (chatModel) async {
+          // Get current user ID from storage
+          final currentUserId = await _authStorageService.getUserId();
+          
           // Navigate to chat screen with created chat data
           if (mounted) {
             Get.to(
@@ -76,7 +81,7 @@ class _FixturesTabState extends State<FixturesTab> {
                 participantName: match.teamTwo.teamName,
                 participantImage: match.teamTwo.logoPhotoUrl,
                 chatModel: chatModel,
-                currentUserId: match.teamOne.id,
+                currentUserId: currentUserId ?? match.teamOne.id,
               ),
             );
           }
