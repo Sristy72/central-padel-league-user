@@ -2,17 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../data/chat_repository.dart';
+import '../../data/models/chat_model.dart';
 import '../../data/models/message_model.dart';
 import '../widgets/message_bubble.dart';
 
 class ChatMessageScreen extends StatefulWidget {
   final String participantName;
   final String? participantImage;
+  final ChatModel? chatModel;
+  final String? currentUserId;
 
   const ChatMessageScreen({
     super.key,
     required this.participantName,
     this.participantImage,
+    this.chatModel,
+    this.currentUserId,
   });
 
   @override
@@ -23,98 +29,101 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   late TextEditingController _messageController;
   final RxList<MessageModel> messages = <MessageModel>[].obs;
   final ScrollController _scrollController = ScrollController();
-
-  // Demo user ID (replace with actual user ID later)
-  static const String _currentUserId = 'user_123';
+  bool _isSending = false;
+  late ChatRepository _chatRepository;
 
   @override
   void initState() {
     super.initState();
     _messageController = TextEditingController();
-    _loadDemoMessages();
+    _chatRepository = ChatRepository();
+    _initializeMessages();
   }
 
-  void _loadDemoMessages() {
-    // Demo messages for now
-    final demoMessages = [
-      MessageModel(
-        id: '1',
-        text: 'Hey! How are you?',
-        userId: 'other_user_456',
-        date: DateTime.now().subtract(const Duration(hours: 2)).toString(),
-        read: true,
-        user: ChatUser(
-          id: 'other_user_456',
-          name: widget.participantName,
-          role: 'Member',
-          avatar: Avatar(publicId: '', url: widget.participantImage ?? ''),
-        ),
-      ),
-      MessageModel(
-        id: '2',
-        text: 'I\'m doing great! How about you?',
-        userId: _currentUserId,
-        date: DateTime.now().subtract(const Duration(hours: 1, minutes: 50)).toString(),
-        read: true,
-        user: ChatUser(
-          id: _currentUserId,
-          name: 'You',
-          role: 'Member',
-          avatar: Avatar(publicId: '', url: ''),
-        ),
-      ),
-      MessageModel(
-        id: '3',
-        text: 'Pretty good! Looking forward to the next match 🎯',
-        userId: 'other_user_456',
-        date: DateTime.now().subtract(const Duration(hours: 1, minutes: 40)).toString(),
-        read: true,
-        user: ChatUser(
-          id: 'other_user_456',
-          name: widget.participantName,
-          role: 'Member',
-          avatar: Avatar(publicId: '', url: widget.participantImage ?? ''),
-        ),
-      ),
-      MessageModel(
-        id: '4',
-        text: 'Same! Let\'s practice together sometime',
-        userId: _currentUserId,
-        date: DateTime.now().subtract(const Duration(hours: 1, minutes: 30)).toString(),
-        read: true,
-        user: ChatUser(
-          id: _currentUserId,
-          name: 'You',
-          role: 'Member',
-          avatar: Avatar(publicId: '', url: ''),
-        ),
-      ),
-    ];
-
-    messages.assignAll(demoMessages);
+  void _initializeMessages() {
+    // Load messages from ChatModel if provided
+    if (widget.chatModel != null && widget.chatModel!.messages.isNotEmpty) {
+      // Convert ChatMessageModel to MessageModel
+      final convertedMessages = widget.chatModel!.messages.map((msg) {
+        return MessageModel(
+          id: msg.id,
+          text: msg.text,
+          userId: msg.user.id,
+          date: msg.date,
+          read: msg.read,
+          user: ChatUser(
+            id: msg.user.id,
+            name: msg.user.name,
+            role: msg.user.role,
+            avatar: Avatar(publicId: '', url: ''),
+          ),
+        );
+      }).toList();
+      messages.assignAll(convertedMessages);
+    }
     Future.delayed(const Duration(milliseconds: 300), _scrollToBottom);
   }
 
-  void _sendMessage() {
-    if (_messageController.text.trim().isEmpty) return;
+  Future<void> _sendMessage() async {
+    if (_messageController.text.trim().isEmpty || _isSending) return;
+    if (widget.chatModel == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error: Chat not initialized'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
-    final newMessage = MessageModel(
-      id: DateTime.now().toString(),
-      text: _messageController.text.trim(),
-      userId: _currentUserId,
-      date: DateTime.now().toString(),
-      read: false,
-      user: ChatUser(
-        id: _currentUserId,
-        name: 'You',
-        role: 'Member',
-        avatar: Avatar(publicId: '', url: ''),
-      ),
-    );
+    setState(() => _isSending = true);
 
-    messages.add(newMessage);
-    _messageController.clear();
-    _scrollToBottom();
+    try {
+      final result = await _chatRepository.sendMessage(
+        chatId: widget.chatModel!.id,
+        message: _messageController.text.trim(),
+      );
+
+      result.fold(
+        (failure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to send message: ${failure.message}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        },
+        (messageData) {
+          // Convert the API response to MessageModel and add to list
+          final newMessage = MessageModel(
+            id: messageData.id,
+            text: messageData.text,
+            userId: messageData.user.id,
+            date: messageData.date,
+            read: messageData.read,
+            user: ChatUser(
+              id: messageData.user.id,
+              name: messageData.user.name,
+              role: messageData.user.role,
+              avatar: Avatar(publicId: '', url: ''),
+            ),
+          );
+          
+          messages.add(newMessage);
+          _messageController.clear();
+          _scrollToBottom();
+        },
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isSending = false);
+    }
   }
 
   void _scrollToBottom() {
@@ -207,7 +216,10 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                 itemCount: messages.length,
                 itemBuilder: (_, index) {
                   final msg = messages[index];
-                  final isMe = msg.userId == _currentUserId;
+                  // Check if message belongs to current user - compare with chatModel seller/user IDs
+                  final isMe = widget.chatModel != null 
+                      ? msg.userId == widget.currentUserId || msg.userId == widget.chatModel!.seller || msg.userId == widget.chatModel!.user
+                      : false;
                   return MessageBubble(message: msg, isMe: isMe);
                 },
               );
@@ -249,16 +261,25 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                 // Send button
                 Container(
                   decoration: BoxDecoration(
-                    color: AppColors.notificationColor,
+                    color: _isSending ? Colors.grey : AppColors.notificationColor,
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
-                    onPressed: _sendMessage,
-                    icon: const Icon(
-                      Icons.send,
-                      color: AppColors.buttonText,
-                      size: 20,
-                    ),
+                    onPressed: _isSending ? null : _sendMessage,
+                    icon: _isSending
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(AppColors.buttonText),
+                            ),
+                          )
+                        : const Icon(
+                            Icons.send,
+                            color: AppColors.buttonText,
+                            size: 20,
+                          ),
                   ),
                 ),
               ],

@@ -1,10 +1,8 @@
-// TODO: Uncomment when API is implemented
-/*
 import 'package:dartz/dartz.dart';
-import 'package:flutter_lakshman1020/core/network/api_client.dart';
-import 'package:flutter_lakshman1020/core/network/constants/api_constants.dart';
-import 'package:flutter_lakshman1020/core/network/models/network_failure.dart';
-import 'package:flutter_lakshman1020/core/network/models/network_success.dart';
+import 'package:karlfive/core/network/api_client.dart';
+import 'package:karlfive/core/network/constants/api_constants.dart';
+import 'package:karlfive/core/network/models/network_failure.dart';
+import 'package:karlfive/core/network/models/network_success.dart';
 
 import 'models/chat_model.dart';
 
@@ -27,11 +25,9 @@ class ChatApi {
 
   /// 🔹 Fetch Single Chat by ID
   Future<Either<NetworkFailure, NetworkSuccess<ChatModel>>> getSingleChat(String chatId) async {
-    print('📡 Fetching single chat for ID: $chatId');
     final result = await _apiClient.get<ChatModel>(
       ApiConstants.chat.getSingleChat(chatId),
       fromJsonT: (json) {
-        print('📦 Received single chat response');
         if (json is Map<String, dynamic>) {
           return ChatModel.fromJson(json);
         }
@@ -42,11 +38,12 @@ class ChatApi {
   }
 
   /// 🔹 Send Message to Chat
+  /// [chatId] is the chat ID to send message to
+  /// [message] is the message text
   Future<Either<NetworkFailure, NetworkSuccess<ChatMessageModel>>> sendMessage({
     required String chatId,
     required String message,
   }) async {
-    print('📤 Sending message to chat: $chatId');
     final data = {
       'chatId': chatId,
       'message': message,
@@ -56,7 +53,6 @@ class ChatApi {
       ApiConstants.chat.sendMessage,
       data: data,
       fromJsonT: (json) {
-        print('✅ Message sent successfully');
         if (json is Map<String, dynamic>) {
           return ChatMessageModel.fromJson(json);
         }
@@ -66,20 +62,22 @@ class ChatApi {
     return result;
   }
 
-  /// 🔹 Create New Chat with Driver
+  /// 🔹 Create New Chat with Seller
+  /// [sellerId] is the team 1 ID (seller)
+  /// [userId] is the team 2 ID (user)
   Future<Either<NetworkFailure, NetworkSuccess<ChatModel>>> createChat({
     required String sellerId,
+    required String userId,
   }) async {
-    print('📤 Creating chat with seller: $sellerId');
     final data = {
       'sellerId': sellerId,
+      'userId': userId,
     };
 
     final result = await _apiClient.post<ChatModel>(
       ApiConstants.chat.createChat,
       data: data,
       fromJsonT: (json) {
-        print('✅ Chat created successfully');
         if (json is Map<String, dynamic>) {
           return ChatModel.fromJson(json);
         }
@@ -89,4 +87,3 @@ class ChatApi {
     return result;
   }
 }
-*/
