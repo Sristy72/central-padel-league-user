@@ -1,10 +1,10 @@
-import 'package:get/get.dart';
 import 'package:dartz/dartz.dart';
+import 'package:get/get.dart';
 
-import '../../data/league_repository.dart';
-import '../../models/league_model.dart';
 import '../../../../core/network/models/network_failure.dart';
 import '../../../../core/network/models/network_success.dart';
+import '../../data/league_repository.dart';
+import '../../models/league_model.dart';
 
 class LeagueController extends GetxController {
   final LeagueRepository repository;
@@ -37,23 +37,14 @@ class LeagueController extends GetxController {
         },
         (success) {
           var fetchedLeagues = success.data;
-          print('� LeagueController: API returned ${fetchedLeagues.length} leagues');
+          print('🟢 LeagueController: API returned ${fetchedLeagues.length} leagues');
+          print('🟢 LeagueController: Full data: $fetchedLeagues');
           
-          // CLIENT-SIDE FILTERING: Ensure we only show the correct type
-          // This is a backup in case backend filtering doesn't work properly
-          if (type != null && type.isNotEmpty) {
-            final beforeFilter = fetchedLeagues.length;
-            fetchedLeagues = fetchedLeagues.where((league) {
-              final leagueTypeMatches = league.leagueType.toLowerCase() == type.toLowerCase();
-              if (!leagueTypeMatches) {
-                print('🔶 Filtered out: "${league.leagueName}" (type: ${league.leagueType}, wanted: $type)');
-              }
-              return leagueTypeMatches;
-            }).toList();
-            print('🟢 LeagueController: Client-side filter: $beforeFilter → ${fetchedLeagues.length} leagues (type=$type)');
-          }
+          // No client-side filtering needed - backend already filters correctly
+          // Just display all leagues from the API response
           
           leagues.assignAll(fetchedLeagues);
+          print('🟢 LeagueController: leagues.obs now contains ${leagues.length} leagues');
           print('🟢 LeagueController: Final result - ${leagues.length} leagues displayed');
         },
       );

@@ -7,8 +7,8 @@ import 'package:karlfive/features/league/presentation/controllers/league_control
 import 'package:karlfive/features/league/presentation/widgets/league_card.dart';
 
 /// Private Leagues Screen with two filters:
-/// 1. My League - Shows leagues created by the user (using main league API)
-/// 2. Joined League - Shows private leagues the user has joined
+/// 1. My League - Shows leagues created by the user (using leagueType='my')
+/// 2. Joined League - Shows private leagues the user has joined (using leagueType='private')
 class PrivateLeaguesScreen extends StatefulWidget {
   const PrivateLeaguesScreen({super.key});
 
@@ -34,18 +34,18 @@ class _PrivateLeaguesScreenState extends State<PrivateLeaguesScreen> {
   }
 
   void _loadMyLeagues() {
-    print('🟡 PrivateLeaguesScreen: Loading My Leagues (main league API)');
+    print('🟡 PrivateLeaguesScreen: Loading My Leagues (leagueType=my)');
     controller.leagues.clear();
     controller.errorMessage.value = '';
-    // Use same API as main league but without type filter to get all user's leagues
-    controller.fetchLeagues(limit: 200);
+    // Use 'my' filter which maps to 'me' in API
+    controller.fetchLeagues(type: 'my', limit: 200);
   }
 
   void _loadJoinedLeagues() {
-    print('🟡 PrivateLeaguesScreen: Loading Joined Leagues (private type)');
+    print('🟡 PrivateLeaguesScreen: Loading Joined Leagues (leagueType=private)');
     controller.leagues.clear();
     controller.errorMessage.value = '';
-    // Use private league type filter
+    // Use 'private' filter for joined leagues
     controller.fetchLeagues(type: 'private', limit: 200);
   }
 
@@ -107,131 +107,108 @@ class _PrivateLeaguesScreenState extends State<PrivateLeaguesScreen> {
               ],
             )),
           ),
-          
-          // League list content
+
+          // Content area
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
-                return const SkeletonListItem(itemCount: 6);
-              } else if (controller.errorMessage.isNotEmpty) {
+                return const Center(
+                  child: SkeletonListItem(),
+                );
+              }
+
+              if (controller.errorMessage.value.isNotEmpty) {
                 return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          size: 64,
-                          color: Colors.grey[400],
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        color: Colors.red,
+                        size: 48,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        controller.errorMessage.value,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Error Loading Leagues',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[300],
-                          ),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (_activeFilter.value == 'my') {
+                            _loadMyLeagues();
+                          } else {
+                            _loadJoinedLeagues();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey[400],
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          controller.errorMessage.value,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[500],
-                          ),
-                          textAlign: TextAlign.center,
+                        child: const Text(
+                          'Retry',
+                          style: TextStyle(color: Colors.black),
                         ),
-                        const SizedBox(height: 24),
-                        ElevatedButton(
-                          onPressed: () {
-                            if (_activeFilter.value == 'my') {
-                              _loadMyLeagues();
-                            } else {
-                              _loadJoinedLeagues();
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.notificationColor,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 12,
-                            ),
-                          ),
-                          child: const Text('Retry'),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 );
-              } else if (controller.leagues.isEmpty) {
+              }
+
+              if (controller.leagues.isEmpty) {
                 return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          _activeFilter.value == 'my'
-                              ? Icons.sports_soccer_outlined
-                              : Icons.group_outlined,
-                          size: 64,
-                          color: Colors.grey[400],
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        _activeFilter.value == 'my'
+                            ? Icons.sports_volleyball
+                            : Icons.group_add,
+                        color: Colors.grey[600],
+                        size: 64,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        _activeFilter.value == 'my'
+                            ? 'Create your first league to see it here.'
+                            : 'You haven\'t joined any private leagues yet.',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _activeFilter.value == 'my'
-                              ? 'No Leagues Created Yet'
-                              : 'No Joined Leagues',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[300],
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _activeFilter.value == 'my'
-                              ? 'Create your first league to see it here.'
-                              : 'Join a private league to see it here.',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[500],
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        if (_activeFilter.value == 'my') ...[
-                          const SizedBox(height: 24),
-                          ElevatedButton.icon(
+                      ),
+                      if (_activeFilter.value == 'my')
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: ElevatedButton.icon(
                             onPressed: () {
                               // TODO: Navigate to create league screen
                               Get.toNamed('/create-league');
                             },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2AAF08),
+                            ),
                             icon: const Icon(Icons.add),
                             label: const Text('Create League'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.notificationColor,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 12,
-                              ),
-                            ),
                           ),
-                        ],
-                      ],
-                    ),
+                        ),
+                    ],
                   ),
                 );
-              } else {
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: controller.leagues.length,
-                  itemBuilder: (context, index) {
-                    return LeagueCard(league: controller.leagues[index]);
-                  },
-                );
               }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(12),
+                itemCount: controller.leagues.length,
+                itemBuilder: (context, index) {
+                  final league = controller.leagues[index];
+                  return LeagueCard(league: league);
+                },
+              );
             }),
           ),
         ],
@@ -248,24 +225,20 @@ class _PrivateLeaguesScreenState extends State<PrivateLeaguesScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: isActive ? AppColors.notificationColor : Colors.grey[800],
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isActive
-                ? AppColors.notificationColor
-                : Colors.grey[700]!,
-            width: 1.5,
-          ),
+          color: isActive
+              ? const Color(0xFF2AAF08)
+              : Colors.grey[800],
+          borderRadius: BorderRadius.circular(6),
         ),
         child: Center(
           child: Text(
             label,
             style: TextStyle(
-              color: isActive ? AppColors.primaryGreen : Colors.grey[400],
-              fontSize: 15,
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+              color: isActive ? Colors.white : Colors.white70,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),

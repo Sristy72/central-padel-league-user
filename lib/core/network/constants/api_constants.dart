@@ -1,12 +1,12 @@
 class ApiConstants {
   /// [Base Configuration]
-  static const String baseDomain = 'https://karlfive223-backend.onrender.com';
+  // static const String baseDomain = 'https://karlfive223-backend.onrender.com';
   // static const String baseDomain = 'http://72.61.161.196';
   static const String baseUrl = '$baseDomain/api/v1';
 
   /// soykot ip
 
-  // static const String baseDomain = 'http://10.10.5.88:5002';
+  static const String baseDomain = 'http://10.10.5.88:5002';
 
   /// [Headers]
   static Map<String, String> get defaultHeaders => {
@@ -32,6 +32,7 @@ class ApiConstants {
 
   static TeamEndpointcs get team => TeamEndpointcs();
   static LeagueEndpoints get league => LeagueEndpoints();
+  static MatchEndpoints get match => MatchEndpoints();
 
   static ContactEndpoints get contact => ContactEndpoints();
 
@@ -80,6 +81,12 @@ class LeagueEndpoints {
 
   final String getAllLeagues = '$_base/all-league';
   final String create = '$_base/create';
+}
+
+class MatchEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/match';
+
+  String updateScore(String matchId) => '$_base/$matchId';
 }
 
 class ContactEndpoints {

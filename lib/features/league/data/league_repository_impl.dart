@@ -17,9 +17,16 @@ class LeagueRepositoryImpl implements LeagueRepository {
   NetworkResult<List<League>> getAllLeagues({String? leagueType, int? limit}) {
     // Build query parameters
     final Map<String, dynamic> queryParams = {};
+    
+    // Handle leagueType mapping: 'my' -> 'me' for API
     if (leagueType != null) {
-      queryParams['leagueType'] = leagueType;
+      if (leagueType.toLowerCase() == 'my') {
+        queryParams['leagueType'] = 'me';
+      } else {
+        queryParams['leagueType'] = leagueType;
+      }
     }
+    
     if (limit != null) {
       queryParams['limit'] = limit.toString();
     }
@@ -30,8 +37,25 @@ class LeagueRepositoryImpl implements LeagueRepository {
     return _apiClient.get<List<League>>(
       ApiConstants.league.getAllLeagues,
       queryParameters: queryParams.isNotEmpty ? queryParams : null,
-      fromJsonT: (json) =>
-          (json as List).map((item) => League.fromJson(item)).toList(),
+      fromJsonT: (json) {
+        print('🔵 Repository fromJsonT: Received json type: ${json.runtimeType}');
+        print('🔵 Repository fromJsonT: Received json: $json');
+        
+        if (json is! List) {
+          print('❌ Repository ERROR: Expected List but got ${json.runtimeType}');
+          throw Exception('Expected List but got ${json.runtimeType}');
+        }
+        
+        final result = (json)
+            .map((item) {
+              print('🟢 Repository: Parsing league item: ${item['leagueName'] ?? 'Unknown'}');
+              return League.fromJson(item);
+            })
+            .toList();
+        
+        print('🟢 Repository: Successfully parsed ${result.length} leagues');
+        return result;
+      },
     );
   }
 
@@ -70,6 +94,24 @@ class LeagueRepositoryImpl implements LeagueRepository {
       ApiConstants.league.create,
       data: leagueData,
       fromJsonT: (json) => CreateLeagueResponse.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  NetworkResult<Match> updateMatchScore({
+    required String matchId,
+    required Map<String, dynamic> scoreData,
+  }) {
+    print('🔵 Repository: Updating match score for matchId=$matchId');
+    print('🔵 Repository: Score data = $scoreData');
+    
+    return _apiClient.patch<Match>(
+      ApiConstants.match.updateScore(matchId),
+      data: scoreData,
+      fromJsonT: (json) {
+        print('🟢 Repository: Match score updated successfully');
+        return Match.fromJson(json as Map<String, dynamic>);
+      },
     );
   }
 }

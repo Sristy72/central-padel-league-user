@@ -7,6 +7,7 @@ import 'package:karlfive/features/league/presentation/widgets/fixtures_tab.dart'
 import 'package:karlfive/features/league/presentation/widgets/matches_tab.dart';
 import 'package:karlfive/features/league/presentation/widgets/standing_tab.dart';
 
+import '../../data/league_repository.dart';
 import '../../models/league_model.dart';
 import '../controllers/league_details_controller.dart';
 import '../widgets/teams_tab.dart'; // Import the model class
@@ -89,7 +90,15 @@ class _LeagueDetailsScreenState extends State<LeagueDetailsScreen>
                 child: Text(msg, style: const TextStyle(color: Colors.white)),
               );
             }
-            return MatchesTab(matchesData: ctrl.matches.toList());
+            return MatchesTab(
+              matchesData: ctrl.matches.toList(),
+              leagueType: widget.league.leagueType,
+              repository: Get.find<LeagueRepository>(),
+              onMatchUpdated: () {
+                // Refresh matches after score update
+                ctrl.fetchMatches();
+              },
+            );
           }),
           TeamsTab(teamsData: widget.league.addTeams),
           // Fixtures tab driven by controller.matches (already filtered by leagueId)
