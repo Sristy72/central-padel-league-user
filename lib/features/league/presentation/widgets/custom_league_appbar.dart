@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../models/league_model.dart';
 
 class CustomLeagueAppbar extends StatelessWidget
     implements PreferredSizeWidget {
@@ -9,6 +10,7 @@ class CustomLeagueAppbar extends StatelessWidget
   final String leagueLogoPath;
   final String backgroundImagePath;
   final TabController tabController;
+  final League? league; // Added to check league type
 
   const CustomLeagueAppbar({
     super.key,
@@ -16,6 +18,7 @@ class CustomLeagueAppbar extends StatelessWidget
     required this.leagueLogoPath,
     required this.backgroundImagePath,
     required this.tabController,
+    this.league,
   });
 
   @override
@@ -77,13 +80,28 @@ class CustomLeagueAppbar extends StatelessWidget
                       },
                     ),
                     //! Favorite icon
-                    IconButton(
-                      icon: const Image(
-                        height: 22,
-                        width: 22,
-                        image: AssetImage("assets/images/star_icon_off.png"),
-                      ),
-                      onPressed: () {}, // TODO: Add favorite logic here
+                    Row(
+                      children: [
+                        // Show favorite icon for all leagues (public, private, me)
+                        IconButton(
+                          icon: const Image(
+                            height: 22,
+                            width: 22,
+                            image: AssetImage("assets/images/star_icon_off.png"),
+                          ),
+                          onPressed: () {}, // TODO: Add favorite logic here
+                        ),
+                        // Only show share icon for private or "me" leagues
+                        if (league != null && (league!.leagueType == 'private' || league!.leagueType == 'me'))
+                          IconButton(
+                            icon: const Image(
+                              height: 22,
+                              width: 22,
+                              image: AssetImage("assets/icons/share.png"),
+                            ),
+                            onPressed: () {}, // TODO: Add share logic here
+                          ),
+                      ],
                     ),
                   ],
                 ),
