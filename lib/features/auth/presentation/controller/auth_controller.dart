@@ -245,6 +245,11 @@ class AuthController extends BaseController {
     return navi;
   }
 
+  Future<bool> checkAuthStatus() async {
+    final accessToken = await _authStorageService.getAccessToken();
+    return accessToken != null && accessToken.isNotEmpty;
+  }
+
   Future<void> logout() async {
     await _authStorageService.clearAuthData();
     final secureStore = SecureStoreServices();
