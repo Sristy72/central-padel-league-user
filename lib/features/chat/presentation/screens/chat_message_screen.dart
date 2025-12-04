@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -25,19 +26,23 @@ class ChatMessageScreen extends StatefulWidget {
   State<ChatMessageScreen> createState() => _ChatMessageScreenState();
 }
 
-class _ChatMessageScreenState extends State<ChatMessageScreen> {
+class _ChatMessageScreenState extends State<ChatMessageScreen> with WidgetsBindingObserver {
   late TextEditingController _messageController;
   final RxList<MessageModel> messages = <MessageModel>[].obs;
   final ScrollController _scrollController = ScrollController();
   bool _isSending = false;
   late ChatRepository _chatRepository;
+  Timer? _autoRefreshTimer;
+  final Set<String> _newMessageIds = {}; // Track new messages for shimmer effect
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _messageController = TextEditingController();
     _chatRepository = ChatRepository();
     _initializeMessages();
+    _startAutoRefresh();
   }
 
   void _initializeMessages() {
@@ -138,8 +143,91 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     }
   }
 
+  void _startAutoRefresh() {
+    // Auto-refresh every 1 second
+    _autoRefreshTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _fetchNewMessages();
+    });
+  }
+
+  Future<void> _fetchNewMessages() async {
+    if (widget.chatModel == null) return;
+
+    try {
+      final result = await _chatRepository.fetchSingleChat(widget.chatModel!.id);
+
+      result.fold(
+        (failure) {
+          // Silently fail for auto-refresh to avoid spamming user with errors
+          print('Auto-refresh failed: ${failure.message}');
+        },
+        (chatData) {
+          // Get current message IDs
+          final currentMessageIds = messages.map((m) => m.id).toSet();
+          
+          // Find new messages
+          final newMessages = chatData.messages.where((msg) {
+            return !currentMessageIds.contains(msg.id);
+          }).toList();
+
+          if (newMessages.isNotEmpty) {
+            // Convert new messages to MessageModel
+            for (var msg in newMessages) {
+              final newMessage = MessageModel(
+                id: msg.id,
+                text: msg.text,
+                userId: msg.user.id,
+                date: msg.date,
+                read: msg.read,
+                user: ChatUser(
+                  id: msg.user.id,
+                  name: msg.user.name,
+                  role: msg.user.role,
+                  avatar: Avatar(publicId: '', url: ''),
+                ),
+              );
+              
+              // Add to new message IDs for shimmer effect
+              _newMessageIds.add(newMessage.id);
+              messages.add(newMessage);
+            }
+
+            // Scroll to bottom to show new messages
+            Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
+
+            // Remove shimmer effect after 2 seconds
+            Future.delayed(const Duration(seconds: 2), () {
+              if (mounted) {
+                setState(() {
+                  _newMessageIds.clear();
+                });
+              }
+            });
+          }
+        },
+      );
+    } catch (e) {
+      print('Auto-refresh error: $e');
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    
+    // Pause auto-refresh when app is in background
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      _autoRefreshTimer?.cancel();
+    } else if (state == AppLifecycleState.resumed) {
+      // Resume auto-refresh when app comes back to foreground
+      _startAutoRefresh();
+    }
+  }
+
   @override
   void dispose() {
+    _autoRefreshTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -220,7 +308,12 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                   final msg = messages[index];
                   // Check if message belongs to current user by comparing user ID
                   final isMe = widget.currentUserId != null && msg.userId == widget.currentUserId;
-                  return MessageBubble(message: msg, isMe: isMe);
+                  final showShimmer = _newMessageIds.contains(msg.id);
+                  return MessageBubble(
+                    message: msg,
+                    isMe: isMe,
+                    showShimmer: showShimmer,
+                  );
                 },
               );
             }),

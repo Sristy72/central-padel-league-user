@@ -4,8 +4,14 @@ import '../../data/models/message_model.dart';
 class MessageBubble extends StatelessWidget {
   final MessageModel message;
   final bool isMe;
+  final bool showShimmer;
 
-  const MessageBubble({super.key, required this.message, required this.isMe});
+  const MessageBubble({
+    super.key,
+    required this.message,
+    required this.isMe,
+    this.showShimmer = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +43,8 @@ class MessageBubble extends StatelessWidget {
                   ? CrossAxisAlignment.end  // Sent message text aligns to the right
                   : CrossAxisAlignment.start,  // Received message text aligns to the left
               children: [
-                Container(
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 500),
                   decoration: BoxDecoration(
                     color: isMe
                         ? const Color(0xFFDCF8C6)  // Greenish color for sent messages
@@ -48,6 +55,15 @@ class MessageBubble extends StatelessWidget {
                       bottomLeft: isMe ? const Radius.circular(18) : const Radius.circular(0),
                       bottomRight: isMe ? const Radius.circular(0) : const Radius.circular(18),
                     ),
+                    boxShadow: showShimmer
+                        ? [
+                            BoxShadow(
+                              color: Colors.blue.withOpacity(0.5),
+                              blurRadius: 8,
+                              spreadRadius: 2,
+                            ),
+                          ]
+                        : null,
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   child: Text(
