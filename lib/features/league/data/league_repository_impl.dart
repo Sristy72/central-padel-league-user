@@ -2,6 +2,7 @@ import 'package:karlfive/core/network/api_client.dart';
 import 'package:karlfive/core/network/constants/api_constants.dart';
 
 import '../../../core/network/network_result.dart';
+import '../../create_league/models/create_league_response.dart';
 import '../models/league_model.dart';
 import '../models/match_model.dart';
 import '../models/standing_model.dart';
@@ -13,11 +14,48 @@ class LeagueRepositoryImpl implements LeagueRepository {
   LeagueRepositoryImpl({required ApiClient apiClient}) : _apiClient = apiClient;
 
   @override
-  NetworkResult<List<League>> getAllLeagues() {
+  NetworkResult<List<League>> getAllLeagues({String? leagueType, int? limit}) {
+    // Build query parameters
+    final Map<String, dynamic> queryParams = {};
+    
+    // Handle leagueType mapping: 'my' -> 'me' for API
+    if (leagueType != null) {
+      if (leagueType.toLowerCase() == 'my') {
+        queryParams['leagueType'] = 'me';
+      } else {
+        queryParams['leagueType'] = leagueType;
+      }
+    }
+    
+    if (limit != null) {
+      queryParams['limit'] = limit.toString();
+    }
+
+    print('🔶 Repository: Built query params -> $queryParams');
+    print('🔶 Repository: Passing to ApiClient -> ${queryParams.isNotEmpty ? queryParams : null}');
+
     return _apiClient.get<List<League>>(
       ApiConstants.league.getAllLeagues,
-      fromJsonT: (json) =>
-          (json as List).map((item) => League.fromJson(item)).toList(),
+      queryParameters: queryParams.isNotEmpty ? queryParams : null,
+      fromJsonT: (json) {
+        print('🔵 Repository fromJsonT: Received json type: ${json.runtimeType}');
+        print('🔵 Repository fromJsonT: Received json: $json');
+        
+        if (json is! List) {
+          print('❌ Repository ERROR: Expected List but got ${json.runtimeType}');
+          throw Exception('Expected List but got ${json.runtimeType}');
+        }
+        
+        final result = (json)
+            .map((item) {
+              print('🟢 Repository: Parsing league item: ${item['leagueName'] ?? 'Unknown'}');
+              return League.fromJson(item);
+            })
+            .toList();
+        
+        print('🟢 Repository: Successfully parsed ${result.length} leagues');
+        return result;
+      },
     );
   }
 
@@ -45,6 +83,35 @@ class LeagueRepositoryImpl implements LeagueRepository {
       fromJsonT: (json) => (json as List)
           .map((e) => Standing.fromJson(e as Map<String, dynamic>))
           .toList(),
+    );
+  }
+
+  @override
+  NetworkResult<CreateLeagueResponse> createLeague({
+    required Map<String, dynamic> leagueData,
+  }) {
+    return _apiClient.post<CreateLeagueResponse>(
+      ApiConstants.league.create,
+      data: leagueData,
+      fromJsonT: (json) => CreateLeagueResponse.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  NetworkResult<Match> updateMatchScore({
+    required String matchId,
+    required Map<String, dynamic> scoreData,
+  }) {
+    print('🔵 Repository: Updating match score for matchId=$matchId');
+    print('🔵 Repository: Score data = $scoreData');
+    
+    return _apiClient.patch<Match>(
+      ApiConstants.match.updateScore(matchId),
+      data: scoreData,
+      fromJsonT: (json) {
+        print('🟢 Repository: Match score updated successfully');
+        return Match.fromJson(json as Map<String, dynamic>);
+      },
     );
   }
 }

@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
-import '../../models/match_model.dart'; // Import the new model
-import '../../../../core/theme/app_colors.dart'; // Assuming AppColors is defined here
 import 'package:intl/intl.dart';
+
+import '../../../../core/theme/app_colors.dart'; // Assuming AppColors is defined here
+import '../../data/league_repository.dart';
+import '../../models/match_model.dart'; // Import the new model
+import 'score_entry_dialog.dart';
 
 class MatchesTab extends StatelessWidget {
   final List<Match> matchesData;
+  final String leagueType;
+  final LeagueRepository repository;
+  final VoidCallback? onMatchUpdated;
 
-  const MatchesTab({super.key, required this.matchesData});
+  const MatchesTab({
+    super.key,
+    required this.matchesData,
+    this.leagueType = 'public',
+    required this.repository,
+    this.onMatchUpdated,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +27,12 @@ class MatchesTab extends StatelessWidget {
       itemCount: matchesData.length,
       itemBuilder: (context, index) {
         final match = matchesData[index];
-        return _MatchCard(match: match);
+        return _MatchCard(
+          match: match,
+          leagueType: leagueType,
+          repository: repository,
+          onMatchUpdated: onMatchUpdated,
+        );
       },
     );
   }
@@ -23,8 +40,16 @@ class MatchesTab extends StatelessWidget {
 
 class _MatchCard extends StatelessWidget {
   final Match match;
+  final String leagueType;
+  final LeagueRepository repository;
+  final VoidCallback? onMatchUpdated;
 
-  const _MatchCard({required this.match});
+  const _MatchCard({
+    required this.match,
+    this.leagueType = 'public',
+    required this.repository,
+    this.onMatchUpdated,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,36 +62,67 @@ class _MatchCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Header row with match info and edit icon (for private leagues)
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildTeamDisplay(
-                  match.teamOne.logoPhotoUrl,
-                  match.teamOne.teamName,
-                ), //* <--- Match API here
-                Column(
-                  children: [
-                    Text(
-                      DateFormat.yMMMd().format(match.matchDateTime),
-                      style: const TextStyle(
-                        color: AppColors.white,
-                        fontSize: 12,
+                // Match info
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildTeamDisplay(
+                        match.teamOne.logoPhotoUrl,
+                        match.teamOne.teamName,
+                      ), //* <--- Match API here
+                      Column(
+                        children: [
+                          Text(
+                            DateFormat.yMMMd().format(match.matchDateTime),
+                            style: const TextStyle(
+                              color: AppColors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                          Text(
+                            DateFormat.Hm().format(match.matchDateTime),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      _buildTeamDisplay(
+                        match.teamTwo.logoPhotoUrl,
+                        match.teamTwo.teamName,
+                      ),
+                    ],
+                  ),
+                ),
+                // Edit icon for private leagues
+                if (leagueType.toLowerCase() == 'private')
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12),
+                    child: GestureDetector(
+                      onTap: () {
+                        _showScoreEntryDialog(context);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2AAF08).withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: const Icon(
+                          Icons.edit,
+                          color: Color(0xFF2AAF08),
+                          size: 20,
+                        ),
                       ),
                     ),
-                    Text(
-                      DateFormat.Hm().format(match.matchDateTime),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                _buildTeamDisplay(
-                  match.teamTwo.logoPhotoUrl,
-                  match.teamTwo.teamName,
-                ),
+                  ),
               ],
             ),
             const SizedBox(height: 20),
@@ -107,6 +163,17 @@ class _MatchCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showScoreEntryDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => ScoreEntryDialog(
+        match: match,
+        repository: repository,
+        onScoreUpdated: onMatchUpdated,
       ),
     );
   }

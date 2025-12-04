@@ -1,9 +1,23 @@
 import 'package:get/get.dart';
-import 'package:karlfive/core/base/base_controller.dart';
-import 'package:karlfive/features/notification/data/model/notification_dummy_model.dart';
+
+import '../../../../core/base/base_controller.dart';
+import '../../../../core/network/services/auth_storage_service.dart';
+import '../../data/model/notification_dummy_model.dart';
+import '../../domain/repo/notification_repo.dart';
 
 class NotificationController extends BaseController {
+  final NotificationRepo _notificationRepo;
+  final AuthStorageService _authStorageService;
+  
   var notifications = <NotificationModel>[].obs;
+  var isLoadingNotifications = false.obs;
+  var isEmpty = false.obs;
+
+  NotificationController({
+    required NotificationRepo notificationRepo,
+    required AuthStorageService authStorageService,
+  })  : _notificationRepo = notificationRepo,
+        _authStorageService = authStorageService;
 
   @override
   void onInit() {
@@ -11,61 +25,70 @@ class NotificationController extends BaseController {
     loadNotifications();
   }
 
-  void loadNotifications() {
-    notifications.value = [
-      NotificationModel(
-        title: "",
-        message:
-            "Reminder: Your match vs. Smash Bros is  tomorrow at 6:00 PM on Court 3.",
-        timeAgo: "2 hours ago",
-        isUnread: true,
-      ),
-      NotificationModel(
-        title: "",
-        message:
-            "Don’t forget! You’re scheduled to play at Padel Arena, 5:30 PM check-in.",
-        timeAgo: "2 hours ago",
-        isUnread: true,
-      ),
-      NotificationModel(
-        title: "",
-        message: "Receive announcements from Admin",
-        timeAgo: "2 hours ago",
-        isUnread: true,
-      ),
-      NotificationModel(
-        title: "",
-        message:
-            "Tough luck! You lost 0–2 vs. Court Kings. Keep pushing for the next match!",
-        timeAgo: "3 hours ago",
-      ),
-      NotificationModel(
-        title: "",
-        message: "Standings updated: Your team is now ranked #2 in the league.",
-        timeAgo: "3 hours ago",
-      ),
-      NotificationModel(
-        title: "",
-        message: "Your team has been confirmed for the Padel Premier League.",
-        timeAgo: "3 hours ago",
-      ),
-      NotificationModel(
-        title: "",
-        message:
-            "New tournament announced! Register now before \n slots fill up.",
-        timeAgo: "3 hours ago",
-      ),
-      NotificationModel(
-        title: "",
-        message: "Standings updated: Your team is now ranked #2 in the league.",
-        timeAgo: "3 hours ago",
-      ),
-      NotificationModel(
-        title: "",
-        message: "New tournament announced! Register now before slots fill up.",
-        timeAgo: "3 hours ago",
-      ),
-    ];
+  Future<void> loadNotifications() async {
+    try {
+      isLoadingNotifications.value = true;
+      isEmpty.value = false;
+      
+      // Get userId from storage or use default
+      final userId = await _authStorageService.getUserId() ?? '68d117a5d487a29db7269e1d';
+      
+      final result = await _notificationRepo.getNotificationsByUserId(userId);
+      
+      result.fold(
+        (failure) {
+          isLoadingNotifications.value = false;
+          isEmpty.value = true;
+          notifications.value = [];
+          Get.snackbar(
+            'Error',
+            failure.message,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        },
+        (success) {
+          final notificationList = success.data;
+          if (notificationList.isEmpty) {
+            isEmpty.value = true;
+            notifications.value = [];
+          } else {
+            isEmpty.value = false;
+            notifications.value = notificationList.map((apiNotification) {
+              return NotificationModel(
+                title: apiNotification.title,
+                message: apiNotification.message,
+                timeAgo: _formatTimeAgo(apiNotification.createdAt),
+                isUnread: !apiNotification.isRead,
+              );
+            }).toList();
+          }
+          isLoadingNotifications.value = false;
+        },
+      );
+    } catch (e) {
+      isLoadingNotifications.value = false;
+      isEmpty.value = true;
+      notifications.value = [];
+    }
+  }
+  
+  String _formatTimeAgo(DateTime dateTime) {
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+    
+    if (difference.inDays > 365) {
+      return '${(difference.inDays / 365).floor()} year${(difference.inDays / 365).floor() > 1 ? 's' : ''} ago';
+    } else if (difference.inDays > 30) {
+      return '${(difference.inDays / 30).floor()} month${(difference.inDays / 30).floor() > 1 ? 's' : ''} ago';
+    } else if (difference.inDays > 0) {
+      return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} hour${difference.inHours > 1 ? 's' : ''} ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} minute${difference.inMinutes > 1 ? 's' : ''} ago';
+    } else {
+      return 'Just now';
+    }
   }
 
   void markAllAsRead() {

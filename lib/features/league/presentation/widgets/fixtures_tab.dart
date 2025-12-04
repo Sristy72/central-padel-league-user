@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
+
+import '../../../../core/network/services/auth_storage_service.dart';
+import '../../../chat/data/chat_repository.dart';
+import '../../../chat/presentation/screens/chat_message_screen.dart';
 import '../../models/match_model.dart';
 
-class FixturesTab extends StatelessWidget {
+class FixturesTab extends StatefulWidget {
   final List<Match> matches;
 
   const FixturesTab({super.key, required this.matches});
+
+  @override
+  State<FixturesTab> createState() => _FixturesTabState();
+}
+
+class _FixturesTabState extends State<FixturesTab> {
+  final ChatRepository _chatRepository = ChatRepository();
+  final AuthStorageService _authStorageService = AuthStorageService();
+  bool _isCreatingChat = false;
 
   //* Group matches by Date
   Map<String, List<Match>> _groupByDate(List<Match> input) {
@@ -20,9 +34,81 @@ class FixturesTab extends StatelessWidget {
     return {for (var k in sortedKeys) k: map[k]!};
   }
 
+  Future<void> _handleCreateChat(Match match) async {
+    if (_isCreatingChat) return;
+
+    setState(() => _isCreatingChat = true);
+
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      // Call API to create chat
+      final result = await _chatRepository.createChat(
+        sellerId: match.teamOne.id,
+        userId: match.teamTwo.id,
+      );
+
+      // Close loading dialog
+      if (mounted) Navigator.of(context).pop();
+
+      result.fold(
+        (failure) {
+          // Show error
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Failed to create chat: ${failure.message}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        (chatModel) async {
+          // Get current user ID from storage
+          final currentUserId = await _authStorageService.getUserId();
+          
+          // Navigate to chat screen with created chat data
+          if (mounted) {
+            Get.to(
+              () => ChatMessageScreen(
+                participantName: match.teamTwo.teamName,
+                participantImage: match.teamTwo.logoPhotoUrl,
+                chatModel: chatModel,
+                currentUserId: currentUserId ?? match.teamOne.id,
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      // Close loading dialog if still open
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isCreatingChat = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (matches.isEmpty) {
+    if (widget.matches.isEmpty) {
       return const Center(
         child: Text(
           'No fixtures available',
@@ -31,7 +117,7 @@ class FixturesTab extends StatelessWidget {
       );
     }
 
-    final grouped = _groupByDate(matches);
+    final grouped = _groupByDate(widget.matches);
 
     return MediaQuery.removePadding(
       context: context,
@@ -115,6 +201,9 @@ class FixturesTab extends StatelessWidget {
                                               )
                                               as ImageProvider,
                                     backgroundColor: Colors.transparent,
+                                    onBackgroundImageError: (exception, stackTrace) {
+                                      // Silently handle image loading errors
+                                    },
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
@@ -142,7 +231,15 @@ class FixturesTab extends StatelessWidget {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                IconButton(
+                                  onPressed: _isCreatingChat
+                                      ? null
+                                      : () => _handleCreateChat(m),
+                                  icon: Icon(
+                                    Icons.message,
+                                    color: AppColors.notificationColor,
+                                  ),
+                                ),
                                 Text(
                                   m.formattedScore(),
                                   style: const TextStyle(color: Colors.white70),
@@ -180,6 +277,9 @@ class FixturesTab extends StatelessWidget {
                                               )
                                               as ImageProvider,
                                     backgroundColor: Colors.transparent,
+                                    onBackgroundImageError: (exception, stackTrace) {
+                                      // Silently handle image loading errors
+                                    },
                                   ),
                                 ],
                               ),

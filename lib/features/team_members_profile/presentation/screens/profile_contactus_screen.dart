@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../data/models/edit_profile_model.dart';
 import '../controllers/contact_us_controller.dart';
 
+
 class ProfileContactUsScreen extends StatelessWidget {
   final EditProfileModel member;
 
@@ -19,38 +20,8 @@ class ProfileContactUsScreen extends StatelessWidget {
   final subjectController = TextEditingController();
   final yourCompanyController = TextEditingController();
 
-  // Method to clear all form fields
-  void _clearAllFields() {
-    firstNameController.clear();
-    lastNameController.clear();
-    addressController.clear();
-    phoneNumberController.clear();
-    subjectController.clear();
-    yourCompanyController.clear();
-  }
-
-  // Method to show snackbar
-  void _showSnackBar(String message, {bool isSuccess = true}) {
-    Get.snackbar(
-      isSuccess ? 'Success' : 'Error',
-      message,
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: isSuccess ? Colors.green : Colors.red,
-      colorText: Colors.white,
-      duration: const Duration(seconds: 3),
-      margin: const EdgeInsets.all(16),
-      borderRadius: 8,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    // Set up success callback for the controller
-    controller.onSuccess = (String message) {
-      _showSnackBar(message, isSuccess: true);
-      _clearAllFields();
-    };
-
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -149,7 +120,7 @@ class ProfileContactUsScreen extends StatelessWidget {
                           width: 35,
                           height: 35,
                         ),
-                        const SizedBox(width: 51),
+                        const SizedBox(width: 12),
                         const Text(
                           'example@gmail.com',
                           style: TextStyle(
@@ -170,7 +141,7 @@ class ProfileContactUsScreen extends StatelessWidget {
                           width: 35,
                           height: 35,
                         ),
-                        const SizedBox(width: 51),
+                        const SizedBox(width: 12),
                         const Text(
                           '+880 1234 567890',
                           style: TextStyle(
@@ -191,7 +162,7 @@ class ProfileContactUsScreen extends StatelessWidget {
                           width: 35,
                           height: 35,
                         ),
-                        const SizedBox(width: 51),
+                        const SizedBox(width: 12),
                         const Text(
                           '123, Main Street, Dhaka',
                           style: TextStyle(
@@ -212,7 +183,7 @@ class ProfileContactUsScreen extends StatelessWidget {
                           width: 35,
                           height: 35,
                         ),
-                        const SizedBox(width: 51),
+                        const SizedBox(width: 12),
                         const Text(
                           'www.example.com',
                           style: TextStyle(
@@ -265,10 +236,8 @@ class ProfileContactUsScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                ),
-                ),
+                )),
               ),
-              const SizedBox(height: 170),
             ],
           ),
         ),
@@ -276,7 +245,7 @@ class ProfileContactUsScreen extends StatelessWidget {
     );
   }
 
-  // Submit form method
+// Submit Form
   void _submitForm() async {
     final firstName = firstNameController.text.trim();
     final lastName = lastNameController.text.trim();
@@ -287,16 +256,14 @@ class ProfileContactUsScreen extends StatelessWidget {
 
     // Basic validation
     if (firstName.isEmpty || lastName.isEmpty) {
-      _showSnackBar("First name and last name are required", isSuccess: false);
+      controller.setError("First name and last name are required");
       return;
     }
 
     controller.clearError();
-    
-    // Store the current error state before API call
-    final errorBefore = controller.errorMessage.value;
-    
-    await controller.createContact(
+
+    // Call API
+    final success = await controller.createContact(
       firstName: firstName,
       lastName: lastName,
       address: address,
@@ -304,12 +271,47 @@ class ProfileContactUsScreen extends StatelessWidget {
       subject: subject,
       yourCompany: yourCompany,
     );
-    
-    // Check if there's a new error after API call
-    if (controller.errorMessage.value.isNotEmpty && controller.errorMessage.value != errorBefore) {
-      _showSnackBar(controller.errorMessage.value, isSuccess: false);
+
+    if (success) {
+      // Success Snackbar
+      Get.snackbar(
+        "Message Sent",
+        "Your message has been sent successfully!",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.shade600,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 2),
+      );
+
+      // Clear all fields
+      firstNameController.clear();
+      lastNameController.clear();
+      addressController.clear();
+      phoneNumberController.clear();
+      subjectController.clear();
+      yourCompanyController.clear();
+
+      // Optional: go back to previous screen after delay
+      await Future.delayed(const Duration(seconds: 2));
+      if (Get.isOverlaysClosed == false && Get.currentRoute != "/ProfileInfoScreen") {
+        Get.back(); // navigate back to ProfileInfoScreen
+      }
+    } else {
+      // Error Snackbar (optional)
+      Get.snackbar(
+        "Failed",
+        controller.errorMessage.isNotEmpty
+            ? controller.errorMessage.value
+            : "Something went wrong. Please try again.",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade700,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+      );
     }
   }
+
 
   // Reusable TextField Builder with controller
   Widget _buildTextField({

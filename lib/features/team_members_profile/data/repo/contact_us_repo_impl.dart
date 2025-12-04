@@ -7,6 +7,7 @@ import '../models/contact_us_request_model.dart';
 import '../models/contact_us_response_model.dart';
 import '../models/report_post_model.dart';
 
+
 class ContactUsRepoImpl implements ContactUsRepo {
   final ApiClient _apiClient;
   
@@ -23,10 +24,12 @@ class ContactUsRepoImpl implements ContactUsRepo {
 
   @override
   NetworkResult<ReportData> report(FormData formData) {
+    // Use the report endpoint and send as multipart/form-data
     return _apiClient.post<ReportData>(
-        ApiConstants.contact.createContact,
-        formData: formData,
-        fromJsonT: (json) => ReportData.fromJson(json)
+      ApiConstants.report.createReport,
+      formData: formData,
+      isFormData: true,
+      fromJsonT: (json) => ReportData.fromJson(json),
     );
   }
 }

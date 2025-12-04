@@ -6,7 +6,9 @@ import 'package:karlfive/features/home/presentation/widgets/custom_search_bar.da
 import 'package:karlfive/features/home/presentation/widgets/search_results_widget.dart';
 import 'package:karlfive/features/join_league/presentation/screens/form_screen/join_league_screen.dart';
 
+import '../../../../core/common/constants/app_images.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../create_league/presentation/screens/create_league_screen.dart';
 import '../../controller/home_controller.dart';
 import '../widgets/fixtures_widget.dart';
 import '../widgets/game_reminder_widget.dart';
@@ -30,34 +32,110 @@ class HomeScreen extends StatelessWidget {
           centerTitle: false,
           backgroundColor: AppColors.leagueBackgroundGrey,
           elevation: 0,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Obx(() {
-                final name = controller.userName.value.isNotEmpty
-                    ? controller.userName.value
-                    : 'Guest';
-                return Text(
-                  'Hello $name,',
-                  style: const TextStyle(color: AppColors.white, fontSize: 18),
-                );
-              }),
-              const SizedBox(height: 4),
-              const Text(
-                "Welcome to Padel app",
-                style: TextStyle(color: AppColors.white, fontSize: 14),
-              ),
-            ],
+          title: LayoutBuilder(
+            builder: (context, constraints) {
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  // LEFT: greeting text
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Obx(() {
+                          final name = controller.userName.value.isNotEmpty
+                              ? controller.userName.value
+                              : 'Guest';
+                          return Text(
+                            'Hello $name,',
+                            style: const TextStyle(
+                              color: AppColors.white,
+                              fontSize: 14,
+                            ),
+                          );
+                        }),
+                        const SizedBox(height: 4),
+                        const Text(
+                          "Welcome to Padel app",
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+
+                  // CENTER: circular responsive logo
+                  Align(
+                    alignment: const Alignment(0.17, 0),
+                    child: SizedBox(
+                      height: kToolbarHeight * 0.85,
+                      width: kToolbarHeight * 0.85,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 1,
+                          ),
+                        ),
+                        padding: const EdgeInsets.all(1),
+                        child: ClipOval(
+                          child: Image.asset(
+                            AppImages.homelogo,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 12),
               child: CircleAvatar(
-                backgroundColor: Colors.grey[850],
+                backgroundColor: const Color(0xFF3B3B3B),
                 child: IconButton(
                   onPressed: () {
-                    // TODO: button logic here
-                    Get.to(() => JoinLeagueScreen());
+                    showMenu(
+                      context: context,
+                      position: const RelativeRect.fromLTRB(1000, 80, 16, 0),
+                      color: const Color(0xFFD9D9D9),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      items: [
+                        PopupMenuItem(
+                          child: const Text(
+                            "Join League",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          onTap: () {
+                            Future.delayed(Duration.zero, () {
+                              Get.to(() => JoinLeagueScreen());
+                            });
+                          },
+                        ),
+                        PopupMenuItem(
+                          child: const Text(
+                            "Create Your League",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          onTap: () {
+                            Future.delayed(Duration.zero, () {
+                              Get.to(() => CreateLeagueScreen());
+                            });
+                          },
+                        ),
+                      ],
+                    );
                   },
                   icon: const Icon(Icons.add, color: Colors.white),
                 ),
@@ -65,8 +143,9 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
 
+
+      ),
       body: Container(
         color: AppColors.leagueBackgroundGrey,
         child: SafeArea(
@@ -123,7 +202,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: AppBottomNavBar(currentIndex: 0),
+      bottomNavigationBar: const AppBottomNavBar(currentIndex: 0),
     );
   }
 }

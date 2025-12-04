@@ -38,18 +38,8 @@ class ApiClient {
     return _instance!;
   }
 
-  ApiClient._internal();
-
-  Future<void> _initialize() async {
-    // Initialize connectivity service with error handling
-    try {
-      _connectivityService = ConnectivityService.instance;
-      await _connectivityService.initialize();
-    } catch (e) {
-      if (kDebugMode) DPrint.log("Using fallback connectivity: $e");
-      // _connectivityService = _FallbackConnectivityService();
-    }
-
+  ApiClient._internal() {
+    // Initialize Dio synchronously so the client is usable immediately.
     _dio = Dio(
       BaseOptions(
         baseUrl: ApiConstants.baseDomain,
@@ -64,15 +54,30 @@ class ApiClient {
       ),
     );
 
-    // Initialize cache interceptor
-    // _cacheInterceptor = CustomCacheInterceptor(
-    //   maxCacheAge: const Duration(minutes: 15),
-    //   staleWhileRevalidate: const Duration(minutes: 5),
-    //   maxCacheSize: 1000,
-    //   maxMemorySize: 5 * 1024 * 1024, // 5MB
-    //   excludedPaths: ['/auth/', '/payment/', '/user/profile'],
-    // );
+    // Assign connectivity service instance synchronously so checks can run
+    // even before async initialization completes.
+    try {
+      _connectivityService = ConnectivityService.instance;
+    } catch (_) {
+      // ignore - instance getter should not fail
+    }
 
+    // Start async initialization for services that can load in background
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    // Initialize connectivity service with error handling (async)
+    try {
+      _connectivityService = ConnectivityService.instance;
+      await _connectivityService.initialize();
+    } catch (e) {
+      if (kDebugMode) DPrint.log("Using fallback connectivity: $e");
+      // _connectivityService = _FallbackConnectivityService();
+    }
+
+    // Initialize cache interceptor if needed (left commented intentionally)
+    // _cacheInterceptor = CustomCacheInterceptor(...);
     // _dio.interceptors.add(_cacheInterceptor);
   }
 
@@ -209,6 +214,9 @@ class ApiClient {
         DPrint.log(
           "🛜 Api Endpoint -> $endpoint ${options.contentType} $method",
         );
+        if (queryParameters != null && queryParameters.isNotEmpty) {
+          DPrint.log("🛜 Query Parameters -> $queryParameters");
+        }
         DPrint.log(
           "🛜 Request payload -> FormData: ${fromData != null}, Data: $data",
         );

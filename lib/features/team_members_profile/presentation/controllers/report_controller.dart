@@ -1,17 +1,13 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 
-import '../../../../core/network/services/multiple_form_data_manager.dart';
-import '../../domain/repo/contact_us_repo.dart';
-
+import '../../domain/repo/report_repo.dart';
 
 class ReportController extends GetxController {
-  final ContactUsRepo _contactUsRepo;
-
-  ReportController(this._contactUsRepo);
-
-  final MultiFormDataManager multiFormDataManager = MultiFormDataManager();
+  final ReportRepo _reportRepo;
+  ReportController(this._reportRepo);
 
   final isLoading = false.obs;
 
@@ -21,32 +17,40 @@ class ReportController extends GetxController {
     required String description,
     File? imageFile,
   }) async {
-    isLoading.value = true;
+    try {
+      isLoading.value = true;
 
-    multiFormDataManager.addTextData("even", even);
-    multiFormDataManager.addTextData("description", description);
-    // multiFormDataManager.addImageFile(imageFile.path);
+      // Build FormData manually to ensure the file field name matches the backend
+      final formData = FormData();
+      formData.fields.add(MapEntry('user', userId));
+      formData.fields.add(MapEntry('even', even));
+      formData.fields.add(MapEntry('description', description));
 
-    final formData = multiFormDataManager.toFormData();
-
-    final result = await _contactUsRepo.report(formData);
-
-    result.fold((fail) {
-      isLoading.value = false;
-      // Trigger error callback if provided
-      if (onError != null) {
-        onError!(fail.message);
+      if (imageFile != null) {
+        final fileName = imageFile.path.split('/').last;
+        formData.files.add(MapEntry(
+          'file', // backend expects 'file' key in form-data (see Postman example)
+          await MultipartFile.fromFile(
+            imageFile.path,
+            filename: fileName,
+          ),
+        ));
       }
-    }, (success) {
+
+      final result = await _reportRepo.report(formData);
+
+      result.fold(
+            (failure) {
+          Get.snackbar("Failed", failure.message);
+        },
+            (success) {
+          Get.snackbar("Success", "Report submitted successfully");
+        },
+      );
+    } catch (e) {
+      Get.snackbar("Error", e.toString());
+    } finally {
       isLoading.value = false;
-      // Trigger success callback if provided
-      if (onSuccess != null) {
-        onSuccess!(success.message);
-      }
-    });
+    }
   }
-
-  // Callbacks for success and error handling
-  Function(String)? onSuccess;
-  Function(String)? onError;
 }

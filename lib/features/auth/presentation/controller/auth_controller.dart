@@ -20,6 +20,7 @@ import 'package:karlfive/features/join_league/presentation/screens/form_screen/j
 import '../../../../core/network/services/auth_storage_service.dart';
 import '../../../../core/network/services/secure_store_services.dart';
 import '../../../home/presentation/screens/home_screen.dart';
+import 'package:karlfive/features/home/controller/home_controller.dart';
 import 'remember_me_controller.dart';
 
 class AuthController extends BaseController {
@@ -59,6 +60,24 @@ class AuthController extends BaseController {
             refreshToken: success.data.refreshToken,
             userId: success.data.user.id,
           );
+          // Immediately fetch and populate user profile service so UI can read it
+          try {
+            await userProfileService.getUserProfile();
+            // If HomeController exists, update its userName directly for immediate UI update
+            try {
+              if (Get.isRegistered<HomeController>()) {
+                final homeCtrl = Get.find<HomeController>();
+                homeCtrl.userName.value = userProfileService.userInfo?.name ?? '';
+              }
+            } catch (_) {}
+          } catch (_) {}
+          // After storing tokens, force the home controller to refresh so
+          // the user's name (and other protected data) is loaded.
+          try {
+            if (Get.isRegistered<HomeController>()) {
+              await Get.find<HomeController>().forceRefresh();
+            }
+          } catch (_) {}
           if (rememberMeController!.rememberMe.value) {
             final secureStore = SecureStoreServices();
             secureStore.storeData('email', email);

@@ -2,17 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/common/widgets/app_scaffold.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
-import 'package:karlfive/features/notification/presentation/controller/notifi_dummy_controller.dart';
 
 import '../../../../core/common/widgets/app_bottom_navbar.dart';
+import '../../../../core/network/api_client.dart';
+import '../../../../core/network/services/auth_storage_service.dart';
+import '../../data/repo/notification_repo_impl.dart';
+import '../controller/notifi_dummy_controller.dart';
 
 class NotificationScreen extends StatelessWidget {
-  final NotificationController controller = Get.put(NotificationController());
-
   NotificationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Initialize dependencies
+    final apiClient = Get.find<ApiClient>();
+    final authStorage = Get.find<AuthStorageService>();
+    final notificationRepo = NotificationRepoImpl(apiClient: apiClient);
+    final controller = Get.put(
+      NotificationController(
+        notificationRepo: notificationRepo,
+        authStorageService: authStorage,
+      ),
+    );
+
     return AppScaffold(
       body: SafeArea(
         child: Column(
@@ -72,6 +84,29 @@ class NotificationScreen extends StatelessWidget {
             // Notification List
             Expanded(
               child: Obx(() {
+                // Show loading spinner
+                if (controller.isLoadingNotifications.value) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.primaryGreen,
+                    ),
+                  );
+                }
+
+                // Show empty state
+                if (controller.isEmpty.value || controller.notifications.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'No notification',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                      ),
+                    ),
+                  );
+                }
+
+                // Show notifications
                 return ListView.builder(
                   padding: const EdgeInsets.only(bottom: 8),
                   itemCount: controller.notifications.length,
@@ -147,7 +182,7 @@ class NotificationScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: AppBottomNavBar(currentIndex: 2),
+      bottomNavigationBar: const AppBottomNavBar(currentIndex: 3),
     );
   }
 }

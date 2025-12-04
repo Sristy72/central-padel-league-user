@@ -1,6 +1,8 @@
-import 'package:karlfive/core/network/network_result.dart';
-import 'package:karlfive/features/notification/data/model/notification_request_model.dart';
-import 'package:karlfive/features/notification/data/model/notification_response_model.dart';
+
+
+import '../../../../core/network/network_result.dart';
+import '../../data/model/notification_request_model.dart';
+import '../../data/model/notification_response_model.dart';
 
 abstract class NotificationRepo {
   NetworkResult<NotificationResponseModel> getnotifications(
@@ -10,4 +12,6 @@ abstract class NotificationRepo {
   NetworkResult<NotificationResponseModel> markAsRead(
     NotificationRequestModel request,
   );
+  
+  NetworkResult<List<NotificationResponseModel>> getNotificationsByUserId(String userId);
 }
