@@ -266,7 +266,8 @@ class AuthController extends BaseController {
 
   Future<bool> checkAuthStatus() async {
     final accessToken = await _authStorageService.getAccessToken();
-    return accessToken != null && accessToken.isNotEmpty;
+    final refreshToken = await _authStorageService.getRefreshToken();
+    return accessToken != null && accessToken.isNotEmpty && refreshToken != null && refreshToken.isNotEmpty;
   }
 
   Future<void> logout() async {

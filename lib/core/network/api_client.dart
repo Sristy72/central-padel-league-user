@@ -104,6 +104,7 @@ class ApiClient {
       );
 
       if (refreshToken == null) {
+        Get.offAll(() => LoginScreen());
         return false;
       }
 
@@ -139,6 +140,7 @@ class ApiClient {
       return false;
     } catch (e) {
       if (kDebugMode) DPrint.log("Refresh token error: $e");
+      Get.offAll(() => LoginScreen());
       return false;
     }
   }
@@ -276,6 +278,8 @@ class ApiClient {
               onReceiveProgress: onReceiveProgress,
               isFormData: isFormData,
             );
+          } else {
+             Get.offAll(() => LoginScreen());
           }
         } finally {
           _isRefreshing = false;
