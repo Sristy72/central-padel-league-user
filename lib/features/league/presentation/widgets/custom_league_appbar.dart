@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -99,8 +100,96 @@ class CustomLeagueAppbar extends StatelessWidget
                               width: 22,
                               image: AssetImage("assets/icons/share.png"),
                             ),
-                            onPressed: () {}, // TODO: Add share logic here
-                          ),
+                            onPressed: () {
+                              if (league?.leagueCode != null) {
+                                Get.dialog(
+                                  Dialog(
+                                    backgroundColor: Colors.black.withValues(alpha: 0.9),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20.0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              const Text(
+                                                "Share League Code",
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                              GestureDetector(
+                                                onTap: () => Get.back(),
+                                                child: const Icon(
+                                                  Icons.close,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 12,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white.withValues(alpha: 0.1),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text(
+                                                  league!.leagueCode!,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    Clipboard.setData(
+                                                      ClipboardData(
+                                                          text: league!.leagueCode!),
+                                                    );
+                                                    Get.back();
+                                                    Get.snackbar(
+                                                      "Success",
+                                                      "League code copied to clipboard",
+                                                      snackPosition:
+                                                          SnackPosition.BOTTOM,
+                                                      backgroundColor:
+                                                          AppColors.primaryGreen,
+                                                      colorText: Colors.white,
+                                                      margin: const EdgeInsets.all(10),
+                                                    );
+                                                  },
+                                                  child: const Icon(
+                                                    Icons.copy,
+                                                    color: AppColors.primaryGreen,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                          )
                       ],
                     ),
                   ],

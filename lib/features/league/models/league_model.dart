@@ -15,6 +15,7 @@ class League {
   final int? totalGameWeeks;
   final String type;
   final String leagueType; // public or private
+  final String? leagueCode;
   final String matchFormat;
   final String tiebreakOption;
   final bool allowSubstitutes;
@@ -33,6 +34,7 @@ class League {
     this.totalGameWeeks,
     required this.type,
     required this.leagueType,
+    this.leagueCode,
     required this.matchFormat,
     required this.tiebreakOption,
     required this.allowSubstitutes,
@@ -68,6 +70,7 @@ class League {
       totalGameWeeks: json['totalGameWeeks'],
       type: json['type'] ?? '',
       leagueType: json['leagueType'] ?? 'public', // Default to public if not specified
+      leagueCode: json['leagueCode'],
       matchFormat: json['matchFormat'] ?? '',
       tiebreakOption: json['tiebreakOption'] ?? '',
       allowSubstitutes: json['allowSubstitutes'] ?? false,
