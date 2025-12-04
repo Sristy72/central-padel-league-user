@@ -102,7 +102,7 @@ class ChatEndpoints {
   final String getAllChats = '$_base/get-chats';
   final String sendMessage = '$_base/send-message';
   
-  String getSingleChat(String chatId) => '$_base/$chatId';
+  String getSingleChat(String chatId) => '$_base/get-single-chat/$chatId';
 }
 
 // New payment endpoints
