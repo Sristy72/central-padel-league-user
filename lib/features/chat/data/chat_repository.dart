@@ -1,5 +1,3 @@
-// TODO: Uncomment when API is implemented
-/*
 import 'package:dartz/dartz.dart';
 
 import '../../../core/network/models/network_failure.dart';
@@ -41,8 +39,9 @@ class ChatRepository {
 
   Future<Either<NetworkFailure, ChatModel>> createChat({
     required String sellerId,
+    required String userId,
   }) async {
-    final response = await _chatApi.createChat(sellerId: sellerId);
+    final response = await _chatApi.createChat(sellerId: sellerId, userId: userId);
 
     return response.fold(
           (failure) => Left(failure),
@@ -50,4 +49,3 @@ class ChatRepository {
     );
   }
 }
-*/

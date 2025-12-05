@@ -11,4 +11,8 @@ abstract class LeagueRepository {
   NetworkResult<CreateLeagueResponse> createLeague({
     required Map<String, dynamic> leagueData,
   });
+  NetworkResult<Match> updateMatchScore({
+    required String matchId,
+    required Map<String, dynamic> scoreData,
+  });
 }

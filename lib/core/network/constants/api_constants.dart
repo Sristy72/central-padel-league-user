@@ -32,8 +32,10 @@ class ApiConstants {
 
   static TeamEndpointcs get team => TeamEndpointcs();
   static LeagueEndpoints get league => LeagueEndpoints();
+  static MatchEndpoints get match => MatchEndpoints();
 
   static ContactEndpoints get contact => ContactEndpoints();
+  static ChatEndpoints get chat => ChatEndpoints();
 
   static PaymentEndpoints get payment => PaymentEndpoints();
   static ReportEndpoints get report => ReportEndpoints();
@@ -82,9 +84,25 @@ class LeagueEndpoints {
   final String create = '$_base/create';
 }
 
+class MatchEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/match';
+
+  String updateScore(String matchId) => '$_base/$matchId';
+}
+
 class ContactEndpoints {
   static const String _base = '${ApiConstants.baseUrl}/contact';
   final String createContact = '$_base/create';
+}
+
+class ChatEndpoints {
+  static const String _base = '${ApiConstants.baseUrl}/chat';
+
+  final String createChat = '$_base/create-chat';
+  final String getAllChats = '$_base/get-chats';
+  final String sendMessage = '$_base/send-message';
+  
+  String getSingleChat(String chatId) => '$_base/get-single-chat/$chatId';
 }
 
 // New payment endpoints

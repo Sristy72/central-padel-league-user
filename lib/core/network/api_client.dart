@@ -17,6 +17,8 @@ import 'services/connectivity_service.dart';
 import 'services/secure_store_services.dart';
 
 import '/core/network/models/network_success.dart';
+import 'package:get/get.dart' hide FormData;
+import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
 
 class ApiClient {
   late final Dio _dio;
@@ -102,6 +104,7 @@ class ApiClient {
       );
 
       if (refreshToken == null) {
+        Get.offAll(() => LoginScreen());
         return false;
       }
 
@@ -133,9 +136,11 @@ class ApiClient {
 
       // Navigate to login screen - you'll need to implement this based on your navigation
       // Go.freshStartTo(LoginScreen());
+      Get.offAll(() => LoginScreen());
       return false;
     } catch (e) {
       if (kDebugMode) DPrint.log("Refresh token error: $e");
+      Get.offAll(() => LoginScreen());
       return false;
     }
   }
@@ -273,6 +278,8 @@ class ApiClient {
               onReceiveProgress: onReceiveProgress,
               isFormData: isFormData,
             );
+          } else {
+             Get.offAll(() => LoginScreen());
           }
         } finally {
           _isRefreshing = false;

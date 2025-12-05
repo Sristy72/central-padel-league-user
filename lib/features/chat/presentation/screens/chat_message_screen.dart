@@ -1,120 +1,136 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../data/chat_repository.dart';
+import '../../data/models/chat_model.dart';
 import '../../data/models/message_model.dart';
 import '../widgets/message_bubble.dart';
 
 class ChatMessageScreen extends StatefulWidget {
   final String participantName;
   final String? participantImage;
+  final ChatModel? chatModel;
+  final String? currentUserId;
 
   const ChatMessageScreen({
     super.key,
     required this.participantName,
     this.participantImage,
+    this.chatModel,
+    this.currentUserId,
   });
 
   @override
   State<ChatMessageScreen> createState() => _ChatMessageScreenState();
 }
 
-class _ChatMessageScreenState extends State<ChatMessageScreen> {
+class _ChatMessageScreenState extends State<ChatMessageScreen> with WidgetsBindingObserver {
   late TextEditingController _messageController;
   final RxList<MessageModel> messages = <MessageModel>[].obs;
   final ScrollController _scrollController = ScrollController();
-
-  // Demo user ID (replace with actual user ID later)
-  static const String _currentUserId = 'user_123';
+  bool _isSending = false;
+  late ChatRepository _chatRepository;
+  Timer? _autoRefreshTimer;
+  final Set<String> _newMessageIds = {}; // Track new messages for shimmer effect
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _messageController = TextEditingController();
-    _loadDemoMessages();
+    _chatRepository = ChatRepository();
+    _initializeMessages();
+    _startAutoRefresh();
   }
 
-  void _loadDemoMessages() {
-    // Demo messages for now
-    final demoMessages = [
-      MessageModel(
-        id: '1',
-        text: 'Hey! How are you?',
-        userId: 'other_user_456',
-        date: DateTime.now().subtract(const Duration(hours: 2)).toString(),
-        read: true,
-        user: ChatUser(
-          id: 'other_user_456',
-          name: widget.participantName,
-          role: 'Member',
-          avatar: Avatar(publicId: '', url: widget.participantImage ?? ''),
-        ),
-      ),
-      MessageModel(
-        id: '2',
-        text: 'I\'m doing great! How about you?',
-        userId: _currentUserId,
-        date: DateTime.now().subtract(const Duration(hours: 1, minutes: 50)).toString(),
-        read: true,
-        user: ChatUser(
-          id: _currentUserId,
-          name: 'You',
-          role: 'Member',
-          avatar: Avatar(publicId: '', url: ''),
-        ),
-      ),
-      MessageModel(
-        id: '3',
-        text: 'Pretty good! Looking forward to the next match 🎯',
-        userId: 'other_user_456',
-        date: DateTime.now().subtract(const Duration(hours: 1, minutes: 40)).toString(),
-        read: true,
-        user: ChatUser(
-          id: 'other_user_456',
-          name: widget.participantName,
-          role: 'Member',
-          avatar: Avatar(publicId: '', url: widget.participantImage ?? ''),
-        ),
-      ),
-      MessageModel(
-        id: '4',
-        text: 'Same! Let\'s practice together sometime',
-        userId: _currentUserId,
-        date: DateTime.now().subtract(const Duration(hours: 1, minutes: 30)).toString(),
-        read: true,
-        user: ChatUser(
-          id: _currentUserId,
-          name: 'You',
-          role: 'Member',
-          avatar: Avatar(publicId: '', url: ''),
-        ),
-      ),
-    ];
-
-    messages.assignAll(demoMessages);
+  void _initializeMessages() {
+    // Load messages from ChatModel if provided
+    if (widget.chatModel != null && widget.chatModel!.messages.isNotEmpty) {
+      // Convert ChatMessageModel to MessageModel
+      final convertedMessages = widget.chatModel!.messages.map((msg) {
+        return MessageModel(
+          id: msg.id,
+          text: msg.text,
+          userId: msg.user.id,
+          date: msg.date,
+          read: msg.read,
+          user: ChatUser(
+            id: msg.user.id,
+            name: msg.user.name,
+            role: msg.user.role,
+            avatar: Avatar(publicId: '', url: ''),
+          ),
+        );
+      }).toList();
+      messages.assignAll(convertedMessages);
+    }
     Future.delayed(const Duration(milliseconds: 300), _scrollToBottom);
   }
 
-  void _sendMessage() {
-    if (_messageController.text.trim().isEmpty) return;
+  Future<void> _sendMessage() async {
+    if (_messageController.text.trim().isEmpty || _isSending) return;
+    if (widget.chatModel == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error: Chat not initialized'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
-    final newMessage = MessageModel(
-      id: DateTime.now().toString(),
-      text: _messageController.text.trim(),
-      userId: _currentUserId,
-      date: DateTime.now().toString(),
-      read: false,
-      user: ChatUser(
-        id: _currentUserId,
-        name: 'You',
-        role: 'Member',
-        avatar: Avatar(publicId: '', url: ''),
-      ),
-    );
+    setState(() => _isSending = true);
 
-    messages.add(newMessage);
-    _messageController.clear();
-    _scrollToBottom();
+    try {
+      final result = await _chatRepository.sendMessage(
+        chatId: widget.chatModel!.id,
+        message: _messageController.text.trim(),
+      );
+
+      result.fold(
+        (failure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to send message: ${failure.message}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        },
+        (messageData) {
+          // Convert the API response to MessageModel and add to list
+          final newMessage = MessageModel(
+            id: messageData.id,
+            text: messageData.text,
+            userId: messageData.user.id,
+            date: messageData.date,
+            read: messageData.read,
+            user: ChatUser(
+              id: messageData.user.id,
+              name: messageData.user.name,
+              role: messageData.user.role,
+              avatar: Avatar(publicId: '', url: ''),
+            ),
+          );
+          
+          messages.add(newMessage);
+          _messageController.clear();
+          
+          // Use Future.delayed to ensure ListView has been rebuilt with new message
+          Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
+        },
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isSending = false);
+    }
   }
 
   void _scrollToBottom() {
@@ -127,8 +143,91 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     }
   }
 
+  void _startAutoRefresh() {
+    // Auto-refresh every 1 second
+    _autoRefreshTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _fetchNewMessages();
+    });
+  }
+
+  Future<void> _fetchNewMessages() async {
+    if (widget.chatModel == null) return;
+
+    try {
+      final result = await _chatRepository.fetchSingleChat(widget.chatModel!.id);
+
+      result.fold(
+        (failure) {
+          // Silently fail for auto-refresh to avoid spamming user with errors
+          print('Auto-refresh failed: ${failure.message}');
+        },
+        (chatData) {
+          // Get current message IDs
+          final currentMessageIds = messages.map((m) => m.id).toSet();
+          
+          // Find new messages
+          final newMessages = chatData.messages.where((msg) {
+            return !currentMessageIds.contains(msg.id);
+          }).toList();
+
+          if (newMessages.isNotEmpty) {
+            // Convert new messages to MessageModel
+            for (var msg in newMessages) {
+              final newMessage = MessageModel(
+                id: msg.id,
+                text: msg.text,
+                userId: msg.user.id,
+                date: msg.date,
+                read: msg.read,
+                user: ChatUser(
+                  id: msg.user.id,
+                  name: msg.user.name,
+                  role: msg.user.role,
+                  avatar: Avatar(publicId: '', url: ''),
+                ),
+              );
+              
+              // Add to new message IDs for shimmer effect
+              _newMessageIds.add(newMessage.id);
+              messages.add(newMessage);
+            }
+
+            // Scroll to bottom to show new messages
+            Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
+
+            // Remove shimmer effect after 2 seconds
+            Future.delayed(const Duration(seconds: 2), () {
+              if (mounted) {
+                setState(() {
+                  _newMessageIds.clear();
+                });
+              }
+            });
+          }
+        },
+      );
+    } catch (e) {
+      print('Auto-refresh error: $e');
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    
+    // Pause auto-refresh when app is in background
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      _autoRefreshTimer?.cancel();
+    } else if (state == AppLifecycleState.resumed) {
+      // Resume auto-refresh when app comes back to foreground
+      _startAutoRefresh();
+    }
+  }
+
   @override
   void dispose() {
+    _autoRefreshTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -207,8 +306,14 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                 itemCount: messages.length,
                 itemBuilder: (_, index) {
                   final msg = messages[index];
-                  final isMe = msg.userId == _currentUserId;
-                  return MessageBubble(message: msg, isMe: isMe);
+                  // Check if message belongs to current user by comparing user ID
+                  final isMe = widget.currentUserId != null && msg.userId == widget.currentUserId;
+                  final showShimmer = _newMessageIds.contains(msg.id);
+                  return MessageBubble(
+                    message: msg,
+                    isMe: isMe,
+                    showShimmer: showShimmer,
+                  );
                 },
               );
             }),
@@ -249,16 +354,25 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                 // Send button
                 Container(
                   decoration: BoxDecoration(
-                    color: AppColors.notificationColor,
+                    color: _isSending ? Colors.grey : AppColors.notificationColor,
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
-                    onPressed: _sendMessage,
-                    icon: const Icon(
-                      Icons.send,
-                      color: AppColors.buttonText,
-                      size: 20,
-                    ),
+                    onPressed: _isSending ? null : _sendMessage,
+                    icon: _isSending
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(AppColors.buttonText),
+                            ),
+                          )
+                        : const Icon(
+                            Icons.send,
+                            color: AppColors.buttonText,
+                            size: 20,
+                          ),
                   ),
                 ),
               ],
