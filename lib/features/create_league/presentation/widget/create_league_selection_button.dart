@@ -102,36 +102,7 @@ class CreateLeagueSelectionButtons extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 24),
 
-        // Allow substitutes
-        GestureDetector(
-          onTap: () => onAllowSubstitutesChanged(!allowSubstitutes),
-          child: Row(
-            children: [
-              Container(
-                width: 12,
-                height: 12,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.green, width: 1),
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.circle,
-                    size: 10,
-                    color: allowSubstitutes ? Colors.green : Colors.transparent,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                "Allow players substitutes",
-                style: TextStyle(color: Colors.white, fontSize: 14),
-              ),
-            ],
-          ),
-        ),
         const SizedBox(height: 24),
 
         // Match Play with others team
@@ -179,6 +150,35 @@ class CreateLeagueSelectionButtons extends StatelessWidget {
             ),
           ],
         ),
+        const SizedBox(height: 24),
+        // Allow substitutes
+        GestureDetector(
+          onTap: () => onAllowSubstitutesChanged(!allowSubstitutes),
+          child: Row(
+            children: [
+              Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.green, width: 1),
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.circle,
+                    size: 10,
+                    color: allowSubstitutes ? Colors.green : Colors.transparent,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                "Allow players substitutes",
+                style: TextStyle(color: Colors.white, fontSize: 14),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -187,7 +187,7 @@ class CreateLeagueSelectionButtons extends StatelessWidget {
       VoidCallback onPressed) {
     return SizedBox(
       height: 29,
-      width: 116,
+      width: 100,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
