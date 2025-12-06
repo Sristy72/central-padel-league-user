@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutx_core/flutx_core.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/common/widgets/app_bottom_navbar.dart';
+
 import '../../../../../core/common/widgets/app_scaffold.dart';
 import '../../../../../core/theme/app_buttoms.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../controller/join_league_controller/join_league_controller.dart';
 import '../../widgets/check_box.dart';
+import '../../widgets/league_dropdown.dart';
 import '../../widgets/lebel_field.dart';
 import '../../widgets/player_dropdown_box.dart';
 import '../../widgets/upload_box.dart';
-import '../../widgets/league_dropdown.dart';
 
 class JoinLeagueScreen extends StatefulWidget {
   const JoinLeagueScreen({super.key});
@@ -118,6 +119,12 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
                   LabeledField(
                     hint: 'Email',
                     controller: controller.emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: Validators.email,
+                  ),
+                  LabeledField(
+                    hint: 'Co-Player Email',
+                    controller: controller.playerEmailController,
                     keyboardType: TextInputType.emailAddress,
                     validator: Validators.email,
                   ),

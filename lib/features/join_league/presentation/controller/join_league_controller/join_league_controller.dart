@@ -27,6 +27,7 @@ class JoinLeagueController extends BaseController {
   final captainNameController = TextEditingController();
   final partnerNameController = TextEditingController();
   final emailController = TextEditingController();
+  final playerEmailController = TextEditingController(); // Co-player email
   final contactNumberController = TextEditingController();
 
   final selectedLeague = ''.obs;
@@ -36,6 +37,7 @@ class JoinLeagueController extends BaseController {
   final agreedRules = false.obs;
   final confirmedAvailability = false.obs;
   final selectedLogo = Rxn<XFile>();
+  final isVerifyingOtp = false.obs; // Track OTP verification loading state
 
   final List<Map<String, Object?>> playerLevels = const [
     {'id': 1, 'label': 'Beginner', 'asset': null},
@@ -104,6 +106,7 @@ class JoinLeagueController extends BaseController {
     captainNameController.dispose();
     partnerNameController.dispose();
     emailController.dispose();
+    playerEmailController.dispose(); // Dispose co-player email controller
     contactNumberController.dispose();
     otpController.dispose(); // Dispose OTP controller
     super.onClose();
@@ -189,6 +192,7 @@ class JoinLeagueController extends BaseController {
         partnerNameController.text,
       );
       _multiFormDataManager.addTextData('email', emailController.text);
+      _multiFormDataManager.addTextData('playerEmail', playerEmailController.text); // Co-player email
       _multiFormDataManager.addTextData(
         'contactNumber',
         contactNumberController.text,
@@ -266,6 +270,7 @@ class JoinLeagueController extends BaseController {
               captainNameController.clear();
               partnerNameController.clear();
               emailController.clear();
+              playerEmailController.clear(); // Clear co-player email
               contactNumberController.clear();
               selectedLogo.value = null;
               selectedLeague.value = '';
@@ -392,6 +397,7 @@ class JoinLeagueController extends BaseController {
   // Method to show private league OTP dialog
   Future<void> showPrivateLeagueOtpDialog() async {
     otpController.clear(); // Clear previous OTP
+    isVerifyingOtp.value = false; // Reset loading state
     
     await Get.dialog<bool>(
       AlertDialog(
@@ -437,12 +443,24 @@ class JoinLeagueController extends BaseController {
             onPressed: () => Get.back(result: false),
             child: const Text('Cancel', style: TextStyle(color: AppColors.textFieldTextiHint)),
           ),
-          ElevatedButton(
-            onPressed: () => _findAndJoinPrivateLeagueByOtp(),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryGreen,
+          Obx(
+            () => ElevatedButton(
+              onPressed: isVerifyingOtp.value ? null : () => _findAndJoinPrivateLeagueByOtp(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryGreen,
+                disabledBackgroundColor: AppColors.primaryGreen.withOpacity(0.5),
+              ),
+              child: isVerifyingOtp.value
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text('Find League', style: TextStyle(color: AppColors.white)),
             ),
-            child: const Text('Find League', style: TextStyle(color: AppColors.white)),
           ),
         ],
       ),
@@ -457,7 +475,7 @@ class JoinLeagueController extends BaseController {
     }
 
     try {
-      setLoading(true);
+      isVerifyingOtp.value = true; // Show loading indicator on button
       
       // Fetch all leagues to find the one with matching leagueCode
       final response = await _repository.getAllLeague(limit: 200);
@@ -465,7 +483,7 @@ class JoinLeagueController extends BaseController {
       response.fold(
         (fail) {
           setError("Failed to verify OTP: ${fail.message}");
-          setLoading(false);
+          isVerifyingOtp.value = false;
         },
         (success) {
           // Find league with matching leagueCode (OTP)
@@ -488,7 +506,7 @@ class JoinLeagueController extends BaseController {
             selectedLeagueType.value = 'private';
             Get.back(result: true);
             clearError();
-            setLoading(false);
+            isVerifyingOtp.value = false;
             
             // Show success message
             Get.snackbar(
@@ -503,13 +521,13 @@ class JoinLeagueController extends BaseController {
             DPrint.log("✅ Private league found and selected: ${privateLeague.leagueName}");
           } else {
             setError("Invalid OTP/League Code. Please check with the league owner.");
-            setLoading(false);
+            isVerifyingOtp.value = false;
           }
         },
       );
     } catch (e) {
       setError("Error verifying OTP: $e");
-      setLoading(false);
+      isVerifyingOtp.value = false;
       DPrint.log("❌ Error in OTP verification: $e");
     }
   }
