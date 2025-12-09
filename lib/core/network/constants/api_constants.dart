@@ -1,7 +1,7 @@
 class ApiConstants {
   /// [Base Configuration]
-  // static const String baseDomain = 'https://karlfive223-backend.onrender.com';
-  static const String baseDomain = 'http://10.10.5.67:5002';
+  static const String baseDomain = 'https://karlfive223-backend.onrender.com';
+  // static const String baseDomain = 'http://10.10.5.67:5002';
   static const String baseUrl = '$baseDomain/api/v1';
 
   /// soykot ip

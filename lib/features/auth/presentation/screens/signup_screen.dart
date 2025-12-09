@@ -12,6 +12,7 @@ import 'package:karlfive/features/auth/presentation/controller/term_of_services_
 import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
 import '../../../../core/common/constants/app_images.dart';
 import '../widgets/different_login_approach.dart';
+import '../../../../core/common/widgets/form_error_message.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -109,13 +110,24 @@ class _SignupScreenState extends State<SignupScreen> {
               children: [
                 SizedBox(height: 59),
                 Text(
-                  'Create Your Account',
+              'Create Your Account',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
                     color: AppColors.white,
                   ),
                 ),
+
+                SizedBox(height: 16),
+
+                /// [Api Error messages]
+                Obx(() {
+                  final error = _authController.errorMessage.value;
+                  if (error.isNotEmpty) {
+                    return FormErrorMessage(message: error);
+                  }
+                  return const SizedBox.shrink(); // return empty widget
+                }),
 
                 SizedBox(height: 16),
                 Form(
