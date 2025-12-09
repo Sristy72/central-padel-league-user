@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:karlfive/core/common/constants/app_images.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -47,19 +49,44 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
   @override
   void initState() {
     super.initState();
-    // Show existing profile data as hint text; leave fields empty so user can type.
-    _birthdayController = TextEditingController(text: '');
-    _firstNameController = TextEditingController(text: '');
-    _lastNameController = TextEditingController(text: '');
-    _phoneController = TextEditingController(text: '');
     _controller = Get.find<EditProfileController>();
     _profileController = Get.find<ProfileController>();
-    // prefer profile values when available for initial hinting
-    _selectedGender = _profileController.profile.value?.gender ?? widget.member.gender;
+    
+    final profile = _profileController.profile.value;
+    
+    // Parse Name
+    String initialFirstName = '';
+    String initialLastName = '';
+    if (profile?.name != null && profile!.name!.isNotEmpty) {
+      final parts = profile!.name!.split(' ');
+      initialFirstName = parts.first;
+      if (parts.length > 1) {
+        initialLastName = parts.sublist(1).join(' ');
+      }
+    } else {
+      initialFirstName = widget.member.firstName;
+      initialLastName = widget.member.lastName;
+    }
 
+    _firstNameController = TextEditingController(text: initialFirstName);
+    _lastNameController = TextEditingController(text: initialLastName);
+    
+    // Parse Phone
+    final initialPhone = (profile?.phoneNumber?.isNotEmpty == true) 
+        ? profile!.phoneNumber! 
+        : widget.member.phone;
+    _phoneController = TextEditingController(text: initialPhone);
+    
+    // Parse Birthday
+    // Note: widget.member.birthday is expected to be a string
+    _birthdayController = TextEditingController(text: widget.member.birthday);
+
+    // Initial Gender
+    _selectedGender = profile?.gender ?? widget.member.gender;
+    
     // Set email from profile controller (uneditable)
     _emailController = TextEditingController(
-        text: _profileController.profile.value?.email ?? widget.member.email
+        text: profile?.email ?? widget.member.email
     );
   }
 
@@ -188,7 +215,7 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                       } else if (fallback.isNotEmpty) {
                         display = fallback.startsWith('http') ? NetworkImage(fallback) : AssetImage(fallback);
                       } else {
-                        display = const AssetImage('assets/images/profile.png');
+                        display = const AssetImage(AppImages.avatarImage);
                       }
 
                       return CircleAvatar(
@@ -207,9 +234,7 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                   Expanded(
                     child: _buildTextField(
                       label: "First Name",
-                      hintText: (_profileController.profile.value?.name != null && _profileController.profile.value!.name!.isNotEmpty)
-                          ? _profileController.profile.value!.name!.split(' ').first
-                          : (widget.member.firstName.isNotEmpty ? widget.member.firstName : 'First Name'),
+                      hintText: "First Name",
                       controller: _firstNameController,
                     ),
                   ),
@@ -217,9 +242,7 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                   Expanded(
                     child: _buildTextField(
                       label: "Last Name",
-                      hintText: (_profileController.profile.value?.name != null && _profileController.profile.value!.name!.isNotEmpty && _profileController.profile.value!.name!.split(' ').length > 1)
-                          ? _profileController.profile.value!.name!.split(' ').sublist(1).join(' ')
-                          : (widget.member.lastName.isNotEmpty ? widget.member.lastName : 'Last Name'),
+                      hintText: "Last Name",
                       controller: _lastNameController,
                     ),
                   ),
@@ -239,9 +262,7 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
               // Phone
               _buildTextField(
                 label: "Phone",
-                hintText: _profileController.profile.value?.phoneNumber?.isNotEmpty == true
-                    ? _profileController.profile.value!.phoneNumber!
-                    : (widget.member.phone.isNotEmpty ? widget.member.phone : 'Enter Phone Number'),
+                hintText: "Enter Phone Number",
                 controller: _phoneController,
               ),
               const SizedBox(height: 16),
@@ -267,7 +288,7 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                       style:
                       const TextStyle(color: Colors.white, fontSize: 14),
                       decoration: InputDecoration(
-                        hintText: widget.member.birthday.isNotEmpty ? widget.member.birthday : '29/02/2000',
+                        hintText: 'Select Date',
                         hintStyle: const TextStyle(
                             color: Color(0xFF7D807D), fontSize: 16),
                         isDense: true,
@@ -316,11 +337,10 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                     child: DropdownButtonFormField<String>(
                       initialValue: null,
                       hint: Text(
-                        _profileController.profile.value?.gender?.isNotEmpty == true
-                            ? _profileController.profile.value!.gender!
-                            : (widget.member.gender.isNotEmpty ? widget.member.gender : 'Select'),
+                        _selectedGender.isNotEmpty ? _selectedGender : 'Select',
                         style: const TextStyle(color: Colors.white),
                       ),
+                      value: _selectedGender.isNotEmpty && ["Male", "Female", "Other"].contains(_selectedGender) ? _selectedGender : null,
                       dropdownColor: Colors.black,
                       style: const TextStyle(color: Colors.white, fontSize: 14),
                       icon: const Icon(Icons.keyboard_arrow_down_sharp,
@@ -375,31 +395,12 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                       ),
                     ),
                     onPressed: () async {
-                      final rawFirst = _firstNameController.text.trim();
-                      final rawLast = _lastNameController.text.trim();
+                      final firstName = _firstNameController.text.trim();
+                      final lastName = _lastNameController.text.trim();
                       final email = _emailController.text.trim();
-                      final rawPhone = _phoneController.text.trim();
-                      final rawBirthday = _birthdayController.text.trim();
-                      final rawGender = _selectedGender;
-
-                      // Use existing member/profile values as fallback when fields left empty
-                      final profileVal = _profileController.profile.value;
-                      final firstName = rawFirst.isNotEmpty
-                          ? rawFirst
-                          : (widget.member.firstName.isNotEmpty
-                          ? widget.member.firstName
-                          : (profileVal?.name?.split(' ').first ?? ''));
-                      final lastName = rawLast.isNotEmpty
-                          ? rawLast
-                          : (widget.member.lastName.isNotEmpty
-                          ? widget.member.lastName
-                          : (profileVal?.name?.split(' ').length ?? 0) > 1
-                          ? profileVal!.name!.split(' ').sublist(1).join(' ')
-                          : '');
-
-                      final phone = rawPhone.isNotEmpty ? rawPhone : (widget.member.phone.isNotEmpty ? widget.member.phone : (profileVal?.phoneNumber ?? ''));
-                      final birthday = rawBirthday.isNotEmpty ? rawBirthday : (widget.member.birthday.isNotEmpty ? widget.member.birthday : '');
-                      final gender = rawGender.isNotEmpty ? rawGender : (widget.member.gender.isNotEmpty ? widget.member.gender : (profileVal?.gender ?? ''));
+                      final phone = _phoneController.text.trim();
+                      final birthday = _birthdayController.text.trim();
+                      final gender = _selectedGender;
 
                       // Basic validation
                       if (firstName.isEmpty || lastName.isEmpty) {

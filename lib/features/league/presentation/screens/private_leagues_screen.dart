@@ -5,6 +5,7 @@ import 'package:karlfive/core/common/widgets/skeleton_loader.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
 import 'package:karlfive/features/league/presentation/controllers/league_controller.dart';
 import 'package:karlfive/features/league/presentation/widgets/league_card.dart';
+import '../../../create_league/presentation/screens/create_league_screen.dart';
 
 /// Private Leagues Screen with two filters:
 /// 1. My League - Shows leagues created by the user (using leagueType='my')
@@ -186,11 +187,11 @@ class _PrivateLeaguesScreenState extends State<PrivateLeaguesScreen> {
                           padding: const EdgeInsets.only(top: 16),
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              // TODO: Navigate to create league screen
-                              Get.toNamed('/create-league');
+                              // Navigate to create league screen
+                              Get.to(() => CreateLeagueScreen());
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2AAF08),
+                              backgroundColor: const Color.fromARGB(255, 254, 254, 254),
                             ),
                             icon: const Icon(Icons.add),
                             label: const Text('Create League'),

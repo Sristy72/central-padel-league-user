@@ -34,7 +34,7 @@ class AuthController extends BaseController {
 
   // Login
   Future<void> login(
-   RememberMeController?  rememberMeController, {
+    RememberMeController? rememberMeController, {
     required String email,
     required String password,
   }) async {
@@ -67,7 +67,8 @@ class AuthController extends BaseController {
             try {
               if (Get.isRegistered<HomeController>()) {
                 final homeCtrl = Get.find<HomeController>();
-                homeCtrl.userName.value = userProfileService.userInfo?.name ?? '';
+                homeCtrl.userName.value =
+                    userProfileService.userInfo?.name ?? '';
               }
             } catch (_) {}
           } catch (_) {}
@@ -78,11 +79,11 @@ class AuthController extends BaseController {
               await Get.find<HomeController>().forceRefresh();
             }
           } catch (_) {}
-          if (rememberMeController!.rememberMe.value) {
+          if (rememberMeController != null &&
+              rememberMeController.rememberMe.value) {
             final secureStore = SecureStoreServices();
             secureStore.storeData('email', email);
             secureStore.storeData('password', password);
-
           }
           Get.to(() => HomeScreen());
         } else {
@@ -119,7 +120,8 @@ class AuthController extends BaseController {
       },
       (success) {
         DPrint.log("Register success result : ${success.data.id}");
-        Get.to(OtpVerificationToCompleteRegister(email: email));
+        // Get.to(OtpVerificationToCompleteRegister(email: email));
+        login(null, email: email, password: password);
         setLoading(false);
       },
     );

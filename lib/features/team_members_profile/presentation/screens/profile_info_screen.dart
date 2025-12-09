@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_contactus_screen.dart';
 import 'package:karlfive/features/team_members_profile/presentation/screens/profile_report_screen.dart';
+import 'package:karlfive/core/common/constants/app_images.dart';
 import '../../../../core/common/widgets/app_bottom_navbar.dart';
 import '../../../../core/common/widgets/shimmer_widgets.dart';
 import '../../../../core/network/api_client.dart';
@@ -122,9 +123,11 @@ class ProfileInfoScreen extends StatelessWidget {
                 final displayImage = p?.profileImage ?? member.imageUrl;
                 return CircleAvatar(
                   radius: 50,
-          backgroundImage: displayImage.isNotEmpty
-            ? (displayImage.startsWith('http') ? NetworkImage(displayImage) : AssetImage(displayImage) as ImageProvider)
-            : const AssetImage('assets/images/profile.png'),
+                  backgroundImage: displayImage.isNotEmpty
+                      ? (displayImage.startsWith('http')
+                          ? NetworkImage(displayImage)
+                          : AssetImage(displayImage) as ImageProvider)
+                      : const AssetImage(AppImages.avatarImage),
                 );
               }),
               const SizedBox(height: 14),
