@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/models/edit_profile_model.dart';
 import '../controllers/contact_us_controller.dart';
+
 
 
 class ProfileContactUsScreen extends StatelessWidget {
@@ -113,86 +115,76 @@ class ProfileContactUsScreen extends StatelessWidget {
                     const SizedBox(height: 16),
 
                     // Email
-                    Row(
-                      children: [
-                        Image.asset(
-                          "assets/icons/contactus_mail.png",
-                          width: 35,
-                          height: 35,
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'example@gmail.com',
-                          style: TextStyle(
-                            color: Color(0xFFA7A7A7),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
+                    GestureDetector(
+                      onTap: () => _launchEmail('Support@centralpaddelleague.com'),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            "assets/icons/contactus_mail.png",
+                            width: 35,
+                            height: 35,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Text(
+                              'Support@centralpaddelleague.com',
+                              style: TextStyle(
+                                color: Color(0xFFA7A7A7),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 26),
 
-                    // Phone
-                    Row(
-                      children: [
-                        Image.asset(
-                          "assets/icons/contactus_phone.png",
-                          width: 35,
-                          height: 35,
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          '+880 1234 567890',
-                          style: TextStyle(
-                            color: Color(0xFFA7A7A7),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
+                    // WhatsApp
+                    GestureDetector(
+                      onTap: () => _launchWhatsApp('+447353129595'),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            "assets/icons/contactus_phone.png",
+                            width: 35,
+                            height: 35,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+                          const Text(
+                            '+447353 129595 (WhatsApp only)',
+                            style: TextStyle(
+                              color: Color(0xFFA7A7A7),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 26),
 
-                    // Address
-                    Row(
-                      children: [
-                        Image.asset(
-                          "assets/icons/contactus_location.png",
-                          width: 35,
-                          height: 35,
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          '123, Main Street, Dhaka',
-                          style: TextStyle(
-                            color: Color(0xFFA7A7A7),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
+                    // Location
+                    GestureDetector(
+                      onTap: () => _launchMap('United Kingdom'),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            "assets/icons/contactus_location.png",
+                            width: 35,
+                            height: 35,
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 26),
-
-                    // Time
-                    Row(
-                      children: [
-                        Image.asset(
-                          "assets/icons/contactus_clock.png",
-                          width: 35,
-                          height: 35,
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'www.example.com',
-                          style: TextStyle(
-                            color: Color(0xFFA7A7A7),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
+                          const SizedBox(width: 12),
+                          const Text(
+                            'United Kingdom',
+                            style: TextStyle(
+                              color: Color(0xFFA7A7A7),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 26),
                   ],
@@ -355,5 +347,52 @@ class ProfileContactUsScreen extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  // Launch Email
+  Future<void> _launchEmail(String email) async {
+    final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: email,
+    );
+    try {
+      if (await canLaunchUrl(emailLaunchUri)) {
+        await launchUrl(emailLaunchUri);
+      } else {
+        Get.snackbar('Error', 'Could not open email application');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to open email: $e');
+    }
+  }
+
+  // Launch WhatsApp
+  Future<void> _launchWhatsApp(String phoneNumber) async {
+    // Remove any non-digit characters from phone number
+    final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+    final Uri whatsappUri = Uri.parse('https://wa.me/$cleanNumber');
+    try {
+      if (await canLaunchUrl(whatsappUri)) {
+        await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+      } else {
+        Get.snackbar('Error', 'Could not open WhatsApp');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to open WhatsApp: $e');
+    }
+  }
+
+  // Launch Map
+  Future<void> _launchMap(String location) async {
+    final Uri googleMapsUri = Uri.parse('https://www.google.com/maps/search/$location');
+    try {
+      if (await canLaunchUrl(googleMapsUri)) {
+        await launchUrl(googleMapsUri, mode: LaunchMode.externalApplication);
+      } else {
+        Get.snackbar('Error', 'Could not open map');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to open map: $e');
+    }
   }
 }
