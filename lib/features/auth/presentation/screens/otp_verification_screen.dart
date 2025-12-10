@@ -50,77 +50,77 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     return AppScaffold(
       body: SafeArea(
         child: Center(
-          child: Column(
-            children: [
-              SizedBox(height: 51),
-              AppLogo(images: AppImages.appLogoLandscape),
-              SizedBox(height: 74),
-
-              Text(
-                'Enter OTP',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.white,
-                ),
-              ),
-              SizedBox(height: 12),
-              Text(
-                'Enter your receive OTP',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.rememberMeColor,
-                ),
-              ),
-
-              Obx(() {
-                final error = _authController.errorMessage.value;
-                if (error.isNotEmpty) {
-                  return FormErrorMessage(message: error);
-                }
-                return const SizedBox.shrink(); // return empty widget
-              }),
-
-              SizedBox(height: 32),
-
-              PinCode(otpController: otpController),
-
-              SizedBox(height: 24),
-
-              Center(
-                child: RichText(
-                  text: TextSpan(
-                    text: 'Didn\'t Receive OTP? ',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      color: AppColors.rememberMeColor,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: 'RESEND OTP',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.primaryGreen,
-                        ),
-                        recognizer: _resendOtp,
-                      ),
-                    ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                AppLogo(images: AppImages.appLogoLandscape),
+            
+                Text(
+                  'Enter OTP',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.white,
                   ),
                 ),
-              ),
-
-              SizedBox(height: 12),
-              Obx(
-                () => PrimaryButton(
-                  onPressed: _submit,
-                  isLoading: _authController.isLoading.value,
-                  text: 'Verify Now',
+                SizedBox(height: 12),
+                Text(
+                  'Enter your receive OTP',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.rememberMeColor,
+                  ),
                 ),
-              ),
-            ],
+            
+                Obx(() {
+                  final error = _authController.errorMessage.value;
+                  if (error.isNotEmpty) {
+                    return FormErrorMessage(message: error);
+                  }
+                  return const SizedBox.shrink(); // return empty widget
+                }),
+            
+                SizedBox(height: 32),
+            
+                PinCode(otpController: otpController),
+            
+                SizedBox(height: 24),
+            
+                Center(
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Didn\'t Receive OTP? ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                        color: AppColors.rememberMeColor,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: 'RESEND OTP',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.primaryGreen,
+                          ),
+                          recognizer: _resendOtp,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            
+                SizedBox(height: 12),
+                Obx(
+                  () => PrimaryButton(
+                    onPressed: _submit,
+                    isLoading: _authController.isLoading.value,
+                    text: 'Verify Now',
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
