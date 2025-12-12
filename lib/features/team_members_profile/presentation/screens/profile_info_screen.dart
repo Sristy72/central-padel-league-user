@@ -73,14 +73,50 @@ class ProfileInfoScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
+              // Get actual profile data from controller
+              final p = controller.profile.value;
+              
+              // Parse name into first and last name
+              String firstName = '';
+              String lastName = '';
+              if (p?.name?.isNotEmpty == true) {
+                final parts = p!.name!.split(' ');
+                firstName = parts.first;
+                if (parts.length > 1) {
+                  lastName = parts.sublist(1).join(' ');
+                }
+              } else {
+                firstName = member.firstName;
+                lastName = member.lastName;
+              }
+              
+              // Get birthday from profile - convert from ISO datetime to display format (DD/MM/YYYY)
+              String birthday = '';
+              if (p?.birthday?.isNotEmpty == true) {
+                final bdayStr = p!.birthday!;
+                // Handle full ISO datetime format (2001-12-12T00:00:00.000Z)
+                String datePart = bdayStr;
+                if (bdayStr.contains('T')) {
+                  datePart = bdayStr.split('T').first;
+                }
+                if (datePart.contains('-') && datePart.split('-').length == 3) {
+                  final parts = datePart.split('-');
+                  birthday = '${parts[2]}/${parts[1]}/${parts[0]}';
+                } else {
+                  birthday = bdayStr;
+                }
+              } else {
+                birthday = member.birthday;
+              }
+              
               final editModel = EditProfileModel(
-                firstName: member.firstName,
-                lastName: member.lastName,
-                email: member.email,
-                phone: member.phone,
-                birthday: member.birthday,
-                gender: member.gender,
-                imageUrl: member.imageUrl,
+                firstName: firstName,
+                lastName: lastName,
+                email: p?.email ?? member.email,
+                phone: p?.phoneNumber ?? member.phone,
+                birthday: birthday,
+                gender: p?.gender ?? member.gender,
+                imageUrl: p?.profileImage ?? member.imageUrl,
               );
 
               // Navigate to edit screen and refresh profile when returning

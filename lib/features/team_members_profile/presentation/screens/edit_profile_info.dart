@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:karlfive/core/common/constants/app_images.dart';
+import 'package:karlfive/features/home/controller/home_controller.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -54,40 +55,73 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
     
     final profile = _profileController.profile.value;
     
-    // Parse Name
+    // Parse Name - prioritize profile data over widget.member
     String initialFirstName = '';
     String initialLastName = '';
-    if (profile?.name != null && profile!.name!.isNotEmpty) {
-      final parts = profile!.name!.split(' ');
+    
+    // Use profile name if available, otherwise use widget.member
+    final fullName = (profile?.name?.isNotEmpty == true) 
+        ? profile!.name! 
+        : '${widget.member.firstName} ${widget.member.lastName}'.trim();
+    
+    if (fullName.isNotEmpty) {
+      final parts = fullName.split(' ');
       initialFirstName = parts.first;
       if (parts.length > 1) {
         initialLastName = parts.sublist(1).join(' ');
       }
-    } else {
-      initialFirstName = widget.member.firstName;
-      initialLastName = widget.member.lastName;
     }
 
     _firstNameController = TextEditingController(text: initialFirstName);
     _lastNameController = TextEditingController(text: initialLastName);
     
-    // Parse Phone
+    // Parse Email - use profile email or fallback to member
+    final initialEmail = profile?.email ?? widget.member.email;
+    _emailController = TextEditingController(text: initialEmail);
+    
+    // Parse Phone - use profile phone or fallback to member
     final initialPhone = (profile?.phoneNumber?.isNotEmpty == true) 
         ? profile!.phoneNumber! 
         : widget.member.phone;
     _phoneController = TextEditingController(text: initialPhone);
     
-    // Parse Birthday
-    // Note: widget.member.birthday is expected to be a string
-    _birthdayController = TextEditingController(text: widget.member.birthday);
+    // Parse Birthday - use profile birthday if available, convert from ISO to display format
+    String initialBirthday = '';
+    if (profile?.birthday?.isNotEmpty == true) {
+      // Birthday from API might be in full ISO datetime format (2001-12-12T00:00:00.000Z)
+      final bdayStr = profile!.birthday!;
+      String datePart = bdayStr;
+      // Extract date part if it's full ISO datetime
+      if (bdayStr.contains('T')) {
+        datePart = bdayStr.split('T').first;
+      }
+      // Convert YYYY-MM-DD to DD/MM/YYYY
+      if (datePart.contains('-') && datePart.split('-').length == 3) {
+        final parts = datePart.split('-');
+        initialBirthday = '${parts[2]}/${parts[1]}/${parts[0]}';
+      } else {
+        initialBirthday = bdayStr;
+      }
+    } else if (widget.member.birthday.isNotEmpty) {
+      // Handle if member.birthday is also in ISO format
+      final bdayStr = widget.member.birthday;
+      String datePart = bdayStr;
+      if (bdayStr.contains('T')) {
+        datePart = bdayStr.split('T').first;
+      }
+      if (datePart.contains('-') && datePart.split('-').length == 3) {
+        final parts = datePart.split('-');
+        initialBirthday = '${parts[2]}/${parts[1]}/${parts[0]}';
+      } else {
+        initialBirthday = bdayStr;
+      }
+    }
+    _birthdayController = TextEditingController(text: initialBirthday);
 
-    // Initial Gender
-    _selectedGender = profile?.gender ?? widget.member.gender;
-    
-    // Set email from profile controller (uneditable)
-    _emailController = TextEditingController(
-        text: profile?.email ?? widget.member.email
-    );
+    // Initial Gender - use profile gender or fallback to member
+    _selectedGender = (profile?.gender?.isNotEmpty == true) 
+        ? profile!.gender! 
+        : widget.member.gender;
   }
 
   @override
@@ -434,6 +468,12 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                         // Refresh global profile data so profile screen shows updates
                         final profileCtrl = Get.find<ProfileController>();
                         await profileCtrl.fetchProfile();
+
+                        // Refresh home screen username instantly
+                        if (Get.isRegistered<HomeController>()) {
+                          final homeCtrl = Get.find<HomeController>();
+                          await homeCtrl.refreshUserName();
+                        }
 
                         // Build a TeamMemberModel from updated profile and navigate to ProfileInfoScreen
                         final updated = profileCtrl.profile.value;

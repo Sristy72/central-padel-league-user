@@ -12,6 +12,7 @@ class UserProfileModel {
   final String? clubAffiliation;
   final String? gender;
   final String? playingLevel;
+  final String? birthday;
 
   UserProfileModel({
     this.id,
@@ -27,6 +28,7 @@ class UserProfileModel {
     this.clubAffiliation,
     this.gender,
     this.playingLevel,
+    this.birthday,
   });
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
@@ -44,6 +46,7 @@ class UserProfileModel {
       clubAffiliation: json['clubAffiliation'] as String?,
       gender: json['gender'] as String?,
       playingLevel: json['playingLevel'] as String?,
+      birthday: json['birthday'] as String?,
     );
   }
 
@@ -62,6 +65,7 @@ class UserProfileModel {
       'clubAffiliation': clubAffiliation,
       'gender': gender,
       'playingLevel': playingLevel,
+      'birthday': birthday,
     };
   }
 }

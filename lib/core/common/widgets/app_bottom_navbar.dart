@@ -133,21 +133,17 @@ class AppBottomNavBar extends StatelessWidget {
                 duration: const Duration(milliseconds: 50),
               );
             } else if (index == 4) {
-              // Profile: ensure profile controller has latest data before navigating
+              // Profile: Navigate immediately - profile screen will load its own data
               try {
                 // Ensure ProfileController and its repo are registered
                 if (!Get.isRegistered<ProfileController>()) {
-                  // Attempt to resolve repository from Get; setup_repository normally registers this
                   final repo = Get.find<UserProfileRepo>();
                   Get.put(ProfileController(repository: repo));
                 }
 
                 final profileController = Get.find<ProfileController>();
 
-                // Try to fetch latest profile (non-blocking if already loaded)
-                await profileController.fetchProfile();
-
-                // Map UserProfileModel -> TeamMemberModel for navigation fallback
+                // Use cached profile data if available (don't wait for API)
                 final apiProfile = profileController.profile.value;
                 final memberToShow = apiProfile != null
                     ? TeamMemberModel(

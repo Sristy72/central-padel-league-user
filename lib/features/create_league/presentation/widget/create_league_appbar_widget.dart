@@ -13,32 +13,32 @@ class CreateLeagueAppBar extends StatelessWidget
     return AppBar(
       backgroundColor: AppColors.leagueBackgroundGrey,
       elevation: 0,
-      automaticallyImplyLeading: false,
+      automaticallyImplyLeading: true,
       titleSpacing: 0,
       title: Padding(
         padding: const EdgeInsets.all(25.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text(
-              "Hello Mosh,",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            SizedBox(height: 2),
-            Text(
-              "Welcome to Pedal app",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
+        // child: Column(
+        //   crossAxisAlignment: CrossAxisAlignment.start,
+        //   children: const [
+        //     Text(
+        //       "Hello Mosh,",
+        //       style: TextStyle(
+        //         color: Colors.white,
+        //         fontSize: 12,
+        //         fontWeight: FontWeight.w500,
+        //       ),
+        //     ),
+        //     SizedBox(height: 2),
+        //     Text(
+        //       "Welcome to Pedal app",
+        //       style: TextStyle(
+        //         color: Colors.white,
+        //         fontSize: 12,
+        //         fontWeight: FontWeight.w500,
+        //       ),
+        //     ),
+        //   ],
+        // ),
       ),
       actions: [
         Padding(

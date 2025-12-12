@@ -36,6 +36,14 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        title: const Text('Join League'),
+        // backgroundColor: AppColors.leagueBackgroundGrey,
+        backgroundColor: false ? AppColors.leagueBackgroundGrey : AppColors.buttonText,
+        elevation: 0,
+        centerTitle: true,
+        ),
       body: SafeArea(
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
@@ -45,16 +53,16 @@ class _JoinLeagueScreenState extends State<JoinLeagueScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 24),
-                  Text(
-                    'Join League',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.white,
-                    ),
-                  ),
                   const SizedBox(height: 8),
+                  // Text(
+                  //   'Join League',
+                  //   style: TextStyle(
+                  //     fontSize: 16,
+                  //     fontWeight: FontWeight.w600,
+                  //     color: AppColors.white,
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 8),
                   Text(
                     'Build your team and join the league—add players, set details, and get ready to compete!',
                     style: TextStyle(

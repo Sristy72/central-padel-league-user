@@ -224,6 +224,22 @@ class HomeController extends GetxController {
     await fetchHomeData();
   }
 
+  /// Refresh only username (lightweight update after profile change)
+  Future<void> refreshUserName() async {
+    try {
+      if (Get.isRegistered<GetUserProfileService>()) {
+        userProfileService = Get.find<GetUserProfileService>();
+        await userProfileService!.getUserProfile();
+        final newName = userProfileService!.userInfo?.name ?? '';
+        userName.value = newName;
+        _staticUserName = newName; // Update cache
+        print('✅ Username refreshed: $newName');
+      }
+    } catch (e) {
+      print('⚠️ Failed to refresh username: $e');
+    }
+  }
+
   /// Check if we should show loading state
   bool get shouldShowLoading {
     return isLoading.value || (!_staticHasLoadedData && fixtures.isEmpty);

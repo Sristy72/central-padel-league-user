@@ -37,37 +37,41 @@ class HomeScreen extends StatelessWidget {
               return Stack(
                 alignment: Alignment.center,
                 children: [
-                  // LEFT: greeting text
+                  // LEFT: greeting text with max width constraint
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Obx(() {
-                          final name = controller.userName.value.isNotEmpty
-                              ? controller.userName.value
-                              : 'Guest';
-                          return Text(
-                            'Hello $name,',
-                            style: const TextStyle(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: constraints.maxWidth * 0.45),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Obx(() {
+                            final name = controller.userName.value.isNotEmpty
+                                ? controller.userName.value
+                                : 'Guest';
+                            return Text(
+                              'Hello $name,',
+                              style: const TextStyle(
+                                color: AppColors.white,
+                                fontSize: 14,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            );
+                          }),
+                          const SizedBox(height: 4),
+                          const Text(
+                            "Welcome to Padel app",
+                            style: TextStyle(
                               color: AppColors.white,
-                              fontSize: 14,
+                              fontSize: 10,
                             ),
-                          );
-                        }),
-                        const SizedBox(height: 4),
-                        const Text(
-                          "Welcome to Padel app",
-                          style: TextStyle(
-                            color: AppColors.white,
-                            fontSize: 10,
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-
 
                   // CENTER: circular responsive logo
                   Align(

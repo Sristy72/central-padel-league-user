@@ -92,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen>
                       //crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         AppLogo(
-                          images: AppImages.appLogoLandscape,
+                          images: AppImages.homelogo,
                           height: 193,
                           width: 193,
                         ),

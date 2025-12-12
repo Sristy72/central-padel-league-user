@@ -27,7 +27,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'KarlFive',
       theme: AppTheme.dark,
-      // home: SplashScreen(),
       home: SplashScreen(),
       
     );
