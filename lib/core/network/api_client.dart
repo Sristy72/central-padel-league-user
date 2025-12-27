@@ -1,29 +1,30 @@
 // lib/core/network/api_client.dart
 
 import 'dart:async';
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutx_core/flutx_core.dart';
+import 'package:get/get.dart' hide FormData;
+import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
 
+import '/core/network/models/network_success.dart';
 import 'constants/api_constants.dart';
 import 'constants/key_constants.dart';
 import 'dio_error_handler.dart';
 import 'interceptor/custom_cache_interceptor.dart';
 import 'models/base_response.dart';
 import 'models/network_failure.dart';
+import 'services/auth_storage_service.dart';
 import 'services/connectivity_service.dart';
 import 'services/secure_store_services.dart';
-
-import '/core/network/models/network_success.dart';
-import 'package:get/get.dart' hide FormData;
-import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
 
 class ApiClient {
   late final Dio _dio;
   late final CustomCacheInterceptor _cacheInterceptor;
   late final ConnectivityService _connectivityService;
+  late final AuthStorageService _authStorageService;
 
   bool _isRefreshing = false;
   final List<Completer<void>> _pendingRequests = [];
@@ -53,6 +54,9 @@ class ApiClient {
         validateStatus: (status) => status != null && status < 500,
       ),
     );
+
+    // Initialize auth storage service
+    _authStorageService = AuthStorageService();
 
     // Assign connectivity service instance synchronously so checks can run
     // even before async initialization completes.
@@ -104,7 +108,7 @@ class ApiClient {
       );
 
       if (refreshToken == null) {
-        Get.offAll(() => LoginScreen());
+        await _handleForceLogout();
         return false;
       }
 
@@ -134,14 +138,40 @@ class ApiClient {
         return true;
       }
 
-      // Navigate to login screen - you'll need to implement this based on your navigation
-      // Go.freshStartTo(LoginScreen());
-      Get.offAll(() => LoginScreen());
+      // Navigate to login screen
+      await _handleForceLogout();
       return false;
     } catch (e) {
       if (kDebugMode) DPrint.log("Refresh token error: $e");
-      Get.offAll(() => LoginScreen());
+      await _handleForceLogout();
       return false;
+    }
+  }
+
+  /// Force logout when JWT expires or refresh fails
+  Future<void> _handleForceLogout() async {
+    try {
+      if (kDebugMode)
+        DPrint.log(
+          "🔐 Force logout: Clearing auth data and redirecting to login",
+        );
+
+      // Clear all stored auth data
+      await _authStorageService.clearAuthData();
+      await _secureStoreServices.deleteData(KeyConstants.accessToken);
+      await _secureStoreServices.deleteData(KeyConstants.refreshToken);
+      await _secureStoreServices.deleteData(KeyConstants.userId);
+
+      // Reset refresh flag
+      _isRefreshing = false;
+      _pendingRequests.clear();
+
+      // Navigate to login screen (use offAll to clear navigation stack)
+      Get.offAll(() => LoginScreen());
+    } catch (e) {
+      if (kDebugMode) DPrint.log("Error during force logout: $e");
+      // Still try to navigate even if clearing fails
+      Get.offAll(() => LoginScreen());
     }
   }
 
@@ -240,6 +270,13 @@ class ApiClient {
 
       final baseResponse = BaseResponse<T>.fromJson(response.data, fromJsonT);
       if (!baseResponse.success) {
+        // Check if it's a JWT expiration error
+        if (_isJwtExpired(baseResponse.message, response.statusCode)) {
+          if (kDebugMode) DPrint.log("🔐 JWT expired detected in response");
+          await _handleForceLogout();
+          return const Left(JwtExpiredFailure());
+        }
+
         return Left(
           ServerFailure(
             message: baseResponse.combinedErrorMessage,
@@ -279,7 +316,7 @@ class ApiClient {
               isFormData: isFormData,
             );
           } else {
-             Get.offAll(() => LoginScreen());
+            await _handleForceLogout();
           }
         } finally {
           _isRefreshing = false;
@@ -289,7 +326,14 @@ class ApiClient {
           _pendingRequests.clear();
         }
       }
-      return Left(_handleDioError(error));
+
+      // Check for JWT expiration in DioException
+      final errorFailure = _handleDioError(error);
+      if (errorFailure is JwtExpiredFailure) {
+        await _handleForceLogout();
+      }
+
+      return Left(errorFailure);
     } catch (e) {
       if (kDebugMode) DPrint.log("Unexpected error: $e");
       return const Left(
@@ -432,6 +476,19 @@ class ApiClient {
     return options;
   }
 
+  /// Check if error message indicates JWT expiration
+  bool _isJwtExpired(String message, int? statusCode) {
+    final lowercaseMessage = message.toLowerCase();
+
+    // Check for common JWT expiration messages
+    return lowercaseMessage.contains('jwt expired') ||
+        lowercaseMessage.contains('token expired') ||
+        lowercaseMessage.contains('session expired') ||
+        lowercaseMessage.contains('jwt malformed') ||
+        lowercaseMessage.contains('invalid token') ||
+        (statusCode == 500 && lowercaseMessage.contains('jwt'));
+  }
+
   /// Updated error handling to return NetworkFailure instead of ApiResult
   NetworkFailure _handleDioError(DioException error) {
     if (kDebugMode) DPrint.log("** Dio Error: ${error.message}");
@@ -441,11 +498,31 @@ class ApiClient {
       try {
         final responseData = error.response?.data;
         if (responseData is Map) {
+          // Check for JWT expiration first
+          if (responseData.containsKey('message')) {
+            final message = responseData['message'] as String;
+            if (_isJwtExpired(message, error.response?.statusCode)) {
+              if (kDebugMode)
+                DPrint.log("🔐 JWT expired detected in error response");
+              return const JwtExpiredFailure();
+            }
+          }
+
           if (responseData.containsKey('errorSources')) {
             final baseResponse = BaseResponse<void>.fromJson(
               responseData as Map<String, dynamic>,
               (json) {},
             );
+
+            // Check if error message indicates JWT expiration
+            if (_isJwtExpired(
+              baseResponse.combinedErrorMessage,
+              error.response?.statusCode,
+            )) {
+              if (kDebugMode)
+                DPrint.log("🔐 JWT expired detected in errorSources");
+              return const JwtExpiredFailure();
+            }
 
             // Check if it's validation errors
             if (baseResponse.errorSources != null &&
@@ -507,4 +584,3 @@ class ApiClient {
   /// Get connectivity service instance
   ConnectivityService get connectivityService => _connectivityService;
 }
-
