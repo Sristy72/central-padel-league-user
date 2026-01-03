@@ -49,8 +49,9 @@ class JoinLeagueController extends BaseController {
 
   final leagues = RxList<LeagueResponeModel>(); // Public leagues only
   final selectedPrivateLeague = Rxn<LeagueResponeModel>(); // Selected private league
+  final selectedPublicLeague = Rxn<LeagueResponeModel>(); // Selected public league via OTP
 
-  // Computed property for dropdown display - public leagues + selected private league
+  // Computed property for dropdown display - public leagues + selected private league + selected public league
   List<LeagueResponeModel> get displayLeagues {
     try {
       // Return empty list immediately if leagues is not initialized
@@ -80,10 +81,26 @@ class JoinLeagueController extends BaseController {
           // Check if it's not already in the list
           final isAlreadyInList = publicLeagues.any((league) => league.id == privateLeague.id);
           if (!isAlreadyInList) {
-            return List<LeagueResponeModel>.from(publicLeagues)..add(privateLeague);
+            publicLeagues.add(privateLeague);
           }
         } catch (e) {
           DPrint.log('Error adding private league: $e');
+        }
+      }
+
+      // Add selected public league via OTP to display if it exists and is valid
+      final otpPublicLeague = selectedPublicLeague.value;
+      if (otpPublicLeague != null && 
+          otpPublicLeague.id.isNotEmpty && 
+          otpPublicLeague.leagueName.isNotEmpty) {
+        try {
+          // Check if it's not already in the list
+          final isAlreadyInList = publicLeagues.any((league) => league.id == otpPublicLeague.id);
+          if (!isAlreadyInList) {
+            publicLeagues.add(otpPublicLeague);
+          }
+        } catch (e) {
+          DPrint.log('Error adding public league via OTP: $e');
         }
       }
       
@@ -394,8 +411,8 @@ class JoinLeagueController extends BaseController {
 
   // Method to update selected league and track its type - DUPLICATE REMOVED
 
-  // Method to show private league OTP dialog
-  Future<void> showPrivateLeagueOtpDialog() async {
+  // Method to show unified OTP dialog that works for both public and private leagues
+  Future<void> showUnifiedLeagueOtpDialog() async {
     otpController.clear(); // Clear previous OTP
     isVerifyingOtp.value = false; // Reset loading state
     
@@ -403,14 +420,14 @@ class JoinLeagueController extends BaseController {
       AlertDialog(
         backgroundColor: AppColors.textFieldBackground,
         title: const Text(
-          'Join Private League',
+          'Join League by OTP',
           style: TextStyle(color: AppColors.white, fontSize: 18),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              'Enter the OTP (League Code) provided by the league owner to join a private league.',
+              'Enter the OTP (League Code) provided by the league organizer or owner. The system will automatically detect whether it is a public or private league.',
               style: TextStyle(color: AppColors.white, fontSize: 14),
             ),
             const SizedBox(height: 16),
@@ -445,7 +462,7 @@ class JoinLeagueController extends BaseController {
           ),
           Obx(
             () => ElevatedButton(
-              onPressed: isVerifyingOtp.value ? null : () => _findAndJoinPrivateLeagueByOtp(),
+              onPressed: isVerifyingOtp.value ? null : () => _findAndJoinLeagueByOtpUnified(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryGreen,
                 disabledBackgroundColor: AppColors.primaryGreen.withOpacity(0.5),
@@ -467,8 +484,8 @@ class JoinLeagueController extends BaseController {
     );
   }
 
-  // Method to find and join private league by OTP
-  Future<void> _findAndJoinPrivateLeagueByOtp() async {
+  // Method to find and join league by OTP (auto-detects public or private)
+  Future<void> _findAndJoinLeagueByOtpUnified() async {
     if (otpController.text.trim().isEmpty) {
       setError("Please enter OTP/League Code");
       return;
@@ -486,41 +503,48 @@ class JoinLeagueController extends BaseController {
           isVerifyingOtp.value = false;
         },
         (success) {
-          // Find league with matching leagueCode (OTP)
-          final privateLeague = success.data.firstWhere(
-            (league) => league.leagueCode == otpController.text.trim() && 
-                        league.leagueType.toLowerCase() == 'private',
-            orElse: () => success.data.first, // This will cause an error if not found
+          // Check if we found a matching league (public or private)
+          final isFound = success.data.any(
+            (league) => league.leagueCode == otpController.text.trim()
           );
 
-          // Check if we found a matching private league
-          final foundMatch = success.data.any(
-            (league) => league.leagueCode == otpController.text.trim() && 
-                        league.leagueType.toLowerCase() == 'private'
-          );
+          if (isFound) {
+            // Find the matching league
+            final foundLeague = success.data.firstWhere(
+              (league) => league.leagueCode == otpController.text.trim(),
+            );
 
-          if (foundMatch) {
-            // Success! Store the private league but don't add to dropdown
-            selectedPrivateLeague.value = privateLeague;
-            selectedLeague.value = privateLeague.id;
-            selectedLeagueType.value = 'private';
+            // Auto-detect league type
+            final leagueType = foundLeague.leagueType.toLowerCase();
+            final isPublic = leagueType == 'public';
+
+            // Store the league based on its type
+            if (isPublic) {
+              selectedPublicLeague.value = foundLeague;
+            } else {
+              selectedPrivateLeague.value = foundLeague;
+            }
+            
+            selectedLeague.value = foundLeague.id;
+            selectedLeagueType.value = leagueType;
+            
             Get.back(result: true);
             clearError();
             isVerifyingOtp.value = false;
             
-            // Show success message
+            // Show success message with league type detected
             Get.snackbar(
               'Success',
-              'Private league "${privateLeague.leagueName}" found! You can now complete your application.',
+              '${isPublic ? 'Public' : 'Private'} league "${foundLeague.leagueName}" found! You can now complete your application.',
               backgroundColor: AppColors.primaryGreen.withOpacity(0.8),
               colorText: AppColors.white,
               snackPosition: SnackPosition.BOTTOM,
               duration: const Duration(seconds: 3),
             );
             
-            DPrint.log("✅ Private league found and selected: ${privateLeague.leagueName}");
+            DPrint.log("✅ League found and selected: ${foundLeague.leagueName} (${isPublic ? 'Public' : 'Private'})");
           } else {
-            setError("Invalid OTP/League Code. Please check with the league owner.");
+            setError("Invalid OTP/League Code. Please check with the league organizer or owner.");
             isVerifyingOtp.value = false;
           }
         },
