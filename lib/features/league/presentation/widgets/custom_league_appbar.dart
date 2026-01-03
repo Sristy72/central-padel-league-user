@@ -27,7 +27,7 @@ class CustomLeagueAppbar extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    final List<String> tabs = ['Standing', 'Matches', 'Teams', 'Fixtures'];
+    final List<String> tabs = ['Table', 'Matches', 'Teams', 'Fixtures'];
 
     return AppBar(
       elevation: 0.0,
@@ -204,7 +204,7 @@ class CustomLeagueAppbar extends StatelessWidget
                       child: Text(
                         leagueName,
                         overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
+                        maxLines: 1,
                         style: const TextStyle(
                           color: AppColors.white,
                           fontSize: 24,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../controller/home_controller.dart';
 import '../screens/home_standings_screen.dart';
 
@@ -34,7 +33,7 @@ class QuickStatsWidget extends StatelessWidget {
               child: Row(
                 children: const [
                   Expanded(
-                    flex: 4,
+                    flex: 3,
                     child: Text(
                       "Teams",
                       style: TextStyle(
@@ -46,6 +45,7 @@ class QuickStatsWidget extends StatelessWidget {
                   Expanded(
                     child: Text(
                       "GP",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -55,6 +55,7 @@ class QuickStatsWidget extends StatelessWidget {
                   Expanded(
                     child: Text(
                       "W",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -64,6 +65,7 @@ class QuickStatsWidget extends StatelessWidget {
                   Expanded(
                     child: Text(
                       "L",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -73,21 +75,22 @@ class QuickStatsWidget extends StatelessWidget {
                   Expanded(
                     child: Text(
                       "Pts",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: Text(
-                      "+/-",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                  // Expanded(
+                  //   child: Text(
+                  //     "+/-",
+                  //     style: TextStyle(
+                  //       color: Colors.white,
+                  //       fontWeight: FontWeight.bold,
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -110,7 +113,7 @@ class QuickStatsWidget extends StatelessWidget {
                     //* <--- Rank + Team Members + Avatar --->
                     Expanded(
                       // reduce flex so other columns get slightly more room on narrow screens
-                      flex: MediaQuery.of(context).size.width < 350 ? 3 : 4,
+                      flex: MediaQuery.of(context).size.width < 350 ? 2 : 3,
                       child: Row(
                         children: [
                           Text(
@@ -216,7 +219,7 @@ class QuickStatsWidget extends StatelessWidget {
                                                         context,
                                                       ).size.width <
                                                       350
-                                                  ? 10
+                                                  ? 12
                                                   : 14,
                                             ),
                                             overflow: TextOverflow.ellipsis,
@@ -252,7 +255,7 @@ class QuickStatsWidget extends StatelessWidget {
                                     width:
                                         MediaQuery.of(context).size.width < 350
                                         ? 70
-                                        : 82,
+                                        : 80,
                                     child: Text(
                                       stat["name"] ?? "",
                                       style: const TextStyle(
@@ -271,50 +274,62 @@ class QuickStatsWidget extends StatelessWidget {
                     ),
                     // numeric columns: wrap text in FittedBox to avoid overflow and scale down if needed
                     Expanded(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          "${stat["GP"]}",
-                          style: const TextStyle(color: Colors.white),
+                      child: Center(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            "${stat["GP"]}",
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
                     Expanded(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          "${stat["W"]}",
-                          style: const TextStyle(color: Colors.white),
+                      child: Center(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            "${stat["W"]}",
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
                     Expanded(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          "${stat["L"]}",
-                          style: const TextStyle(color: Colors.white),
+                      child: Center(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            "${stat["L"]}",
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
                     Expanded(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          "${stat["Pts"]}",
-                          style: const TextStyle(color: Colors.white),
+                      child: Center(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            "${stat["Pts"]}",
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          "${stat["+/-"]}",
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
+                    // Expanded(
+                    //   child: FittedBox(
+                    //     fit: BoxFit.scaleDown,
+                    //     child: Text(
+                    //       "${stat["+/-"]}",
+                    //       style: const TextStyle(color: Colors.white),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               );
