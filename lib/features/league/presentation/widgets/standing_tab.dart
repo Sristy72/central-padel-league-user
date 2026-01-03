@@ -85,15 +85,6 @@ class StandingTab extends StatelessWidget {
               ),
               DataColumn(
                 label: Text(
-                  '+/-',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              DataColumn(
-                label: Text(
                   'PTS',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -130,7 +121,6 @@ class StandingTab extends StatelessWidget {
                   DataCell(Text(standing.won.toString())),
                   DataCell(Text(standing.drawn.toString())),
                   DataCell(Text(standing.lost.toString())),
-                  DataCell(Text(standing.goalDifference.toString())),
                   DataCell(Text(standing.points.toString())),
                 ],
               );
