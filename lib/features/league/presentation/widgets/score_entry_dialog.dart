@@ -25,6 +25,7 @@ class ScoreEntryDialog extends StatefulWidget {
 class _ScoreEntryDialogState extends State<ScoreEntryDialog> {
   late List<TextEditingController> teamOneControllers;
   late List<TextEditingController> teamTwoControllers;
+  bool isMatchComplete = false;
 
   @override
   void initState() {
@@ -43,6 +44,9 @@ class _ScoreEntryDialogState extends State<ScoreEntryDialog> {
           : '';
       return TextEditingController(text: initialValue);
     });
+    
+    // Check if match is already completed
+    isMatchComplete = widget.match.matchStatus.toLowerCase() == 'completed';
   }
 
   @override
@@ -126,6 +130,40 @@ class _ScoreEntryDialogState extends State<ScoreEntryDialog> {
                     ),
                   );
                 }),
+
+                const SizedBox(height: 24),
+
+                // Match Complete Checkbox
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[800]?.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.grey[700]!,
+                      width: 1,
+                    ),
+                  ),
+                  child: CheckboxListTile(
+                    value: isMatchComplete,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        isMatchComplete = value ?? false;
+                      });
+                    },
+                    title: const Text(
+                      'Is Match Complete?',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    checkColor: Colors.white,
+                    activeColor: const Color(0xFF2AAF08),
+                    side: const BorderSide(color: Colors.grey, width: 1.5),
+                    controlAffinity: ListTileControlAffinity.leading,
+                  ),
+                ),
 
                 const SizedBox(height: 24),
 
@@ -356,7 +394,9 @@ class _ScoreEntryDialogState extends State<ScoreEntryDialog> {
             'teamOneGames': s.teamOneGames,
             'teamTwoGames': s.teamTwoGames,
           }).toList(),
-        }
+        },
+        'matchStatus': isMatchComplete ? 'completed' : 'live',
+        'matchDateTime': widget.match.matchDateTime.toIso8601String(),
       };
 
       // Call API to update match score

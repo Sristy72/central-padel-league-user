@@ -15,4 +15,8 @@ abstract class LeagueRepository {
     required String matchId,
     required Map<String, dynamic> scoreData,
   });
+  NetworkResult<Match> updateMatchDateTime({
+    required String matchId,
+    required String matchDateTime,
+  });
 }

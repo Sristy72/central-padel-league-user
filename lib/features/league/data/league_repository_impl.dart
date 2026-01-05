@@ -114,4 +114,22 @@ class LeagueRepositoryImpl implements LeagueRepository {
       },
     );
   }
+
+  @override
+  NetworkResult<Match> updateMatchDateTime({
+    required String matchId,
+    required String matchDateTime,
+  }) {
+    print('🔵 Repository: Updating match date/time for matchId=$matchId');
+    print('🔵 Repository: New date = $matchDateTime');
+    
+    return _apiClient.patch<Match>(
+      '${ApiConstants.baseUrl}/match/$matchId',
+      data: {'matchDateTime': matchDateTime},
+      fromJsonT: (json) {
+        print('🟢 Repository: Match date/time updated successfully');
+        return Match.fromJson(json as Map<String, dynamic>);
+      },
+    );
+  }
 }

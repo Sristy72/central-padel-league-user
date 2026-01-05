@@ -43,13 +43,13 @@ class CreateLeagueDateLocationFields extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 18),
-            Expanded(
-              child: _buildTextField(
-                "Total Game Weeks",
-                controller: totalGameWeeksController,
-              ),
-            ),
+            // const SizedBox(width: 18),
+            // Expanded(
+            //   child: _buildTextField(
+            //     "Total Game Weeks",
+            //     controller: totalGameWeeksController,
+            //   ),
+            // ),
           ],
         ),
         const SizedBox(height: 8),

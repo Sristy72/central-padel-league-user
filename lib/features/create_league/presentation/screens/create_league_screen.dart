@@ -1,8 +1,10 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../league/presentation/screens/leagues_screen.dart';
 import '../controller/create_league_controller.dart';
 import '../widget/create_league_appbar_widget.dart';
 import '../widget/create_league_date_location.dart';
@@ -11,7 +13,6 @@ import '../widget/create_league_image_upload.dart';
 import '../widget/create_league_rule_selection.dart';
 import '../widget/create_league_selection_button.dart';
 import '../widget/private_league_validation.dart';
-import '../../../league/presentation/screens/leagues_screen.dart';
 
 class CreateLeagueScreen extends StatefulWidget {
   const CreateLeagueScreen({super.key});
@@ -262,6 +263,7 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
       matchFormat: _selectedMatchFormat,
       tiebreakOption: _selectedTiebreak,
       allowSubstitutes: _allowSubstitutes,
+      matchPlay: _selectedMatchPlay.toLowerCase(),
       entryFee: _entryFeeController.text.trim(),
     );
 

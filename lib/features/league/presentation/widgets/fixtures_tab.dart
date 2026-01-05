@@ -6,12 +6,20 @@ import 'package:karlfive/core/theme/app_colors.dart';
 import '../../../../core/network/services/auth_storage_service.dart';
 import '../../../chat/data/chat_repository.dart';
 import '../../../chat/presentation/screens/chat_message_screen.dart';
+import '../../data/league_repository.dart';
 import '../../models/match_model.dart';
 
 class FixturesTab extends StatefulWidget {
   final List<Match> matches;
+  final LeagueRepository? repository;
+  final VoidCallback? onDataUpdated;
 
-  const FixturesTab({super.key, required this.matches});
+  const FixturesTab({
+    super.key, 
+    required this.matches,
+    this.repository,
+    this.onDataUpdated,
+  });
 
   @override
   State<FixturesTab> createState() => _FixturesTabState();
@@ -103,6 +111,117 @@ class _FixturesTabState extends State<FixturesTab> {
       }
     } finally {
       if (mounted) setState(() => _isCreatingChat = false);
+    }
+  }
+
+  Future<void> _showDatePickerDialog(Match match) async {
+    final now = DateTime.now();
+    final matchDate = match.matchDateTime;
+    
+    // Use the earlier date between now and matchDateTime as initialDate
+    // This ensures initialDate is always within the valid range
+    final initialDate = matchDate.isBefore(now) ? now : matchDate;
+    
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(2020), // Allow selecting past dates for rescheduling
+      lastDate: DateTime.now().add(const Duration(days: 365 * 2)), // Allow up to 2 years ahead
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.primaryGreen,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
+      helpText: 'Select date you want to play on',
+    );
+
+    if (pickedDate != null) {
+      await _handleUpdateMatchDate(match, pickedDate);
+    }
+  }
+
+  Future<void> _handleUpdateMatchDate(Match match, DateTime newDate) async {
+    if (widget.repository == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Repository not available'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      // Format date as ISO string
+      final formattedDate = newDate.toIso8601String();
+
+      // Call API to update match date
+      final result = await widget.repository!.updateMatchDateTime(
+        matchId: match.id,
+        matchDateTime: formattedDate,
+      );
+
+      // Close loading dialog
+      if (mounted) Navigator.of(context).pop();
+
+      result.fold(
+        (failure) {
+          // Show error
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Failed to update match date: ${failure.message}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        (updatedMatch) {
+          // Show success message
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Match date updated successfully'),
+                backgroundColor: AppColors.primaryGreen,
+              ),
+            );
+
+            // Trigger refresh if callback provided
+            widget.onDataUpdated?.call();
+          }
+        },
+      );
+    } catch (e) {
+      // Close loading dialog if still open
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -240,6 +359,15 @@ class _FixturesTabState extends State<FixturesTab> {
                                     color: AppColors.notificationColor,
                                   ),
                                 ),
+                                if (widget.repository != null)
+                                  IconButton(
+                                    onPressed: () => _showDatePickerDialog(m),
+                                    icon: const Icon(
+                                      Icons.edit_calendar,
+                                      color: AppColors.primaryGreen,
+                                    ),
+                                    tooltip: 'Edit match date',
+                                  ),
                                 Text(
                                   m.formattedScore(),
                                   style: const TextStyle(color: Colors.white70),

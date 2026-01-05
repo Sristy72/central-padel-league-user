@@ -204,7 +204,7 @@ class _MatchCard extends StatelessWidget {
                   errorBuilder: (_, __, ___) =>
                       const Icon(Icons.broken_image, color: Colors.white),
                 )
-              : Image.asset(logoPath, width: 40, height: 40),
+              : null,
         ),
         const SizedBox(height: 8),
         Text(name, style: const TextStyle(color: Colors.white, fontSize: 14)),

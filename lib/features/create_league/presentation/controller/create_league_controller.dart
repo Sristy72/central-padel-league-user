@@ -34,6 +34,7 @@ class CreateLeagueController extends GetxController {
     required String matchFormat,
     required String tiebreakOption,
     required bool allowSubstitutes,
+    required String matchPlay,
     String? entryFee,
   }) async {
     try {
@@ -51,6 +52,7 @@ class CreateLeagueController extends GetxController {
         'matchFormat': matchFormat,
         'tiebreakOption': tiebreakOption,
         'allowSubstitutes': allowSubstitutes,
+        'matchPlay': matchPlay,
         if (entryFee?.isNotEmpty == true) 'entryFee': entryFee,
       };
 
