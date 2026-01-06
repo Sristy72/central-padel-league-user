@@ -61,8 +61,8 @@ class LeagueRepositoryImpl implements LeagueRepository {
 
   @override
   NetworkResult<List<Match>> getMatchesByLeague(String leagueId) {
-    // full endpoint: {baseUrl}/match/all-match
-    final endpoint = '${ApiConstants.baseUrl}/match/all-match';
+    // full endpoint: {baseUrl}/match/all-match?league={leagueId}&limit=1000
+    final endpoint = '${ApiConstants.baseUrl}/match/all-match?league=$leagueId&limit=1000';
     return _apiClient.get<List<Match>>(
       endpoint,
       fromJsonT: (json) {
