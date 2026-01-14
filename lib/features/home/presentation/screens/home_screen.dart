@@ -62,7 +62,7 @@ class HomeScreen extends StatelessWidget {
                           }),
                           const SizedBox(height: 4),
                           const Text(
-                            "Welcome to Padel app",
+                            "Welcome to Central Padel League app",
                             style: TextStyle(
                               color: AppColors.white,
                               fontSize: 10,
