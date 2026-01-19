@@ -61,10 +61,10 @@ class CreateLeagueRulesSection extends StatelessWidget {
                 text: "6.To be agreed before the match if the scores are to be recorded \n\t\t\t\t\tonto the Playt*mic app.\n\n",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-               TextSpan(
-                text: "\u2605 Once the league has finished have an option to delete league.",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              //  TextSpan(
+              //   text: "\u2605 Once the league has finished have an option to delete league.",
+              //   style: TextStyle(fontWeight: FontWeight.bold),
+              // ),
             ],
           ),
         ),
