@@ -146,11 +146,11 @@ class _MatchCard extends StatelessWidget {
               'Date',
               '${DateFormat.yMMMd().format(match.matchDateTime)} - ${DateFormat.Hm().format(match.matchDateTime)}',
             ),
-            _buildDetailRow(
-              "assets/images/group_icon.png",
-              'Arena',
-              match.venueName,
-            ),
+            // _buildDetailRow(
+            //   "assets/images/group_icon.png",
+            //   'Arena',
+            //   match.venueName,
+            // ),
             _buildDetailRow(
               "assets/images/score_icon.png",
               'Score',
