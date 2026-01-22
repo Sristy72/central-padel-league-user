@@ -3,15 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutx_core/core/validation/validators.dart';
 import 'package:get/get.dart';
 import 'package:karlfive/core/common/widgets/app_scaffold.dart';
-import 'package:karlfive/core/common/widgets/or_divider_with_circle.dart';
 import 'package:karlfive/core/theme/app_buttoms.dart';
 import 'package:karlfive/core/theme/app_colors.dart';
 import 'package:karlfive/core/theme/input_decoration_extensions.dart';
 import 'package:karlfive/features/auth/presentation/controller/auth_controller.dart';
 import 'package:karlfive/features/auth/presentation/controller/term_of_services_and_privacy_policy_controller.dart';
 import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
-import '../../../../core/common/constants/app_images.dart';
-import '../widgets/different_login_approach.dart';
+
 import '../../../../core/common/widgets/form_error_message.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -203,38 +201,38 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
 
                       SizedBox(height: 16),
-                      Text(
-                        'Phone Number',
-                        style: TextStyle(
-                          color: AppColors.textFieldTitle,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      TextFormField(
-                        controller: _phoneNumberTEController,
-                        focusNode: _phoneNumberFocus,
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.next,
-                        style: TextStyle(fontSize: 16, color: AppColors.white),
-                        decoration: context.primaryInputDecoration.copyWith(
-                          hintText: "Enter your Phone Number",
-                          hintStyle: TextStyle(
-                            color: AppColors.prefixIconColor,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          prefixIcon: Icon(
-                            Icons.phone_outlined,
-                            color: AppColors.prefixIconColor,
-                          ),
-                        ),
-                        validator: Validators.phone,
-                        autofillHints: const [AutofillHints.email],
-                      ),
+                      // Text(
+                      //   'Phone Number',
+                      //   style: TextStyle(
+                      //     color: AppColors.textFieldTitle,
+                      //     fontSize: 14,
+                      //     fontWeight: FontWeight.w500,
+                      //   ),
+                      // ),
+                      // SizedBox(height: 8),
+                      // TextFormField(
+                      //   controller: _phoneNumberTEController,
+                      //   focusNode: _phoneNumberFocus,
+                      //   keyboardType: TextInputType.emailAddress,
+                      //   textInputAction: TextInputAction.next,
+                      //   style: TextStyle(fontSize: 16, color: AppColors.white),
+                      //   decoration: context.primaryInputDecoration.copyWith(
+                      //     hintText: "Enter your Phone Number",
+                      //     hintStyle: TextStyle(
+                      //       color: AppColors.prefixIconColor,
+                      //       fontSize: 14,
+                      //       fontWeight: FontWeight.w400,
+                      //     ),
+                      //     prefixIcon: Icon(
+                      //       Icons.phone_outlined,
+                      //       color: AppColors.prefixIconColor,
+                      //     ),
+                      //   ),
+                      //   validator: Validators.phone,
+                      //   autofillHints: const [AutofillHints.email],
+                      // ),
 
-                      SizedBox(height: 16),
+                      // SizedBox(height: 16),
                       Text(
                         'Password',
                         style: TextStyle(
@@ -449,13 +447,13 @@ class _SignupScreenState extends State<SignupScreen> {
 
                       SizedBox(height: 16),
 
-                      OrDividerWithCircle(),
+                      // OrDividerWithCircle(),
 
                       SizedBox(height: 16),
-                      DifferentLoginApproach(
-                        text: 'Continue With Google',
-                        image: AppImages.googleLogo,
-                      ),
+                      // DifferentLoginApproach(
+                      //   text: 'Continue With Google',
+                      //   image: AppImages.googleLogo,
+                      // ),
                     ],
                   ),
                 ),

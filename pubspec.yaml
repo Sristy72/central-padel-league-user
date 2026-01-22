@@ -4,7 +4,8 @@ description: "A new Flutter project."
 publish_to: 'none'
 
 
-version: 1.0.0+1
+version: 1.0.0+1 #(android)
+# version: 1.0.0+1 #(iOS)
 
 environment:
   sdk: ^3.9.2
@@ -47,6 +48,7 @@ dependencies:
   equatable: ^2.0.7
   dartz: ^0.10.1
   file_picker: ^10.3.3
+  rename_app: ^1.6.5
 
 
 dev_dependencies:
