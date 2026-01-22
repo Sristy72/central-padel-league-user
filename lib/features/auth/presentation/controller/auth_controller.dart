@@ -13,14 +13,13 @@ import 'package:karlfive/features/auth/data/models/set_new_password_request_mode
 import 'package:karlfive/features/auth/domain/repo/auth_repo.dart';
 import 'package:karlfive/features/auth/presentation/screens/login_screen.dart';
 import 'package:karlfive/features/auth/presentation/screens/otp_verification_screen.dart';
-import 'package:karlfive/features/auth/presentation/screens/otp_verification_to_complete_register.dart';
 import 'package:karlfive/features/auth/presentation/screens/set_new_password_screen.dart';
+import 'package:karlfive/features/home/controller/home_controller.dart';
 import 'package:karlfive/features/join_league/presentation/screens/form_screen/join_league_screen.dart';
 
 import '../../../../core/network/services/auth_storage_service.dart';
 import '../../../../core/network/services/secure_store_services.dart';
 import '../../../home/presentation/screens/home_screen.dart';
-import 'package:karlfive/features/home/controller/home_controller.dart';
 import 'remember_me_controller.dart';
 
 class AuthController extends BaseController {
@@ -85,6 +84,14 @@ class AuthController extends BaseController {
             secureStore.storeData('email', email);
             secureStore.storeData('password', password);
           }
+          // Show success snackbar before navigation
+          Get.snackbar(
+            "Success",
+            "Login successful! Welcome back.",
+            snackPosition: SnackPosition.BOTTOM,
+            duration: Duration(milliseconds: 1500),
+          );
+          // Navigate immediately - snackbar will show during transition
           Get.to(() => HomeScreen());
         } else {
           setError("You are not authorized to login as Manager");
@@ -118,11 +125,21 @@ class AuthController extends BaseController {
         DPrint.log("Register success result : ${fail.message}");
         setLoading(false);
       },
-      (success) {
+      (success) async {
         DPrint.log("Register success result : ${success.data.id}");
+        // Show registration success snackbar
+        Get.snackbar(
+          "Registration Successful",
+          "Your account has been created. Logging you in...",
+          snackPosition: SnackPosition.BOTTOM,
+          duration: Duration(milliseconds: 1500),
+        );
+        // Reduced delay for faster experience
+        await Future.delayed(Duration(milliseconds: 400));
         // Get.to(OtpVerificationToCompleteRegister(email: email));
-        login(null, email: email, password: password);
-        setLoading(false);
+        // Don't call setLoading(false) here - let login() handle it
+        // This keeps the loading indicator active during auto-login
+        await login(null, email: email, password: password);
       },
     );
   }
@@ -269,13 +286,18 @@ class AuthController extends BaseController {
   Future<bool> checkAuthStatus() async {
     final accessToken = await _authStorageService.getAccessToken();
     final refreshToken = await _authStorageService.getRefreshToken();
-    return accessToken != null && accessToken.isNotEmpty && refreshToken != null && refreshToken.isNotEmpty;
+    return accessToken != null &&
+        accessToken.isNotEmpty &&
+        refreshToken != null &&
+        refreshToken.isNotEmpty;
   }
 
   Future<void> logout() async {
     await _authStorageService.clearAuthData();
     final secureStore = SecureStoreServices();
-    await secureStore.deleteData('previewConfirmed'); // or storeData('previewConfirmed', 'false');
+    await secureStore.deleteData(
+      'previewConfirmed',
+    ); // or storeData('previewConfirmed', 'false');
     // await secureStore.deleteData('email');
     // await secureStore.deleteData('password');
 
