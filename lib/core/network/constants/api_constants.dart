@@ -1,6 +1,6 @@
 class ApiConstants {
   /// [Base Configuration]
-  static const String baseDomain = 'http://72.61.161.196';
+  static const String baseDomain = 'https://api.centralpadelleague.com';
   // static const String baseDomain = 'http://10.10.5.67:5002';
   static const String baseUrl = '$baseDomain/api/v1';
 
@@ -59,6 +59,8 @@ class UserEndpoints {
   final String updateProfile = '$_base/update-profile';
   final String getUserProfile = '$_base/profile';
 
+  String deleteAccount(String userId) => '$_base/$userId';
+
   // final String create = '$_base/create';
 }
 
@@ -101,7 +103,7 @@ class ChatEndpoints {
   final String createChat = '$_base/create-chat';
   final String getAllChats = '$_base/get-chats';
   final String sendMessage = '$_base/send-message';
-  
+
   String getSingleChat(String chatId) => '$_base/get-single-chat/$chatId';
 }
 
