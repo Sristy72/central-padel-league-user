@@ -4,4 +4,5 @@ import 'package:karlfive/features/EntireScreen/data/model/user_info_response_mod
 
 abstract class UserInfoRepo {
   NetworkResult<UserInfoResponseModel> updateprofile(FormData formData);
+  NetworkResult<Map<String, dynamic>> deleteAccount(String userId);
 }
