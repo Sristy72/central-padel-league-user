@@ -62,36 +62,37 @@ class CustomLeagueAppbar extends StatelessWidget
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    IconButton(
-                      icon: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                          color: AppColors.white.withValues(alpha: 0.3),
-                        ),
-                        child: const Image(
-                          height: 22,
-                          width: 22,
-                          image: AssetImage("assets/images/cross_icon.png"),
-                          color: AppColors.white,
-                        ),
-                      ),
-                      onPressed: () {
-                        Get.back();
-                      },
-                    ),
+                    // IconButton(
+                    //   icon: Container(
+                    //     padding: const EdgeInsets.all(4),
+                    //     decoration: BoxDecoration(
+                    //       borderRadius: BorderRadius.circular(4),
+                    //       color: AppColors.white.withValues(alpha: 0.3),
+                    //     ),
+                    //     child: const Image(
+                    //       height: 22,
+                    //       width: 22,
+                    //       image: AssetImage("assets/images/cross_icon.png"),
+                    //       color: AppColors.white,
+                    //     ),
+                    //   ),
+                    //   onPressed: () {
+                    //     Get.back();
+                    //   },
+                    // ),
                     //! Favorite icon
+                    Spacer(), // Placeholder for alignment
                     Row(
                       children: [
                         // Show favorite icon for all leagues (public, private, me)
-                        IconButton(
-                          icon: const Image(
-                            height: 22,
-                            width: 22,
-                            image: AssetImage("assets/images/star_icon_off.png"),
-                          ),
-                          onPressed: () {}, // TODO: Add favorite logic here
-                        ),
+                        // IconButton(
+                        //   icon: const Image(
+                        //     height: 22,
+                        //     width: 22,
+                        //     image: AssetImage("assets/images/star_icon_off.png"),
+                        //   ),
+                        //   onPressed: () {}, // TODO: Add favorite logic here
+                        // ),
                         // Only show share icon for private or "me" leagues
                         if (league != null && (league!.leagueType == 'private' || league!.leagueType == 'me'))
                           IconButton(

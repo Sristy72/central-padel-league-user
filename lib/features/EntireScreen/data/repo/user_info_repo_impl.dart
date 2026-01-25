@@ -19,4 +19,12 @@ class UserInfoRepoImpl implements UserInfoRepo {
       isFormData: true,
     );
   }
+
+  @override
+  NetworkResult<Map<String, dynamic>> deleteAccount(String userId) {
+    return _apiClient.delete<Map<String, dynamic>>(
+      ApiConstants.user.deleteAccount(userId),
+      fromJsonT: (json) => json as Map<String, dynamic>,
+    );
+  }
 }
