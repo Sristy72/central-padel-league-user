@@ -7,6 +7,7 @@ import 'package:karlfive/features/team_members_profile/presentation/screens/prof
 import '../../../../core/common/widgets/app_bottom_navbar.dart';
 import '../../../../core/common/widgets/shimmer_widgets.dart';
 import '../../../../core/network/api_client.dart';
+import '../../../../core/network/services/auth_storage_service.dart';
 import '../../../EntireScreen/data/repo/user_info_repo_impl.dart';
 import '../../../EntireScreen/domain/repo/user_info_repo.dart';
 import '../../../auth/presentation/controller/auth_controller.dart';
@@ -25,13 +26,10 @@ import '../controllers/profile_controller.dart';
 import '../controllers/report_controller.dart';
 import 'edit_profile_info.dart';
 
-
-
 class ProfileInfoScreen extends StatelessWidget {
   final TeamMemberModel member;
 
   const ProfileInfoScreen({super.key, required this.member});
-
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +48,10 @@ class ProfileInfoScreen extends StatelessWidget {
     // If profile has a linked team id, fetch team data so TeamDetailsScreen is ready.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final teamId = controller.profile.value?.clubAffiliation;
-      if (teamId != null && teamId.isNotEmpty && teamCtrl.team.value == null && !teamCtrl.isLoading.value) {
+      if (teamId != null &&
+          teamId.isNotEmpty &&
+          teamCtrl.team.value == null &&
+          !teamCtrl.isLoading.value) {
         teamCtrl.fetchTeam(teamId);
       }
     });
@@ -58,7 +59,6 @@ class ProfileInfoScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-
         backgroundColor: Colors.black,
         elevation: 0,
         title: const Text(
@@ -76,7 +76,7 @@ class ProfileInfoScreen extends StatelessWidget {
             onPressed: () {
               // Get actual profile data from controller
               final p = controller.profile.value;
-              
+
               // Parse name into first and last name
               String firstName = '';
               String lastName = '';
@@ -90,7 +90,7 @@ class ProfileInfoScreen extends StatelessWidget {
                 firstName = member.firstName;
                 lastName = member.lastName;
               }
-              
+
               // Get birthday from profile - convert from ISO datetime to display format (DD/MM/YYYY)
               String birthday = '';
               if (p?.birthday?.isNotEmpty == true) {
@@ -109,7 +109,7 @@ class ProfileInfoScreen extends StatelessWidget {
               } else {
                 birthday = member.birthday;
               }
-              
+
               final editModel = EditProfileModel(
                 firstName: firstName,
                 lastName: lastName,
@@ -126,12 +126,18 @@ class ProfileInfoScreen extends StatelessWidget {
                 Get.put<UserInfoRepo>(UserInfoRepoImpl(apiClient: apiClient));
               }
               if (!Get.isRegistered<EditProfileController>()) {
-                Get.put(EditProfileController(Get.find<UserInfoRepo>()));
+                Get.put(
+                  EditProfileController(
+                    Get.find<UserInfoRepo>(),
+                    Get.find<AuthStorageService>(),
+                  ),
+                );
               }
-              Get.to(() => EditProfileInfoScreen(member: editModel))?.then((_) async {
+              Get.to(() => EditProfileInfoScreen(member: editModel))?.then((
+                _,
+              ) async {
                 await controller.fetchProfile();
               });
-
             },
             icon: Image.asset(
               'assets/icons/profile_Edit.png',
@@ -162,15 +168,17 @@ class ProfileInfoScreen extends StatelessWidget {
                   radius: 50,
                   backgroundImage: displayImage.isNotEmpty
                       ? (displayImage.startsWith('http')
-                          ? NetworkImage(displayImage)
-                          : AssetImage(displayImage) as ImageProvider)
+                            ? NetworkImage(displayImage)
+                            : AssetImage(displayImage) as ImageProvider)
                       : const AssetImage(AppImages.avatarImage),
                 );
               }),
               const SizedBox(height: 14),
               Obx(() {
                 final p = controller.profile.value;
-                final displayName = (p?.name?.isNotEmpty == true) ? p!.name! : member.name;
+                final displayName = (p?.name?.isNotEmpty == true)
+                    ? p!.name!
+                    : member.name;
                 return Text(
                   displayName,
                   style: const TextStyle(
@@ -181,338 +189,343 @@ class ProfileInfoScreen extends StatelessWidget {
                 );
               }),
 
-            // const SizedBox(height: 19),
-            // // My Team
-            // Align(
-            //   alignment: Alignment.centerRight,
-            //   child: ElevatedButton(
-            //     style: ElevatedButton.styleFrom(
-            //       backgroundColor: Color(0xFFD9D9D9),
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(8),
-            //       ),
-            //     ),
-            //     onPressed: () {
-            //       final teamId = controller.profile.value?.clubAffiliation;
-            //       if (teamId != null && teamId.isNotEmpty) {
-            //         Get.to(() => TeamDetailsScreen(teamId: teamId));
-            //       } else {
-            //         Get.snackbar('No team', 'No team associated with this account');
-            //       }
-            //     },
-            //     child: const Text(
-            //       style: TextStyle(
-            //         fontSize: 16,
-            //         fontWeight: FontWeight.w400,
-            //         color: Color(0xFF060606),
-            //       ),
-            //       "My team",
-            //     ),
-            //   ),
-            // ),
+              // const SizedBox(height: 19),
+              // // My Team
+              // Align(
+              //   alignment: Alignment.centerRight,
+              //   child: ElevatedButton(
+              //     style: ElevatedButton.styleFrom(
+              //       backgroundColor: Color(0xFFD9D9D9),
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(8),
+              //       ),
+              //     ),
+              //     onPressed: () {
+              //       final teamId = controller.profile.value?.clubAffiliation;
+              //       if (teamId != null && teamId.isNotEmpty) {
+              //         Get.to(() => TeamDetailsScreen(teamId: teamId));
+              //       } else {
+              //         Get.snackbar('No team', 'No team associated with this account');
+              //       }
+              //     },
+              //     child: const Text(
+              //       style: TextStyle(
+              //         fontSize: 16,
+              //         fontWeight: FontWeight.w400,
+              //         color: Color(0xFF060606),
+              //       ),
+              //       "My team",
+              //     ),
+              //   ),
+              // ),
 
-            // const SizedBox(height: 36),
-            // // Matches and Level
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: [
-            //     _buildStatBox("${member.matches}", "Matches"),
-            //     const SizedBox(width: 21),
-            //     _buildStatBox("${member.level}", "Level"),
-            //   ],
-            // ),
-
-            const SizedBox(height: 33),
-            Card(
-              elevation: 4,
-              shadowColor: Colors.grey,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey[900],
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(22.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.start,
-                      //   children: [
-                      //     Image.asset(
-                      //       'assets/icons/profile_phone.png',
-                      //       width: 11,
-                      //       height: 11,
-                      //     ),
-                      //     const SizedBox(width: 14),
-                      //     // const Text(
-                      //     //   "Phone number",
-                      //     //   style: TextStyle(
-                      //     //     color: Colors.white,
-                      //     //     fontWeight: FontWeight.w400,
-                      //     //     fontSize: 16,
-                      //     //   ),
-                      //     // ),
-                      //     // const Spacer(),
-                      //     // Obx(() {
-                      //     //   final p = controller.profile.value;
-                      //     //   return Text(
-                      //     //     p?.phoneNumber ?? member.phone,
-                      //     //     style: const TextStyle(color: Colors.white),
-                      //     //   );
-                      //     // }),
-                      //   ],
-                      // ),
-                      // const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Image.asset(
-                            'assets/icons/profile_mail.png',
-                            width: 12,
-                            height: 12,
-                          ),
-                          const SizedBox(width: 14),
-                          const Text(
-                            "Email",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w400,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const Spacer(),
-                          Obx(() {
-                            final p = controller.profile.value;
-                            return Text(
-                              p?.email ?? member.email,
-                              style: const TextStyle(color: Colors.white),
-                            );
-                          }),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-            Card(
-              elevation: 4,
-              shadowColor: Colors.grey,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey[900],
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(22.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Image.asset(
-                        'assets/icons/profile_language.png',
-                        width: 16,
-                        height: 16,
-                      ),
-                      const SizedBox(width: 12),
-                      const Text(
-                        "Language",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const Spacer(),
-                      const Text(
-                        'English',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-            Card(
-              elevation: 4,
-              shadowColor: Colors.grey,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey[900],
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(22.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          // dummy data for contactUs
-                          final editProfile = EditProfileModel(
-                            firstName: member.name.split(" ").first,
-                            lastName: member.name.contains(" ")
-                                ? member.name.split(" ").last
-                                : "",
-                            email: "test@gmail.com",
-                            phone: "01700000000",
-                            birthday: "2000-01-01",
-                            gender: "Male",
-                            imageUrl: member.imageUrl,
-                          );
-                          final apiClient = Get.find<ApiClient>();
-                          if (!Get.isRegistered<ContactUsRepo>()) {
-                            Get.put<ContactUsRepo>(ContactUsRepoImpl(apiClient: apiClient));
-                          }
-                          if (!Get.isRegistered<ContactUsController>()) {
-                            Get.put(ContactUsController(Get.find<ContactUsRepo>()));
-                          }
-
-                          Get.to(() => ProfileContactUsScreen(member: editProfile));
-
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Image.asset(
-                              'assets/icons/profile_contactus.png',
-                              width: 11,
-                              height: 11,
-                            ),
-                            const SizedBox(width: 14),
-                            const Text(
-                              "Contact Us",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      InkWell(
-                        onTap: () {
-                          Get.to(() => const PrivacypolicyScreen());
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Image.asset(
-                              'assets/icons/profile_privacy_policy.png',
-                              width: 11,
-                              height: 11,
-                            ),
-                            const SizedBox(width: 14),
-                            const Text(
-                              "Privacy policy",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      InkWell(
-                        onTap: () {
-                          final apiClient = Get.find<ApiClient>();
-                          if (!Get.isRegistered<ReportRepo>()) {
-                            Get.put<ReportRepo>(ReportRepoImpl(apiClient: apiClient));
-                          }
-                          if (!Get.isRegistered<ReportController>()) {
-                            Get.put(ReportController(Get.find<ReportRepo>()));
-                          }
-
-                          Get.to(() => const ProfileReportScreen());
-
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Image.asset(
-                              'assets/icons/profile_report.png',
-                              width: 11,
-                              height: 11,
-                            ),
-                            const SizedBox(width: 14),
-                            const Text(
-                              "Report",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 27),
-            Card(
-              elevation: 4,
-              shadowColor: Colors.grey,
-              child: GestureDetector(
-                onTap: () {},
+              // const SizedBox(height: 36),
+              // // Matches and Level
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
+              //     _buildStatBox("${member.matches}", "Matches"),
+              //     const SizedBox(width: 21),
+              //     _buildStatBox("${member.level}", "Level"),
+              //   ],
+              // ),
+              const SizedBox(height: 33),
+              Card(
+                elevation: 4,
+                shadowColor: Colors.grey,
                 child: Container(
-                  height: 50,
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
                   decoration: BoxDecoration(
                     color: Colors.grey[900],
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 22),
-                    child: InkWell(
-                      onTap: () {
-                        // Get.offAll(() => const LoginScreen());
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Image.asset(
-                            'assets/icons/profile_Logout.png',
-                            width: 15,
-                            height: 15,
-                          ),
-                          const SizedBox(width: 9),
-                          GestureDetector(
-                            onTap: () => Get.find<AuthController>().logout(),
-                            child: const Text(
-                              "Log out",
+                    padding: const EdgeInsets.all(22.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Image.asset(
+                              'assets/icons/profile_phone.png',
+                              width: 11,
+                              height: 11,
+                            ),
+                            const SizedBox(width: 14),
+                            const Text(
+                              "Phone number",
                               style: TextStyle(
-                                color: Colors.redAccent,
-                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w400,
                                 fontSize: 16,
                               ),
                             ),
+                            const Spacer(),
+                            Obx(() {
+                              final p = controller.profile.value;
+                              return Text(
+                                p?.phoneNumber ?? member.phone,
+                                style: const TextStyle(color: Colors.white),
+                              );
+                            }),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Image.asset(
+                              'assets/icons/profile_mail.png',
+                              width: 12,
+                              height: 12,
+                            ),
+                            const SizedBox(width: 14),
+                            const Text(
+                              "Email",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const Spacer(),
+                            Obx(() {
+                              final p = controller.profile.value;
+                              return Text(
+                                p?.email ?? member.email,
+                                style: const TextStyle(color: Colors.white),
+                              );
+                            }),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+              Card(
+                elevation: 4,
+                shadowColor: Colors.grey,
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[900],
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(22.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Image.asset(
+                          'assets/icons/profile_language.png',
+                          width: 16,
+                          height: 16,
+                        ),
+                        const SizedBox(width: 12),
+                        const Text(
+                          "Language",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
                           ),
-                        ],
+                        ),
+                        const Spacer(),
+                        const Text(
+                          'English',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+              Card(
+                elevation: 4,
+                shadowColor: Colors.grey,
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[900],
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(22.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            // dummy data for contactUs
+                            final editProfile = EditProfileModel(
+                              firstName: member.name.split(" ").first,
+                              lastName: member.name.contains(" ")
+                                  ? member.name.split(" ").last
+                                  : "",
+                              email: "test@gmail.com",
+                              phone: "01700000000",
+                              birthday: "2000-01-01",
+                              gender: "Male",
+                              imageUrl: member.imageUrl,
+                            );
+                            final apiClient = Get.find<ApiClient>();
+                            if (!Get.isRegistered<ContactUsRepo>()) {
+                              Get.put<ContactUsRepo>(
+                                ContactUsRepoImpl(apiClient: apiClient),
+                              );
+                            }
+                            if (!Get.isRegistered<ContactUsController>()) {
+                              Get.put(
+                                ContactUsController(Get.find<ContactUsRepo>()),
+                              );
+                            }
+
+                            Get.to(
+                              () => ProfileContactUsScreen(member: editProfile),
+                            );
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                'assets/icons/profile_contactus.png',
+                                width: 11,
+                                height: 11,
+                              ),
+                              const SizedBox(width: 14),
+                              const Text(
+                                "Contact Us",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        InkWell(
+                          onTap: () {
+                            Get.to(() => const PrivacypolicyScreen());
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                'assets/icons/profile_privacy_policy.png',
+                                width: 11,
+                                height: 11,
+                              ),
+                              const SizedBox(width: 14),
+                              const Text(
+                                "Privacy policy",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        InkWell(
+                          onTap: () {
+                            final apiClient = Get.find<ApiClient>();
+                            if (!Get.isRegistered<ReportRepo>()) {
+                              Get.put<ReportRepo>(
+                                ReportRepoImpl(apiClient: apiClient),
+                              );
+                            }
+                            if (!Get.isRegistered<ReportController>()) {
+                              Get.put(ReportController(Get.find<ReportRepo>()));
+                            }
+
+                            Get.to(() => const ProfileReportScreen());
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                'assets/icons/profile_report.png',
+                                width: 11,
+                                height: 11,
+                              ),
+                              const SizedBox(width: 14),
+                              const Text(
+                                "Report",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 27),
+              Card(
+                elevation: 4,
+                shadowColor: Colors.grey,
+                child: GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    height: 50,
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[900],
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 22),
+                      child: InkWell(
+                        onTap: () {
+                          // Get.offAll(() => const LoginScreen());
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Image.asset(
+                              'assets/icons/profile_Logout.png',
+                              width: 15,
+                              height: 15,
+                            ),
+                            const SizedBox(width: 9),
+                            GestureDetector(
+                              onTap: () => Get.find<AuthController>().logout(),
+                              child: const Text(
+                                "Log out",
+                                style: TextStyle(
+                                  color: Colors.redAccent,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      );
+            ],
+          ),
+        );
       }),
       bottomNavigationBar: const AppBottomNavBar(currentIndex: 4),
     );

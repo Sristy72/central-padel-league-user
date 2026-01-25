@@ -59,6 +59,8 @@ class UserEndpoints {
   final String updateProfile = '$_base/update-profile';
   final String getUserProfile = '$_base/profile';
 
+  String deleteAccount(String userId) => '$_base/$userId';
+
   // final String create = '$_base/create';
 }
 
@@ -101,7 +103,7 @@ class ChatEndpoints {
   final String createChat = '$_base/create-chat';
   final String getAllChats = '$_base/get-chats';
   final String sendMessage = '$_base/send-message';
-  
+
   String getSingleChat(String chatId) => '$_base/get-single-chat/$chatId';
 }
 

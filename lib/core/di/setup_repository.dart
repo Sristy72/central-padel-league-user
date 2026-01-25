@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:karlfive/core/network/services/auth_storage_service.dart';
 import 'package:karlfive/features/EntireScreen/data/repo/user_info_repo_impl.dart';
 import 'package:karlfive/features/EntireScreen/domain/repo/user_info_repo.dart';
 import 'package:karlfive/features/auth/data/repo/auth_repo_impl.dart';
@@ -62,7 +63,10 @@ void setupRepository() {
 
   // Edit profile controller (uses existing UserInfoRepo)
   Get.lazyPut(
-    () => EditProfileController(Get.find<UserInfoRepo>()),
+    () => EditProfileController(
+      Get.find<UserInfoRepo>(),
+      Get.find<AuthStorageService>(),
+    ),
     fenix: true,
   );
 
