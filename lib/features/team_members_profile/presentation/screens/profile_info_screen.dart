@@ -26,6 +26,120 @@ import '../controllers/profile_controller.dart';
 import '../controllers/report_controller.dart';
 import 'edit_profile_info.dart';
 
+// Helper function to show delete account dialog
+void _showDeleteAccountDialog(BuildContext context) {
+  final TextEditingController confirmController = TextEditingController();
+  final RxBool isConfirmValid = false.obs;
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext dialogContext) {
+      return AlertDialog(
+        backgroundColor: Colors.grey[900],
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        title: const Text(
+          'Delete Account',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'This action cannot be undone. All your data will be permanently deleted.',
+              style: TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Type "confirm" to delete your account:',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: confirmController,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'confirm',
+                hintStyle: const TextStyle(color: Colors.grey),
+                filled: true,
+                fillColor: Colors.grey[800],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
+              ),
+              onChanged: (value) {
+                isConfirmValid.value = value.toLowerCase() == 'confirm';
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              confirmController.dispose();
+              Navigator.of(dialogContext).pop();
+            },
+            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+          ),
+          Obx(
+            () => ElevatedButton(
+              onPressed: isConfirmValid.value
+                  ? () async {
+                      Navigator.of(dialogContext).pop();
+                      confirmController.dispose();
+
+                      // Show loading dialog
+                      Get.dialog(
+                        const Center(
+                          child: CircularProgressIndicator(color: Colors.white),
+                        ),
+                        barrierDismissible: false,
+                      );
+
+                      // Call delete account API
+                      final editProfileController =
+                          Get.find<EditProfileController>();
+                      final success = await editProfileController
+                          .deleteAccount();
+
+                      // Close loading dialog
+                      Get.back();
+
+                      if (success) {
+                        // Logout and navigate to login screen
+                        final authController = Get.find<AuthController>();
+                        await authController.logout();
+                      }
+                    }
+                  : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isConfirmValid.value
+                    ? Colors.red
+                    : Colors.grey,
+                disabledBackgroundColor: Colors.grey,
+              ),
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 class ProfileInfoScreen extends StatelessWidget {
   final TeamMemberModel member;
 
@@ -163,7 +277,7 @@ class ProfileInfoScreen extends StatelessWidget {
               // Profile Image (from API if available)
               Obx(() {
                 final p = controller.profile.value;
-                final displayImage = p?.profileImage ?? member.imageUrl;
+                final displayImage = p?.profileImage ?? '';
                 return CircleAvatar(
                   radius: 50,
                   backgroundImage: displayImage.isNotEmpty
@@ -178,7 +292,7 @@ class ProfileInfoScreen extends StatelessWidget {
                 final p = controller.profile.value;
                 final displayName = (p?.name?.isNotEmpty == true)
                     ? p!.name!
-                    : member.name;
+                    : 'user name';
                 return Text(
                   displayName,
                   style: const TextStyle(
@@ -244,34 +358,34 @@ class ProfileInfoScreen extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Image.asset(
-                              'assets/icons/profile_phone.png',
-                              width: 11,
-                              height: 11,
-                            ),
-                            const SizedBox(width: 14),
-                            const Text(
-                              "Phone number",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16,
-                              ),
-                            ),
-                            const Spacer(),
-                            Obx(() {
-                              final p = controller.profile.value;
-                              return Text(
-                                p?.phoneNumber ?? member.phone,
-                                style: const TextStyle(color: Colors.white),
-                              );
-                            }),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.start,
+                        //   children: [
+                        //     // Image.asset(
+                        //     //   'assets/icons/profile_phone.png',
+                        //     //   width: 11,
+                        //     //   height: 11,
+                        //     // ),
+                        //     // const SizedBox(width: 14),
+                        //     // const Text(
+                        //     //   "Phone number",
+                        //     //   style: TextStyle(
+                        //     //     color: Colors.white,
+                        //     //     fontWeight: FontWeight.w400,
+                        //     //     fontSize: 16,
+                        //     //   ),
+                        //     // ),
+                        //     // const Spacer(),
+                        //   //   Obx(() {
+                        //   //     final p = controller.profile.value;
+                        //   //     return Text(
+                        //   //       p?.phoneNumber ?? member.phone,
+                        //   //       style: const TextStyle(color: Colors.white),
+                        //   //     );
+                        //   //   }),
+                        //   // ],
+                        // ),
+                        // const SizedBox(height: 24),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -477,11 +591,13 @@ class ProfileInfoScreen extends StatelessWidget {
               ),
 
               const SizedBox(height: 27),
+
+              // Delete Account Button
               Card(
                 elevation: 4,
                 shadowColor: Colors.grey,
                 child: GestureDetector(
-                  onTap: () {},
+                  onTap: () => _showDeleteAccountDialog(context),
                   child: Container(
                     height: 50,
                     width: double.infinity,
@@ -492,32 +608,66 @@ class ProfileInfoScreen extends StatelessWidget {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 22),
-                      child: InkWell(
-                        onTap: () {
-                          // Get.offAll(() => const LoginScreen());
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Image.asset(
-                              'assets/icons/profile_Logout.png',
-                              width: 15,
-                              height: 15,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.delete_forever,
+                            color: Colors.red,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 9),
+                          const Text(
+                            "Delete Account",
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
-                            const SizedBox(width: 9),
-                            GestureDetector(
-                              onTap: () => Get.find<AuthController>().logout(),
-                              child: const Text(
-                                "Log out",
-                                style: TextStyle(
-                                  color: Colors.redAccent,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Logout Button
+              Card(
+                elevation: 4,
+                shadowColor: Colors.grey,
+                child: GestureDetector(
+                  onTap: () => Get.find<AuthController>().logout(),
+                  child: Container(
+                    height: 50,
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[900],
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 22),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Image.asset(
+                            'assets/icons/profile_Logout.png',
+                            width: 15,
+                            height: 15,
+                          ),
+                          const SizedBox(width: 9),
+                          const Text(
+                            "Log out",
+                            style: TextStyle(
+                              color: Colors.redAccent,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

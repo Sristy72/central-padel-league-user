@@ -1,12 +1,10 @@
 import 'dart:io';
 
-import 'package:karlfive/core/common/constants/app_images.dart';
-import 'package:karlfive/features/auth/presentation/controller/auth_controller.dart';
-import 'package:karlfive/features/home/controller/home_controller.dart';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:karlfive/core/common/constants/app_images.dart';
+import 'package:karlfive/features/home/controller/home_controller.dart';
 
 import '../../data/models/edit_profile_model.dart';
 import '../../data/models/team_member_model.dart';
@@ -247,7 +245,6 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                         final profileImg =
                             _profileController.profile.value?.profileImage ??
                             '';
-                        final fallback = widget.member.imageUrl;
                         ImageProvider display;
                         if (_pickedImage != null) {
                           display = FileImage(_pickedImage!);
@@ -255,10 +252,6 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
                           display = profileImg.startsWith('http')
                               ? NetworkImage(profileImg)
                               : AssetImage(profileImg);
-                        } else if (fallback.isNotEmpty) {
-                          display = fallback.startsWith('http')
-                              ? NetworkImage(fallback)
-                              : AssetImage(fallback);
                         } else {
                           display = const AssetImage(AppImages.avatarImage);
                         }
@@ -545,82 +538,82 @@ class _EditProfileInfoScreenState extends State<EditProfileInfoScreen> {
               const SizedBox(height: 16),
 
               // Delete Account Button
-              Align(
-                alignment: Alignment.center,
-                child: SizedBox(
-                  height: 39,
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 10,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    onPressed: () async {
-                      // Show confirmation dialog
-                      final bool? confirmed = await showDialog<bool>(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            backgroundColor: Colors.grey[900],
-                            title: const Text(
-                              'Delete Account',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            content: const Text(
-                              'Are you sure you want to delete your account? This action cannot be undone.',
-                              style: TextStyle(color: Colors.white70),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pop(false),
-                                child: const Text(
-                                  'Cancel',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pop(true),
-                                style: TextButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                ),
-                                child: const Text(
-                                  'Delete',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      );
+              // Align(
+              //   alignment: Alignment.center,
+              //   child: SizedBox(
+              //     height: 39,
+              //     width: double.infinity,
+              //     child: ElevatedButton(
+              //       style: ElevatedButton.styleFrom(
+              //         backgroundColor: Colors.red,
+              //         padding: const EdgeInsets.symmetric(
+              //           horizontal: 32,
+              //           vertical: 10,
+              //         ),
+              //         shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(8),
+              //         ),
+              //       ),
+              //       onPressed: () async {
+              //         // Show confirmation dialog
+              //         final bool? confirmed = await showDialog<bool>(
+              //           context: context,
+              //           builder: (BuildContext context) {
+              //             return AlertDialog(
+              //               backgroundColor: Colors.grey[900],
+              //               title: const Text(
+              //                 'Delete Account',
+              //                 style: TextStyle(color: Colors.white),
+              //               ),
+              //               content: const Text(
+              //                 'Are you sure you want to delete your account? This action cannot be undone.',
+              //                 style: TextStyle(color: Colors.white70),
+              //               ),
+              //               actions: [
+              //                 TextButton(
+              //                   onPressed: () =>
+              //                       Navigator.of(context).pop(false),
+              //                   child: const Text(
+              //                     'Cancel',
+              //                     style: TextStyle(color: Colors.white),
+              //                   ),
+              //                 ),
+              //                 TextButton(
+              //                   onPressed: () =>
+              //                       Navigator.of(context).pop(true),
+              //                   style: TextButton.styleFrom(
+              //                     backgroundColor: Colors.red,
+              //                   ),
+              //                   child: const Text(
+              //                     'Delete',
+              //                     style: TextStyle(color: Colors.white),
+              //                   ),
+              //                 ),
+              //               ],
+              //             );
+              //           },
+              //         );
 
-                      if (confirmed == true) {
-                        final success = await _controller.deleteAccount();
+              //         if (confirmed == true) {
+              //           final success = await _controller.deleteAccount();
 
-                        if (success) {
-                          // Logout and navigate to login screen
-                          final authController = Get.find<AuthController>();
-                          await authController.logout();
-                        }
-                      }
-                    },
-                    child: const Text(
-                      "Delete Account",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              //           if (success) {
+              //             // Logout and navigate to login screen
+              //             final authController = Get.find<AuthController>();
+              //             await authController.logout();
+              //           }
+              //         }
+              //       },
+              //       child: const Text(
+              //         "Delete Account",
+              //         style: TextStyle(
+              //           color: Colors.white,
+              //           fontWeight: FontWeight.w500,
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),
