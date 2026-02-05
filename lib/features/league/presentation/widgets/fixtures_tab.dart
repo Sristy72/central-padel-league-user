@@ -34,7 +34,7 @@ class _FixturesTabState extends State<FixturesTab> {
   Map<String, List<Match>> _groupByDate(List<Match> input) {
     final map = <String, List<Match>>{};
     for (final m in input) {
-      final key = DateFormat('yyyy-MM-dd').format(m.matchDateTime.toLocal());
+      final key = DateFormat('yyyy-MM-dd').format(m.matchDateTime);
       map.putIfAbsent(key, () => []).add(m);
     }
     //* Keep the map sorted by date ascending
@@ -144,7 +144,42 @@ class _FixturesTabState extends State<FixturesTab> {
     );
 
     if (pickedDate != null) {
-      await _handleUpdateMatchDate(match, pickedDate);
+      // After date is selected, show time picker
+      await _showTimePickerDialog(match, pickedDate);
+    }
+  }
+
+  Future<void> _showTimePickerDialog(Match match, DateTime selectedDate) async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(match.matchDateTime),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.primaryGreen,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (pickedTime != null) {
+      // Combine selected date and time
+      final combinedDateTime = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+        pickedTime.hour,
+        pickedTime.minute,
+      );
+      
+      // Now call the API with combined date and time
+      await _handleUpdateMatchDate(match, combinedDateTime);
     }
   }
 
@@ -343,8 +378,8 @@ class _FixturesTabState extends State<FixturesTab> {
                               children: [
                                 Text(
                                   DateFormat(
-                                    'hh:mm a',
-                                  ).format(m.matchDateTime.toLocal()),
+                                    'HH:mm',
+                                  ).format(m.matchDateTime),
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -360,13 +395,26 @@ class _FixturesTabState extends State<FixturesTab> {
                                   ),
                                 ),
                                 if (widget.repository != null)
-                                  IconButton(
-                                    onPressed: () => _showDatePickerDialog(m),
-                                    icon: const Icon(
-                                      Icons.edit_calendar,
-                                      color: AppColors.primaryGreen,
-                                    ),
-                                    tooltip: 'Edit match date',
+
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        onPressed: () => _showDatePickerDialog(m),
+                                        icon: const Icon(
+                                          Icons.edit_calendar,
+                                          color: AppColors.primaryGreen,
+                                        ),
+                                        tooltip: 'Edit match date',
+                                      ),
+                                      // IconButton(
+                                      //   onPressed: () => _showDatePickerDialog(m),
+                                      //   icon: const Icon(
+                                      //     Icons.edit_calendar,
+                                      //     color: AppColors.primaryGreen,
+                                      //   ),
+                                      //   tooltip: 'Edit match date',
+                                      // ),
+                                    ],
                                   ),
                                 Text(
                                   m.formattedScore(),
