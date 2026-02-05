@@ -114,6 +114,16 @@ class _FixturesTabState extends State<FixturesTab> {
     }
   }
 
+  void _showMatchEndedSnackbar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('This match is already ended. You cannot update the date anymore.'),
+        backgroundColor: Colors.orange,
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
   Future<void> _showDatePickerDialog(Match match) async {
     final now = DateTime.now();
     final matchDate = match.matchDateTime;
@@ -399,12 +409,16 @@ class _FixturesTabState extends State<FixturesTab> {
                                   Row(
                                     children: [
                                       IconButton(
-                                        onPressed: () => _showDatePickerDialog(m),
+                                        onPressed: m.sets.isNotEmpty
+                                            ? () => _showMatchEndedSnackbar()
+                                            : () => _showDatePickerDialog(m),
                                         icon: const Icon(
                                           Icons.edit_calendar,
                                           color: AppColors.primaryGreen,
                                         ),
-                                        tooltip: 'Edit match date',
+                                        tooltip: m.sets.isNotEmpty
+                                            ? 'Match already ended'
+                                            : 'Edit match date',
                                       ),
                                       // IconButton(
                                       //   onPressed: () => _showDatePickerDialog(m),
