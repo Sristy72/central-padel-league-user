@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../controller/home_controller.dart';
-import '../screens/home_standings_screen.dart';
 
 class QuickStatsWidget extends StatelessWidget {
   const QuickStatsWidget({super.key});
@@ -335,19 +335,19 @@ class QuickStatsWidget extends StatelessWidget {
               );
             }),
 
-            //* <--- "See All" link --->
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {
-                  Get.to(() => const HomeStandingsScreen());
-                },
-                child: const Text(
-                  "See All",
-                  style: TextStyle(color: Colors.green),
-                ),
-              ),
-            ),
+            // //* <--- "See All" link --->
+            // Align(
+            //   alignment: Alignment.centerRight,
+            //   child: TextButton(
+            //     onPressed: () {
+            //       Get.to(() => const HomeStandingsScreen());
+            //     },
+            //     child: const Text(
+            //       "See All",
+            //       style: TextStyle(color: Colors.green),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),

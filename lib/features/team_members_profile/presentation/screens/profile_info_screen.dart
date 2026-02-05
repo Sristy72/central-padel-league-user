@@ -116,9 +116,21 @@ void _showDeleteAccountDialog(BuildContext context) {
                       Get.back();
 
                       if (success) {
-                        // Logout and navigate to login screen
+                        // Logout and navigate to login screen first
                         final authController = Get.find<AuthController>();
                         await authController.logout();
+                        
+                        // Show success message after navigation
+                        Future.delayed(const Duration(milliseconds: 500), () {
+                          Get.snackbar(
+                            'Success',
+                            'Account deleted successfully',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.green,
+                            colorText: Colors.white,
+                            duration: const Duration(seconds: 3),
+                          );
+                        });
                       }
                     }
                   : null,

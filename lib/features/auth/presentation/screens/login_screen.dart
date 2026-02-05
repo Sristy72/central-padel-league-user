@@ -93,8 +93,8 @@ class _LoginScreenState extends State<LoginScreen>
                       children: [
                         AppLogo(
                           images: AppImages.homelogo,
-                          height: 193,
-                          width: 193,
+                          height: 170,
+                          width: 170,
                         ),
 
                         SizedBox(height: 37),

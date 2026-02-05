@@ -1,9 +1,11 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../core/network/services/multiple_form_data_manager.dart';
+
 import '../../../../core/network/services/auth_storage_service.dart';
+import '../../../../core/network/services/multiple_form_data_manager.dart';
 import '../../../EntireScreen/domain/repo/user_info_repo.dart';
 
 class EditProfileController extends GetxController {
@@ -192,13 +194,7 @@ class EditProfileController extends GetxController {
           success = false;
         },
         (response) {
-          Get.snackbar(
-            'Success',
-            'Account deleted successfully',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.green,
-            colorText: Colors.white,
-          );
+          // Don't show snackbar here, it will be shown after navigation
           success = true;
         },
       );
